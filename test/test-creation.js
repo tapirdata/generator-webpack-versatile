@@ -11,8 +11,11 @@ describe('express-develop generator', function () {
       }
 
       this.app = helpers.createGenerator('express-develop:app', [
-        '../../app'
-      ]);
+          '../../generators/app',
+        ],
+        [],
+        {'test-framework': 'none'}
+      );
       done();
     }.bind(this));
   });
@@ -21,11 +24,15 @@ describe('express-develop generator', function () {
     var expected = [
       // add files you expect to exist here.
       '.jshintrc',
-      '.editorconfig'
+      '.editorconfig',
+      '.gitignore',
+      'static/favicon.ico',
+      'static/robots.txt',
+      'static/404.html'
     ];
 
     helpers.mockPrompt(this.app, {
-      'someOption': true
+      'features': []
     });
     this.app.options['skip-install'] = true;
     this.app.run({}, function () {
