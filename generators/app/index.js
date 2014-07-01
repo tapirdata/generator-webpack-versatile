@@ -14,7 +14,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     this.pkg = require('../../package.json');
 
     _.defaults(this.options, {
-      'test-framework': 'mocha',
+      // 'test-framework': 'mocha',
       'app-dir':        'app',
       'static-dir':     'static'
     });
@@ -47,11 +47,11 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       },{
         name: 'Sass',
         value: 'includeSass',
-        checked: false
+        checked: true
       },{
         name: 'Modernizr',
         value: 'includeModernizr',
-        checked: false
+        checked: true
       }]
     }, {
       when: function (answers) {
@@ -119,6 +119,10 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     this.copy(path.join('views', 'layout.jade'), path.join(appDir, 'views', 'layout.jade'));
     this.copy(path.join('styles', 'main.scss'), path.join(appDir, 'styles', 'main.scss'));
     this.copy(path.join('routes', 'index.js'), path.join(appDir, 'routes', 'index.js'));
+  },
+
+  gruntfile: function () {
+    this.copy('Gruntfile-simple.js', 'Gruntfile.js');
   }
 
   // _testfiles: function () {

@@ -11,10 +11,8 @@ module.exports = function(options) {
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
 
-  if (options.develop) {
-    app.use('/', express.static(path.join(__dirname, '../.tmp')));
-  }
-  app.use('/', express.static(__dirname));
+  app.use('/', express.static(path.join(__dirname, '..', 'static')));
+  // console.log('path=', path.join(__dirname, '..', 'static'));
 
   if (options.develop) {
     app.use(require('connect-livereload')({
