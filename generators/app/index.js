@@ -18,6 +18,9 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       'app-dir':        'app',
       'static-dir':     'static'
     });
+
+    this.appDir    = this.options['app-dir'];
+    this.staticDir = this.options['static-dir'];
   },
 
   init: function () {
@@ -86,7 +89,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
   },
 
   app: function () {
-    var appDir = this.options['app-dir'];
+    var appDir = this.appDir;
     this.mkdir(appDir);
     this._mkdirs(appDir, ['views', 'routes', 'styles', 'images']);
     this.copy('_package.json', 'package.json');
@@ -102,7 +105,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
   },
 
   staticfiles: function () {
-    var staticDir = this.options['static-dir'];
+    var staticDir = this.staticDir;
     this._mkdirs(staticDir, ['styles', 'scripts']);
     var statics = ['favicon.ico', '404.html', 'robots.txt'];
     for (var i=0; i<statics.length; ++i) {
@@ -112,13 +115,14 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
   },
 
   appfiles: function () {
-    var appDir = this.options['app-dir'];
+    var appDir = this.appDir;
     this.copy(path.join('app', 'app-factory.js'), path.join(appDir, 'app-factory.js'));
     this.copy(path.join('app', 'startapp.js'), path.join(appDir, 'startapp.js'));
     this.copy(path.join('views', 'index.jade'), path.join(appDir, 'views', 'index.jade'));
     this.copy(path.join('views', 'layout.jade'), path.join(appDir, 'views', 'layout.jade'));
     this.copy(path.join('styles', 'main.scss'), path.join(appDir, 'styles', 'main.scss'));
     this.copy(path.join('routes', 'index.js'), path.join(appDir, 'routes', 'index.js'));
+    this.copy(path.join('routes', 'otto.js'), path.join(appDir, 'routes', 'otto.js'));
   },
 
   gruntfile: function () {

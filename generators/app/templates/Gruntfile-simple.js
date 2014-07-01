@@ -132,7 +132,7 @@ module.exports = function (grunt) {
                     ]
                 }]
             },
-            server: '<%= config.staticDir %>'
+            server: '<%= config.staticDir %>/styles'
         },
 
         // Make sure code styles are up to par and there are no obvious mistakes
