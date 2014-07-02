@@ -3,6 +3,7 @@ var path = require('path');
 var express = require('express')
 var routes = require('./routes/index');
 var favicon = require('serve-favicon');
+var robots = require('robots.txt');
 
 module.exports = function(options) {
 
@@ -12,6 +13,7 @@ module.exports = function(options) {
   app.set('view engine', 'jade');
 
   app.use(favicon(path.join(__dirname, '..', 'static', 'images', 'favicon.ico')));
+  app.use(robots(path.join(__dirname, '..', 'static', 'pages', 'robots.txt')));
   app.use('/static', express.static(path.join(__dirname, '..', 'static')));
 
   if (options.develop) {

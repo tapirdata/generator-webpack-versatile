@@ -3,6 +3,8 @@ html
   head
     title= title
     link(rel='stylesheet', href='/static/styles/main.css')
-    link(rel='javascript', href='/static/vendor/jquery/dist/jquery.js')
+    link(rel='javascript', href='/static/vendor/jquery/dist/jquery.js')<% if (includeModernizr) { %>
+    link(rel='javascript', href='/static/vendor/modernizr/modernizr.js')<% } %><% if (includeBootstrap) { %>
+    link(rel='javascript', href='/static/vendor/bootstrap-sass-official/assets/javascripts/bootstrap.js')<% } %>
   body
     block content

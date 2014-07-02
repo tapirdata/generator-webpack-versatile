@@ -56,7 +56,7 @@ module.exports = function (grunt) {
                 files: ['<%%= config.appDir %>/styles/{,*/}*.css'],
                 tasks: ['newer:copy:styles', 'autoprefixer']
             },
-            livereloado: {
+            livereload: {
                 options: {
                     livereload: true
                 },
@@ -65,58 +65,15 @@ module.exports = function (grunt) {
                     '<%%= config.appDir %>/views/{,*/}*.html',
                     '<%%= config.appDir %>/views/{,*/}*.jade',
                     '<%%= config.staticDir %>/styles/{,*/}*.css',
-                    '<%%= config.appDir %>/images/{,*/}*'
+                    '<%%= config.staticDir %>/scripts/{,*/}*.js',
                 ]
             }
         },
 
-        // The actual grunt server settings
-        // connect: {
-        //     options: {
-        //         port: 9000,
-        //         open: true,
-        //         livereload: 35729,
-        //         // Change this to '0.0.0.0' to access the server from outside
-        //         hostname: 'localhost'
-        //     },
-        //     livereload: {
-        //         options: {
-        //             middleware: function(connect) {
-        //                 // console.log('connect=', connect);
-        //                 return [
-        //                     connect.static('.tmp'),
-        //                     connect().use('/bower_components', connect.static('./bower_components')),
-        //                     connect.static(config.appDir)
-        //                 ];
-        //             }
-        //         }
-        //     },
-        //     test: {
-        //         options: {
-        //             open: false,
-        //             port: 9001,
-        //             middleware: function(connect) {
-        //                 return [
-        //                     connect.static('.tmp'),
-        //                     connect.static('test'),
-        //                     connect().use('/bower_components', connect.static('./bower_components')),
-        //                     connect.static(config.appDir)
-        //                 ];
-        //             }
-        //         }
-        //     },
-        //     dist: {
-        //         options: {
-        //             base: '<%%= config.distDir %>',
-        //             livereload: false
-        //         }
-        //     }
-        // },
-
         develop: {
             server: {
                 file: './<%%= config.appDir %>/startapp.js',
-                args: ['--port', '9999', '--develop']
+                args: ['--port=9999', '--develop']
             }
         },
 
@@ -126,7 +83,6 @@ module.exports = function (grunt) {
                 files: [{
                     dot: true,
                     src: [
-                        '<%%= config.staticDir %>',
                         '<%%= config.distDir %>/*',
                         '!<%%= config.distDir %>/.git*'
                     ]
@@ -163,7 +119,7 @@ module.exports = function (grunt) {
         sass: {
             options: {
                 includePaths: [
-                    'bower_components'
+                    // 'bower_components'
                 ]
             },
             dist: {
@@ -202,15 +158,15 @@ module.exports = function (grunt) {
         },
 
         // Automatically inject Bower components into the HTML file
-        bowerInstall: {
-            app: {
-                src: ['<%%= config.appDir %>/index.html'],
-                exclude: ['bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap.js']
-            },
-            sass: {
-                src: ['<%%= config.appDir %>/styles/{,*/}*.{scss,sass}']
-            }
-        },
+        // bowerInstall: {
+        //     app: {
+        //         src: ['<%%= config.appDir %>/index.html'],
+        //         exclude: ['bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap.js']
+        //     },
+        //     sass: {
+        //         src: ['<%%= config.appDir %>/styles/{,*/}*.{scss,sass}']
+        //     }
+        // },
 
         // Renames files for browser caching purposes
         rev: {
@@ -393,15 +349,9 @@ module.exports = function (grunt) {
             'clean:server',
             'concurrent:server',
             'autoprefixer',
-            // 'connect:livereload',
             'develop',
             'watch'
         ]);
-    });
-
-    grunt.registerTask('server', function (target) {
-        grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-        grunt.task.run([target ? ('serve:' + target) : 'serve']);
     });
 
     grunt.registerTask('test', function (target) {
