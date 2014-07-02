@@ -33,7 +33,6 @@
     "mocha": "^1.20.1"
   },
   "peerDependencies": {
-    "yo": ">=1.0.0",
-    "generator-mocha": ">=0.1.0"
+    "yo": ">=1.0.0"
   }
 }
