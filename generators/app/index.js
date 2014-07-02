@@ -5,7 +5,6 @@ var yeoman = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
 var _ = require('underscore');
-// var GruntfileEditor = require('gruntfile-editor');
 
 
 var ExpressDevelopGenerator = yeoman.generators.Base.extend({
@@ -16,12 +15,14 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
 
     _.defaults(this.options, {
       // 'test-framework': 'mocha',
-      'app-dir':        'app',
-      'static-dir':     'static'
+      'app-dir':     'app',
+      'static-dir':  'static',
+      'dist-dir':    'dist'
     });
 
     this.appDir    = this.options['app-dir'];
     this.staticDir = this.options['static-dir'];
+    this.distDir   = this.options['dist-dir'];
   },
 
   initializing: function () {
@@ -95,11 +96,11 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     gruntfile: function () {
       console.log('copy gruntfile');
       this.copy('Gruntfile.js', 'Gruntfile.js', function(gruntfile){
-        // gruntfile = new GruntfileEditor(gruntfile);
-        // gruntfile = gruntfile.replace(/a/g, 'AAAAA');
-        // gruntfile.insertConfig('huhn', JSON.stringify({name: "prillan"}));
-        // return gruntfile.toString();
         return gruntfile;
+        var GruntfileEditor = require('gruntfile-editor');
+        gruntfile = new GruntfileEditor(gruntfile);
+        gruntfile.insertConfig('huhn', JSON.stringify({name: "prjllan"}));
+        return gruntfile.toString();
       });
     },
 
@@ -108,6 +109,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       this.copy('editorconfig', '.editorconfig');
       this.copy('jshintrc', '.jshintrc');
       this.copy('gitignore', '.gitignore');
+      this.copy('bowerrc', '.bowerrc');
     },
 
     pkgfiles: function () {
@@ -131,11 +133,9 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     staticfiles: function () {
       var staticDir = this.staticDir;
       this._mkdirs(staticDir, ['styles', 'scripts']);
-      var statics = ['favicon.ico', '404.html', 'robots.txt'];
-      for (var i=0; i<statics.length; ++i) {
-        var name = statics[i];
-        this.copy(path.join('static', name), path.join(staticDir, name));
-      }
+      this.copy(path.join('images', 'favicon.ico'), path.join(staticDir, 'images', 'favicon.ico'));
+      this.copy(path.join('pages', '404.html'), path.join(staticDir, 'pages', '404.html'));
+      this.copy(path.join('pages', 'robots.txt'), path.join(staticDir, 'pages', 'robots.txt'));
     },
 
     appfiles: function () {

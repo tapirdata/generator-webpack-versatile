@@ -2,7 +2,7 @@
 var path = require('path');
 var express = require('express')
 var routes = require('./routes/index');
-
+var favicon = require('serve-favicon');
 
 module.exports = function(options) {
 
@@ -11,8 +11,8 @@ module.exports = function(options) {
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
 
-  app.use('/', express.static(path.join(__dirname, '..', 'static')));
-  // console.log('path=', path.join(__dirname, '..', 'static'));
+  app.use(favicon(path.join(__dirname, '..', 'static', 'images', 'favicon.ico')));
+  app.use('/static', express.static(path.join(__dirname, '..', 'static')));
 
   if (options.develop) {
     app.use(require('connect-livereload')({
