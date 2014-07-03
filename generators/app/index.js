@@ -58,6 +58,10 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
           name: 'Modernizr',
           value: 'includeModernizr',
           checked: true
+        },{
+          name: 'Backbone',
+          value: 'includeBackbone',
+          checked: true
         }]
       }, {
         when: function (answers) {
@@ -76,6 +80,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
         this.includeSass = hasFeature('includeSass');
         this.includeBootstrap = hasFeature('includeBootstrap');
         this.includeModernizr = hasFeature('includeModernizr');
+        this.includeBackbone = hasFeature('includeBackbone');
 
         this.includeLibSass = answers.libsass;
         this.includeRubySass = !(answers.libsass);
@@ -126,7 +131,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       console.log('make appdirs');
       var appDir = this.appDir;
       this.mkdir(appDir);
-      this._mkdirs(appDir, ['views', 'routes', 'styles', 'images']);
+      this._mkdirs(appDir, ['views', 'routes', 'styles', 'scripts', 'images']);
     },
 
 
@@ -146,7 +151,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       this.copy(path.join('views', 'layout.jade'), path.join(appDir, 'views', 'layout.jade'));
       this.copy(path.join('styles', 'main.scss'), path.join(appDir, 'styles', 'main.scss'));
       this.copy(path.join('routes', 'index.js'), path.join(appDir, 'routes', 'index.js'));
-      this.copy(path.join('routes', 'otto.js'), path.join(appDir, 'routes', 'otto.js'));
+      // this.copy(path.join('routes', 'otto.js'), path.join(appDir, 'routes', 'otto.js'));
     },
 
     // gruntfile: function () {

@@ -36,7 +36,7 @@ module.exports = function (grunt) {
             },
             js: {
                 files: ['<%%= config.appDir %>/scripts/{,*/}*.js'],
-                tasks: ['jshint'],
+                tasks: ['jshint', 'newer:copy:scripts'],
                 options: {
                     livereload: true
                 }
@@ -88,7 +88,10 @@ module.exports = function (grunt) {
                     ]
                 }]
             },
-            server: '<%%= config.staticDir %>/styles'
+            server: [
+              '<%%= config.staticDir %>/styles/*',
+              '<%%= config.staticDir %>/scripts/*'
+            ]  
         },
 
         // Make sure code styles are up to par and there are no obvious mistakes
@@ -98,7 +101,7 @@ module.exports = function (grunt) {
                 reporter: require('jshint-stylish')
             },
             all: [
-                'Gruntfile.js',
+                // 'Gruntfile.js',
                 '<%%= config.appDir %>/scripts/{,*/}*.js',
                 '!<%%= config.appDir %>/scripts/vendor/*',
                 'test/spec/{,*/}*.js'
@@ -301,6 +304,13 @@ module.exports = function (grunt) {
                 cwd: '<%%= config.appDir %>/styles',
                 dest: '<%%= config.staticDir %>/styles/',
                 src: '{,*/}*.css'
+            },
+            scripts: {
+                expand: true,
+                dot: true,
+                cwd: '<%%= config.appDir %>/scripts',
+                dest: '<%%= config.staticDir %>/scripts/',
+                src: '{,*/}*.js'
             }
         },
 
@@ -325,7 +335,8 @@ module.exports = function (grunt) {
         concurrent: {
             server: [
                 'sass:server',
-                'copy:styles'
+                'copy:styles',
+                'copy:scripts'
             ],
             test: [
                 'copy:styles'

@@ -2,9 +2,11 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/static/styles/main.css')
-    link(rel='javascript', href='/static/vendor/jquery/dist/jquery.js')<% if (includeModernizr) { %>
-    link(rel='javascript', href='/static/vendor/modernizr/modernizr.js')<% } %><% if (includeBootstrap) { %>
-    link(rel='javascript', href='/static/vendor/bootstrap-sass-official/assets/javascripts/bootstrap.js')<% } %>
+    link(rel='stylesheet', href='/static/styles/main.css')<% if (includeModernizr) { %>
+    script(rel='javascript', src='/static/vendor/modernizr/modernizr.js')<% } %>
+    script(rel='javascript', src='/static/vendor/jquery/dist/jquery.js')<% if (includeBootstrap) { %>
+    script(rel='javascript', src='/static/vendor/bootstrap-sass-official/assets/javascripts/bootstrap.js')<% } %><% if (includeBackbone) { %>
+    script(rel='javascript', src='/static/vendor/underscore/underscore.js')
+    script(rel='javascript', src='/static/vendor/backbone/backbone.js')<% } %>
   body
     block content
