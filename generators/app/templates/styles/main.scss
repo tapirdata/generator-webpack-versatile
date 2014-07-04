@@ -1,9 +1,7 @@
-$icon-font-path: "/bower_components/bootstrap-sass-official/assets/fonts/bootstrap/";
-
-
-// bower:scss
-@import "../../static/vendor/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
-// endbower
+<% if (includeBootstrap) { %>
+$icon-font-path: "/static/vendor/bootstrap-sass-official/assets/fonts/bootstrap/";
+@import "../../<%= staticDir %>/vendor/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
+<% } %>
 
 .browsehappy {
     margin: 0.2em 0;

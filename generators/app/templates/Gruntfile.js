@@ -122,7 +122,6 @@ module.exports = function(grunt) {
     sass: {
       options: {
         includePaths: [
-          // 'bower_components'
         ]
       },
       dist: {
@@ -159,17 +158,6 @@ module.exports = function(grunt) {
         }]
       }
     },
-
-    // Automatically inject Bower components into the HTML file
-    // bowerInstall: {
-    //     app: {
-    //         src: ['<%%= config.appDir %>/index.html'],
-    //         exclude: ['bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap.js']
-    //     },
-    //     sass: {
-    //         src: ['<%%= config.appDir %>/styles/{,*/}*.{scss,sass}']
-    //     }
-    // },
 
     // Renames files for browser caching purposes
     rev: {
@@ -333,16 +321,16 @@ module.exports = function(grunt) {
 
     // Run some tasks in parallel to speed up build process
     concurrent: {
-      server: [
-        'sass:server',
+      server: [<% if (includeSass) { %>
+        'sass:server',<% } %>
         'copy:styles',
         'copy:scripts'
       ],
       test: [
         'copy:styles'
       ],
-      dist: [
-        'sass',
+      dist: [<% if (includeSass) { %>
+        'sass',<% } %>
         'copy:styles',
         'imagemin',
         'svgmin'
