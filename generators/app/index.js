@@ -147,11 +147,12 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       var appDir = this.appDir;
       this.copy(path.join('app', 'app-factory.js'), path.join(appDir, 'app-factory.js'));
       this.copy(path.join('app', 'startapp.js'), path.join(appDir, 'startapp.js'));
-      this.copy(path.join('views', 'index.jade'), path.join(appDir, 'views', 'index.jade'));
-      this.copy(path.join('views', 'layout.jade'), path.join(appDir, 'views', 'layout.jade'));
+      var branch = '_simple';
       this.copy(path.join('styles', 'main.scss'), path.join(appDir, 'styles', 'main.scss'));
-      this.copy(path.join('routes', 'index.js'), path.join(appDir, 'routes', 'index.js'));
+      // this.copy(path.join('routes', 'index.js'), path.join(appDir, 'routes', 'index.js'));
       // this.copy(path.join('routes', 'otto.js'), path.join(appDir, 'routes', 'otto.js'));
+      this.directory(path.join(branch, 'routes'), path.join(appDir, 'routes'));
+      this.directory(path.join(branch, 'views'), path.join(appDir, 'views'));
     },
 
     // gruntfile: function () {
