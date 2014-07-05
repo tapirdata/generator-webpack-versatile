@@ -70,9 +70,9 @@ module.exports = function(grunt) {
           livereload: true
         },
         files: [
-          '<%%= config.clientDir %>/{,*/}*.js',
-          '<%%= config.clientDir %>/views/{,*/}*.html',
-          '<%%= config.clientDir %>/views/{,*/}*.jade',
+          '<%%= config.appDir %>/{,*/}*.js',
+          '<%%= config.appDir %>/views/{,*/}*.html',
+          '<%%= config.appDir %>/views/{,*/}*.jade',
           '<%%= config.staticDir %>/styles/{,*/}*.css',
           '<%%= config.staticDir %>/scripts/{,*/}*.js',
         ]

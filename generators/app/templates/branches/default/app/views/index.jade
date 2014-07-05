@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  <!--[if lt IE 9]>
+  p.browsehappy
+    | You are using an <strong>outdated</strong> browser. Please 
+    a(href='http://browsehappy.com/') upgrade your browser 
+    |  to improve your experience.
+  <![endif]-->
+  .container
+    .header
+      ul.nav.nav-pills.pull-right
+        li.active
+          a(href='#') Home
+        li
+          a(href='#') Contact
+        li
+          a(href='#') Contact
+      h3.text-muted= title
+    .jumbotron
+      h1 'Allo, 'Allo!
+      p.lead Always a pleasure scaffolding your apps.
+      p
+        a.btn.btn-lg.btn-success(href='#') Splendid!
+
+    .row.marketing
+      .col-lg-6
+        h4 HTML5 Boilerplate
+        p HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.
+
+        h4 Bootstrap
+        p Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.
+
+    .footer
+      p
+        span.glyphicon.glyphicon-heart from the Yeoman team
