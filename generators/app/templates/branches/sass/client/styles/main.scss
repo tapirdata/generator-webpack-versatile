@@ -1,6 +1,6 @@
 <% if (includeBootstrap) { %>
 $icon-font-path: "/static/vendor/bootstrap-sass-official/assets/fonts/bootstrap/";
-@import "../../<%= staticDir %>/vendor/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
+@import "<%= staticDir %>/vendor/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
 <% } %>
 
 .browsehappy {

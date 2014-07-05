@@ -18,6 +18,7 @@ module.exports = function(grunt) {
   // Configurable paths
   var config = {
     appDir: '<%= appDir %>',
+    clientDir: '<%= clientDir %>',
     staticDir: '<%= staticDir %>',
     distDir: '<%= distDir %>'
   };
@@ -34,8 +35,8 @@ module.exports = function(grunt) {
         files: ['bower.json'],
         tasks: ['bowerInstall']
       },
-      js: {
-        files: ['<%%= config.appDir %>/scripts/{,*/}*.js'],
+      scripts: {
+        files: ['<%%= config.clientDir %>/scripts/{,*/}*.js'],
         tasks: ['jshint', 'newer:copy:scripts'],
         options: {
           livereload: true
@@ -49,11 +50,19 @@ module.exports = function(grunt) {
         files: ['Gruntfile.js']
       },
       sass: {
-        files: ['<%%= config.appDir %>/styles/{,*/}*.{scss,sass}'],
+        files: ['<%%= config.clientDir %>/styles/{,*/}*.{scss,sass}'],
         tasks: ['sass:server', 'autoprefixer']
       },
+      images: {
+        files: ['<%%= config.clientDir %>/images/{,*/}*'],
+        tasks: ['newer:copy:images']
+      },
+      pages: {
+        files: ['<%%= config.clientDir %>/pages/{,*/}*'],
+        tasks: ['newer:copy:pages']
+      },
       styles: {
-        files: ['<%%= config.appDir %>/styles/{,*/}*.css'],
+        files: ['<%%= config.clientDir %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
       },
       livereload: {
@@ -61,9 +70,9 @@ module.exports = function(grunt) {
           livereload: true
         },
         files: [
-          '<%%= config.appDir %>/{,*/}*.js',
-          '<%%= config.appDir %>/views/{,*/}*.html',
-          '<%%= config.appDir %>/views/{,*/}*.jade',
+          '<%%= config.clientDir %>/{,*/}*.js',
+          '<%%= config.clientDir %>/views/{,*/}*.html',
+          '<%%= config.clientDir %>/views/{,*/}*.jade',
           '<%%= config.staticDir %>/styles/{,*/}*.css',
           '<%%= config.staticDir %>/scripts/{,*/}*.js',
         ]
@@ -89,6 +98,7 @@ module.exports = function(grunt) {
         }]
       },
       server: [
+        '<%%= config.staticDir %>/images/*',
         '<%%= config.staticDir %>/styles/*',
         '<%%= config.staticDir %>/scripts/*'
       ]
@@ -102,8 +112,8 @@ module.exports = function(grunt) {
       },
       all: [
         // 'Gruntfile.js',
-        '<%%= config.appDir %>/scripts/{,*/}*.js',
-        '!<%%= config.appDir %>/scripts/vendor/*',
+        '<%%= config.clientDir %>/scripts/{,*/}*.js',
+        '!<%%= config.clientDir %>/scripts/vendor/*',
         'test/spec/{,*/}*.js'
       ]
     },
@@ -127,7 +137,7 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.appDir %>/styles',
+          cwd: '<%%= config.clientDir %>/styles',
           src: ['*.scss'],
           dest: '<%%= config.staticDir %>/styles',
           ext: '.css'
@@ -136,7 +146,7 @@ module.exports = function(grunt) {
       server: {
         files: [{
           expand: true,
-          cwd: '<%%= config.appDir %>/styles',
+          cwd: '<%%= config.clientDir %>/styles',
           src: ['*.scss'],
           dest: '<%%= config.staticDir %>/styles',
           ext: '.css'
@@ -198,7 +208,7 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.appDir %>/images',
+          cwd: '<%%= config.clientDir %>/images',
           src: '{,*/}*.{gif,jpeg,jpg,png}',
           dest: '<%%= config.distDir %>/images'
         }]
@@ -209,7 +219,7 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.appDir %>/images',
+          cwd: '<%%= config.clientDir %>/images',
           src: '{,*/}*.svg',
           dest: '<%%= config.distDir %>/images'
         }]
@@ -245,7 +255,7 @@ module.exports = function(grunt) {
     //         files: {
     //             '<%%= config.distDir %>/styles/main.css': [
     //                 '.tmp/styles/{,*/}*.css',
-    //                 '<%%= config.appDir %>/styles/{,*/}*.css'
+    //                 '<%%= config.clientDir %>/styles/{,*/}*.css'
     //             ]
     //         }
     //     }
@@ -269,7 +279,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           dot: true,
-          cwd: '<%%= config.appDir %>',
+          cwd: '<%%= config.clientDir %>',
           dest: '<%%= config.distDir %>',
           src: [
             '*.{ico,png,txt}',
@@ -286,17 +296,31 @@ module.exports = function(grunt) {
           dest: '<%%= config.distDir %>'
         }]
       },
+      images: {
+        expand: true,
+        dot: true,
+        cwd: '<%%= config.clientDir %>/images',
+        dest: '<%%= config.staticDir %>/images/',
+        src: '{,*/}*'
+      },
+      pages: {
+        expand: true,
+        dot: true,
+        cwd: '<%%= config.clientDir %>/pages',
+        dest: '<%%= config.staticDir %>/pages/',
+        src: '{,*/}*'
+      },
       styles: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.appDir %>/styles',
+        cwd: '<%%= config.clientDir %>/styles',
         dest: '<%%= config.staticDir %>/styles/',
         src: '{,*/}*.css'
       },
       scripts: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.appDir %>/scripts',
+        cwd: '<%%= config.clientDir %>/scripts',
         dest: '<%%= config.staticDir %>/scripts/',
         src: '{,*/}*.js'
       }
@@ -323,6 +347,8 @@ module.exports = function(grunt) {
     concurrent: {
       server: [<% if (includeSass) { %>
         'sass:server',<% } %>
+        'copy:images',
+        'copy:pages',
         'copy:styles',
         'copy:scripts'
       ],

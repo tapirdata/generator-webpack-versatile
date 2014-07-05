@@ -20,9 +20,14 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       'dist-dir':    'dist'
     });
 
+    _.defaults(this.options, {
+      'client-dir':  path.join(this.options['app-dir'], 'client')
+    });
+
     this.appDir    = this.options['app-dir'];
     this.staticDir = this.options['static-dir'];
     this.distDir   = this.options['dist-dir'];
+    this.clientDir = this.options['client-dir'];
   },
 
   initializing: function () {
@@ -31,6 +36,37 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
         this.installDependencies();
       }
     });
+  },
+
+  _setupBranches: function() {
+    var branches = ['default'];
+
+    function pushAll(name, ok) {
+      if (!ok)
+        name = 'no' + name;
+      for (var i=0, l=branches.length; i<l; ++i)
+      {
+        var branch = branches[i];
+        branch = (branch === 'default') ? name : branch + '+' + name; 
+        branches.push(branch);
+      }
+    }
+    pushAll('backbone', this.includeBackbone);
+    pushAll('bootstrap', this.includeBootstrap);
+    pushAll('requirejs', this.includeRequireJS);
+    pushAll('sass', this.includeSass);
+    branches.reverse();
+    var src = this.src;
+    branches = _.filter(branches, function(branch) {
+      if (!src.isDir('branches', branch))
+        return false;
+      if (src.isFile('branches', branch, '.unsupported')) {
+        var msg = src.read(path.join('branches', branch, '.unsupported'));
+        throw new Error(branch + ': ' + msg);
+      }
+    });
+    this.log('branches=', branches);
+    this.activeBranches = branches;
   },
 
   prompting: {
@@ -47,20 +83,24 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
         name: 'features',
         message: 'What more would you like?',
         choices: [{
-          name: 'Bootstrap',
-          value: 'includeBootstrap',
+          name: 'Backbone',
+          value: 'includeBackbone',
           checked: true
         },{
-          name: 'Sass',
-          value: 'includeSass',
+          name: 'Bootstrap',
+          value: 'includeBootstrap',
           checked: true
         },{
           name: 'Modernizr',
           value: 'includeModernizr',
           checked: true
         },{
-          name: 'Backbone',
-          value: 'includeBackbone',
+          name: 'RequireJS',
+          value: 'includeRequireJS',
+          checked: true
+        },{
+          name: 'Sass',
+          value: 'includeSass',
           checked: true
         }]
       }, {
@@ -81,9 +121,17 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
         this.includeBootstrap = hasFeature('includeBootstrap');
         this.includeModernizr = hasFeature('includeModernizr');
         this.includeBackbone = hasFeature('includeBackbone');
+        this.includeRequireJS = hasFeature('includeRequireJS');
 
         this.includeLibSass = answers.libsass;
         this.includeRubySass = !(answers.libsass);
+
+        try {
+          this._setupBranches();
+        } catch (e) {
+          this.log(chalk.red('Unsupported options: ') + e.message);
+          process.exit(0);
+        }  
 
         done();
       }.bind(this));
@@ -97,61 +145,93 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     }
   },
 
+
+  // _saveCopy: function (source, destination, process) {
+  //   if (this.src.isFile(source)) {
+  //     this.copy(source, destination, process);
+  //   }  
+  // },
+
+  _branchCopy: function (source, destination, process) {
+    for (var i=0, l=this.activeBranches.length; i<l; ++i) {
+      var branch = this.activeBranches[i];
+      var branchSource = path.join('branches', branch, source);
+      // this.log('_branchCopy branchSource=' + branchSource);
+      if (this.src.isFile(branchSource)) {
+        // this.log('_branchCopy branchSource=' + branchSource + ' OK');
+        return this.copy(branchSource, destination, process);
+      }  
+    }
+  },
+
+  _branchDirectory: function (source, destination, process) {
+    for (var i=0, l=this.activeBranches.length; i<l; ++i) {
+      var branch = this.activeBranches[i];
+      var branchSource = path.join('branches', branch, source);
+      if (this.src.isDir(branchSource)) {
+        this.directory(branchSource, destination, process);
+      }  
+    }
+  },
+
   configuring: {
+  },
+
+  writing: {
+
     gruntfile: function () {
       console.log('copy gruntfile');
-      this.copy('Gruntfile.js', 'Gruntfile.js', function(gruntfile){
+      this._branchCopy('Gruntfile.js', 'Gruntfile.js', function(gruntfile){
         return gruntfile;
-        var GruntfileEditor = require('gruntfile-editor');
-        gruntfile = new GruntfileEditor(gruntfile);
-        gruntfile.insertConfig('huhn', JSON.stringify({name: "prjllan"}));
-        return gruntfile.toString();
+        // var GruntfileEditor = require('gruntfile-editor');
+        // gruntfile = new GruntfileEditor(gruntfile);
+        // gruntfile.insertConfig('huhn', JSON.stringify({name: "prillan"}));
+        // return gruntfile.toString();
       });
     },
 
     projectfiles: function () {
       console.log('copy projectfiles');
-      this.copy('editorconfig', '.editorconfig');
-      this.copy('jshintrc', '.jshintrc');
-      this.copy('gitignore', '.gitignore');
-      this.copy('bowerrc', '.bowerrc');
+      this._branchCopy('editorconfig', '.editorconfig');
+      this._branchCopy('jshintrc', '.jshintrc');
+      this._branchCopy('gitignore', '.gitignore');
+      this._branchCopy('bowerrc', '.bowerrc');
     },
 
     pkgfiles: function () {
       console.log('copy pkgfiles');
-      this.copy('_package.json', 'package.json');
-      this.copy('_bower.json', 'bower.json');
-    }
-
-  },
-
-  writing: {
+      this._branchCopy('_package.json', 'package.json');
+      this._branchCopy('_bower.json', 'bower.json');
+    },
 
     appdirs: function () {
       console.log('make appdirs');
       var appDir = this.appDir;
+      var clientDir = this.clientDir;
       this.mkdir(appDir);
-      this._mkdirs(appDir, ['views', 'routes', 'styles', 'scripts', 'images']);
-    },
-
-
-    staticfiles: function () {
-      var staticDir = this.staticDir;
-      this._mkdirs(staticDir, ['styles', 'scripts']);
-      this.copy(path.join('images', 'favicon.ico'), path.join(staticDir, 'images', 'favicon.ico'));
-      this.copy(path.join('pages', '404.html'), path.join(staticDir, 'pages', '404.html'));
-      this.copy(path.join('pages', 'robots.txt'), path.join(staticDir, 'pages', 'robots.txt'));
+      this._mkdirs(appDir, ['views', 'routes']);
+      this._mkdirs(clientDir, ['styles', 'scripts', 'images', 'pages']);
+      this._mkdirs(this.staticDir, ['styles', 'scripts', 'images', 'pages']);
     },
 
     appfiles: function () {
       var appDir = this.appDir;
-      this.copy(path.join('app', 'app-factory.js'), path.join(appDir, 'app-factory.js'));
-      this.copy(path.join('app', 'startapp.js'), path.join(appDir, 'startapp.js'));
-      var branch = 'simple';
-      this.copy(path.join('styles', 'main.scss'), path.join(appDir, 'styles', 'main.scss'));
-      this.directory(path.join('branches', branch, 'routes'), path.join(appDir, 'routes'));
-      this.directory(path.join('branches', branch, 'views'), path.join(appDir, 'views'));
+      var clientDir = this.clientDir;
+      this._branchCopy(path.join('app', 'app-factory.js'), path.join(appDir, 'app-factory.js'));
+      this._branchCopy(path.join('app', 'startapp.js'), path.join(appDir, 'startapp.js'));
+
+      this._branchDirectory(path.join('app', 'routes'), path.join(appDir, 'routes'));
+      this._branchDirectory(path.join('app', 'views'), path.join(appDir, 'views'));
     },
+
+    clientfiles: function () {
+      var clientDir = this.clientDir;
+      this._branchDirectory(path.join('client', 'styles'), path.join(clientDir, 'styles'));
+      this._branchDirectory(path.join('client', 'scripts'), path.join(clientDir, 'scripts'));
+      this._branchDirectory(path.join('client', 'images'), path.join(clientDir, 'images'));
+      this._branchDirectory(path.join('client', 'pages'), path.join(clientDir, 'pages'));
+    },
+
 
     // gruntfile: function () {
     //   console.log('adapt gruntfile');
