@@ -64,8 +64,9 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
         var msg = src.read(path.join('branches', branch, '.unsupported'));
         throw new Error(branch + ': ' + msg);
       }
+      return true;
     });
-    this.log('branches=', branches);
+    // this.log('branches=', branches);
     this.activeBranches = branches;
   },
 
