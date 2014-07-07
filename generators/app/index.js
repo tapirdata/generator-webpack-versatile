@@ -24,10 +24,15 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       'client-dir':  path.join(this.options['app-dir'], 'client')
     });
 
-    this.appDir    = this.options['app-dir'];
-    this.staticDir = this.options['static-dir'];
-    this.distDir   = this.options['dist-dir'];
-    this.clientDir = this.options['client-dir'];
+    _.defaults(this.options, {
+      'templates-dir':  path.join(this.options['client-dir'], 'templates')
+    });
+
+    this.appDir       = this.options['app-dir'];
+    this.staticDir    = this.options['static-dir'];
+    this.distDir      = this.options['dist-dir'];
+    this.clientDir    = this.options['client-dir'];
+    this.templatesDir = this.options['templates-dir'];
   },
 
   initializing: function () {

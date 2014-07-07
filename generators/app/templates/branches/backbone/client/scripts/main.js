@@ -1,9 +1,14 @@
 'use strict';
 
+require.config({
+  paths: {
+    jade: '/static/vendor/jade/runtime'
+  }
+});
+
+
 require([
-  // Load our app module and pass it to our definition function
   'app',
 ], function (App) {
-  // The "app" dependency is passed in as "App"
   App.initialize();
 });

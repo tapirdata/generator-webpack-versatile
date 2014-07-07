@@ -7,6 +7,8 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
+var path = require('path');
+
 module.exports = function(grunt) {
 
   // Load grunt tasks automatically
@@ -20,7 +22,8 @@ module.exports = function(grunt) {
     appDir: '<%= appDir %>',
     clientDir: '<%= clientDir %>',
     staticDir: '<%= staticDir %>',
-    distDir: '<%= distDir %>'
+    distDir: '<%= distDir %>',
+    templatesDir: '<%= templatesDir %>'
   };
 
   // Define the configuration for all the tasks
@@ -52,6 +55,10 @@ module.exports = function(grunt) {
       sass: {
         files: ['<%%= config.clientDir %>/styles/{,*/}*.{scss,sass}'],
         tasks: ['sass:server', 'autoprefixer']
+      },
+      jade: {
+        files: ['<%%= config.templatesDir %>/{,*/}*.jade'],
+        tasks: ['jade:server']
       },
       images: {
         files: ['<%%= config.clientDir %>/images/{,*/}*'],
@@ -150,6 +157,24 @@ module.exports = function(grunt) {
           src: ['*.scss'],
           dest: '<%%= config.staticDir %>/styles',
           ext: '.css'
+        }]
+      }
+    },
+    
+    jade: {
+      server: {
+        options: {
+          client: true,
+          amd: true,
+          processName: function(filename) {
+            filename = path.relative(config.templatesDir, filename);
+            filename = filename.substr(0, filename.lastIndexOf('.'));
+            return filename;
+          }
+        },
+        files: [{
+          src: ['<%%= config.templatesDir %>/{,*/}*.jade'],
+          dest: '<%%= config.staticDir %>/scripts/templates.js'
         }]
       }
     },
@@ -347,6 +372,7 @@ module.exports = function(grunt) {
     concurrent: {
       server: [<% if (includeSass) { %>
         'sass:server',<% } %>
+        'jade:server',
         'copy:images',
         'copy:pages',
         'copy:styles',
