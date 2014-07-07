@@ -216,7 +216,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       var clientDir = this.clientDir;
       this.mkdir(appDir);
       this._mkdirs(appDir, ['views', 'routes']);
-      this._mkdirs(clientDir, ['styles', 'scripts', 'images', 'pages']);
+      this._mkdirs(clientDir, ['styles', 'scripts', 'images', 'pages', 'templates']);
       this._mkdirs(this.staticDir, ['styles', 'scripts', 'images', 'pages']);
     },
 
@@ -236,6 +236,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       this._branchDirectory(path.join('client', 'scripts'), path.join(clientDir, 'scripts'));
       this._branchDirectory(path.join('client', 'images'), path.join(clientDir, 'images'));
       this._branchDirectory(path.join('client', 'pages'), path.join(clientDir, 'pages'));
+      this._branchDirectory(path.join('client', 'templates'), path.join(clientDir, 'templates'));
     },
 
 
