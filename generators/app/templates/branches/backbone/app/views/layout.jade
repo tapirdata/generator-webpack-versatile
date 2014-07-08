@@ -7,7 +7,8 @@ html
       script(rel='javascript', src='/static/vendor/modernizr/modernizr.js')<% } %>
       script(rel='javascript', src='/static/vendor/jquery/dist/jquery.js')<% if (includeBootstrap) { %>
       script(rel='javascript', src='/static/vendor/bootstrap-sass-official/assets/javascripts/bootstrap.js')<% } %><% if (includeBackbone) { %>
-      script(rel='javascript', src='/static/vendor/underscore/underscore.js')
+      // script(rel='javascript', src='/static/vendor/underscore/underscore.js')
+      script(rel='javascript', src='/static/vendor/lodash/dist/lodash.js')
       script(rel='javascript', src='/static/vendor/backbone/backbone.js')<% } %><% if (includeRequireJS) { %>
       script(rel='javascript', src='/static/vendor/requirejs/require.js', data-main='/static/scripts/main')<% } %>
   body

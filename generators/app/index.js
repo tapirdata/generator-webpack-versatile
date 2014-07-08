@@ -151,13 +151,6 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     }
   },
 
-
-  // _saveCopy: function (source, destination, process) {
-  //   if (this.src.isFile(source)) {
-  //     this.copy(source, destination, process);
-  //   }  
-  // },
-
   _branchCopy: function (source, destination, process) {
     for (var i=0, l=this.activeBranches.length; i<l; ++i) {
       var branch = this.activeBranches[i];

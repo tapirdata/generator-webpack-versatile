@@ -36,7 +36,7 @@ module.exports = function(grunt) {
     watch: {
       bower: {
         files: ['bower.json'],
-        tasks: ['bowerInstall']
+        // tasks: ['bowerInstall']
       },
       scripts: {
         files: ['<%%= config.clientDir %>/scripts/{,*/}*.js'],

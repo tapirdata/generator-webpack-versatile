@@ -11,10 +11,11 @@ define(['views/simple'], function (SimpleView) {
 
     targetEl: '#body-container',
 
-    initialize: function () {
+    initialize: function (options) {
       console.log('AppRouter.initialize');
-      this.homeView  = new SimpleView({el: this.targetEl, templateName: 'home'});
-      this.aboutView = new SimpleView({el: this.targetEl, templateName: 'about'});
+      this.app = options.app;
+      this.homeView  = new SimpleView({el: this.targetEl, templateName: 'home', app: this.app});
+      this.aboutView = new SimpleView({el: this.targetEl, templateName: 'about', app: this.app});
       Backbone.history.start();
     },
 
