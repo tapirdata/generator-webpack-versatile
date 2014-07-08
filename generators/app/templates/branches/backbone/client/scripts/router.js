@@ -1,7 +1,7 @@
 'use strict';
 /* global define, Backbone */
 
-define([], function () {
+define(['views/simple'], function (SimpleView) {
   var AppRouter = Backbone.Router.extend({
     initialize: function () {
       console.log('AppRouter.initialize');
@@ -9,25 +9,21 @@ define([], function () {
     },
 
     routes: {
-      '':          'showHome',
-      'about':     'showAbout',
-      '*actiions': 'defaultAction'
+      '':         'showHome',
+      'about':    'showAbout',
+      '*actions': 'defaultAction'
     },
 
+    targetEl: '#body-container',
+
     showHome: function () {
-      console.log('showHome');
-      require(['views/home'], function (View) {
-        var view = new View();
-        view.render();
-      });
+      var view = new SimpleView({el: this.targetEl, templateName: 'home'});
+      view.render();
     },
 
     showAbout: function () {
-      console.log('showAbout');
-      require(['views/about'], function (View) {
-        var view = new View();
-        view.render();
-      });
+      var view = new SimpleView({el: this.targetEl, templateName: 'about'});
+      view.render();
     },
 
     defaultAction: function () {
