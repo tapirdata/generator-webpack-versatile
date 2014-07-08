@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  <!--[if lt IE 9]>
+  p.browsehappy
+    | You are using an <strong>outdated</strong> browser. Please 
+    a(href='http://browsehappy.com/') upgrade your browser 
+    |  to improve your experience.
+  <![endif]-->
+  .container
+    .header
+      ul.nav.nav-pills.pull-right
+        li
+          a(href='/') Home
+        li.active
+          a(href='#') About
+        li
+          a(href='#') Contact
+      h3.text-muted= title
+    div
+      p
+        | about ...
+    .footer
+      p
+        span.glyphicon.glyphicon-heart from the Yeoman team

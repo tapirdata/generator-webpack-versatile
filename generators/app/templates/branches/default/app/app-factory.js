@@ -1,7 +1,7 @@
 "use strict"
 var path = require('path');
 var express = require('express')
-var routes = require('./routes/index');
+var routes = require('./routes/main');
 var favicon = require('serve-favicon');
 var robots = require('robots.txt');
 
