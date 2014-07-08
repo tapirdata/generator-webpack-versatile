@@ -3,11 +3,6 @@
 
 define(['views/simple'], function (SimpleView) {
   var AppRouter = Backbone.Router.extend({
-    initialize: function () {
-      console.log('AppRouter.initialize');
-      Backbone.history.start();
-    },
-
     routes: {
       '':         'showHome',
       'about':    'showAbout',
@@ -16,14 +11,19 @@ define(['views/simple'], function (SimpleView) {
 
     targetEl: '#body-container',
 
+    initialize: function () {
+      console.log('AppRouter.initialize');
+      this.homeView  = new SimpleView({el: this.targetEl, templateName: 'home'});
+      this.aboutView = new SimpleView({el: this.targetEl, templateName: 'about'});
+      Backbone.history.start();
+    },
+
     showHome: function () {
-      var view = new SimpleView({el: this.targetEl, templateName: 'home'});
-      view.render();
+      this.homeView.render();
     },
 
     showAbout: function () {
-      var view = new SimpleView({el: this.targetEl, templateName: 'about'});
-      view.render();
+      this.aboutView.render();
     },
 
     defaultAction: function () {
