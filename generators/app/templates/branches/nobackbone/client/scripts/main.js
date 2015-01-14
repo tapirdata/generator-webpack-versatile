@@ -2,7 +2,7 @@
 
 require.config({
   paths: {
-    jade: '/static/vendor/jade/runtime'
+    jade: '/vendor/jade/runtime'
   }
 });
 

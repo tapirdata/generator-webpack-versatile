@@ -8,14 +8,17 @@ var robots = require('robots.txt');
 module.exports = function(options) {
 
   var app = express()
-  app.set('port', options.port);
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
   app.locals.pretty = true;
 
-  app.use(favicon(path.join(__dirname, '..', 'static', 'images', 'favicon.ico')));
-  app.use(robots(path.join(__dirname, '..', 'static', 'pages', 'robots.txt')));
-  app.use('/static', express.static(path.join(__dirname, '..', 'static')));
+  var staticDir = path.join(__dirname, '..', 'static');
+  var vendorDir = path.join(__dirname, '..', 'bower_components');
+
+  app.use(favicon(path.join(staticDir, 'images', 'favicon.ico')));
+  app.use(robots(path.join(staticDir, 'pages', 'robots.txt')));
+  app.use('/static', express.static(staticDir));
+  app.use('/vendor', express.static(vendorDir));
 
   if (options.develop) {
     app.use(require('connect-livereload')({

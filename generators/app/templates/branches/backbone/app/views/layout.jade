@@ -4,7 +4,7 @@ html
     head
       title= title
       link(rel='stylesheet', href='/static/styles/main.css')<% if (includeModernizr) { %>
-      script(rel='javascript', src='/static/vendor/modernizr/modernizr.js')<% } %>
-      script(rel='javascript', src='/static/vendor/requirejs/require.js', data-main='/static/scripts/main')
+      script(rel='javascript', src='/vendor/modernizr/modernizr.js')<% } %>
+      script(rel='javascript', src='/vendor/requirejs/require.js', data-main='/static/scripts/main')
   body
     block content

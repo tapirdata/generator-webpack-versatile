@@ -2,11 +2,11 @@
 
 require.config({
   paths: {
-    jquery:     '/static/vendor/jquery/dist/jquery',
-    underscore: '/static/vendor/lodash/dist/lodash',
-    backbone:   '/static/vendor/backbone/backbone',
-    bootstrap:  '/static/vendor/bootstrap-sass-official/assets/javascripts/bootstrap',
-    jade:       '/static/vendor/jade/runtime'
+    jquery:     '/vendor/jquery/dist/jquery',
+    underscore: '/vendor/lodash/dist/lodash',
+    backbone:   '/vendor/backbone/backbone',
+    bootstrap:  '/vendor/bootstrap-sass-official/assets/javascripts/bootstrap',
+    jade:       '/vendor/jade/runtime'
   },
   shim: {
     'bootstrap': {

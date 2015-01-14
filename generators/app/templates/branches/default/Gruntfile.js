@@ -36,7 +36,7 @@ module.exports = function(grunt) {
     watch: {
       bower: {
         files: ['bower.json'],
-        // tasks: ['bowerInstall']
+        tasks: ['wiredep']
       },
       scripts: {
         files: ['<%%= config.clientDir %>/scripts/{,*/}*.js'],
@@ -138,7 +138,8 @@ module.exports = function(grunt) {
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
       options: {
-        includePaths: [
+        loadPath: [
+          'bower_components'
         ]
       },
       dist: {
@@ -176,6 +177,18 @@ module.exports = function(grunt) {
           src: ['<%%= config.templatesDir %>/{,*/}*.jade'],
           dest: '<%%= config.staticDir %>/scripts/templates.js'
         }]
+      }
+    },
+
+    // Automatically inject Bower components into the app
+    wiredep: {
+      // app: {
+      //   src: ['<%= yeoman.app %>/index.html'],
+      //   ignorePath:  /\.\.\//
+      // },
+      sass: {
+        src: ['<%%= config.clientDir %>/styles/{,*/}*.{scss,sass}'],
+        ignorePath: /(\.\.\/){1,3}bower_components\//
       }
     },
 
@@ -398,6 +411,7 @@ module.exports = function(grunt) {
 
     grunt.task.run([
       'clean:server',
+      'wiredep',
       'concurrent:server',
       'autoprefixer',
       'develop',
