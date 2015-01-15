@@ -1,13 +1,18 @@
+"use strict"
+var path = require('path');
 var http = require('http')
-var appFactory = require('./app-factory.js')
-
 var argv = require('optimist').argv;
 
+console.log('argv=', argv);
+
 var options = {
-  port:     argv.port || 80,
-  develop: !!argv.develop
+  port:       argv.port || 9999,
+  livereload: (argv.livereload === 'true') ? 35729 : argv.livereload,
+  staticDir:  argv.staticDir,
+  vendorDir:  argv.vendorDir
 }
 
+var appFactory = require('./app-factory.js')
 var app = appFactory(options)
 
 var server = http.createServer(app).listen(options.port, function() {

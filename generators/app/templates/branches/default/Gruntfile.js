@@ -7,6 +7,7 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
+var fs = require('fs');
 var path = require('path');
 
 module.exports = function(grunt) {
@@ -21,9 +22,11 @@ module.exports = function(grunt) {
   var config = {
     appDir: '<%= appDir %>',
     clientDir: '<%= clientDir %>',
+    templatesDir: '<%= templatesDir %>',
     staticDir: '<%= staticDir %>',
+    bowerDir: JSON.parse(fs.readFileSync('./.bowerrc')).directory,
     distDir: '<%= distDir %>',
-    templatesDir: '<%= templatesDir %>'
+    livereload: true  // use default port 35729
   };
 
   // Define the configuration for all the tasks
@@ -38,13 +41,6 @@ module.exports = function(grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-      scripts: {
-        files: ['<%%= config.clientDir %>/scripts/{,*/}*.js'],
-        tasks: ['jshint', 'newer:copy:scripts'],
-        options: {
-          livereload: true
-        }
-      },
       jstest: {
         files: ['test/spec/{,*/}*.js'],
         tasks: ['test:watch']
@@ -52,13 +48,14 @@ module.exports = function(grunt) {
       gruntfile: {
         files: ['Gruntfile.js']
       },
-      sass: {
-        files: ['<%%= config.clientDir %>/styles/{,*/}*.{scss,sass}'],
-        tasks: ['sass:server', 'autoprefixer']
+      // copy tasks
+      styles: {
+        files: ['<%%= config.clientDir %>/styles/{,*/}*.css'],
+        tasks: ['newer:copy:styles', 'autoprefixer']
       },
-      jade: {
-        files: ['<%%= config.templatesDir %>/{,*/}*.jade'],
-        tasks: ['jade:server']
+      scripts: {
+        files: ['<%%= config.clientDir %>/scripts/{,*/}*.js'],
+        tasks: ['jshint', 'newer:copy:scripts']
       },
       images: {
         files: ['<%%= config.clientDir %>/images/{,*/}*'],
@@ -68,28 +65,51 @@ module.exports = function(grunt) {
         files: ['<%%= config.clientDir %>/pages/{,*/}*'],
         tasks: ['newer:copy:pages']
       },
-      styles: {
-        files: ['<%%= config.clientDir %>/styles/{,*/}*.css'],
-        tasks: ['newer:copy:styles', 'autoprefixer']
+      // transform tasks
+      sass: {
+        files: ['<%%= config.clientDir %>/styles/{,*/}*.{scss,sass}'],
+        tasks: ['sass:client', 'autoprefixer']
+      },
+      jade: {
+        files: ['<%%= config.templatesDir %>/{,*/}*.jade'],
+        tasks: ['jade:client']
       },
       livereload: {
+        files: [
+          '<%%= config.staticDir %>/styles/{,*/}*.css',
+          '<%%= config.staticDir %>/scripts/{,*/}*.js',
+          '<%%= config.staticDir %>/images/{,*/}*'
+        ],
         options: {
-          livereload: true
-        },
+          livereload: config.livereload
+        }
+      },
+      // server files
+      express: {
         files: [
           '<%%= config.appDir %>/{,*/}*.js',
           '<%%= config.appDir %>/views/{,*/}*.html',
           '<%%= config.appDir %>/views/{,*/}*.jade',
-          '<%%= config.staticDir %>/styles/{,*/}*.css',
-          '<%%= config.staticDir %>/scripts/{,*/}*.js',
-        ]
+        ],
+        tasks: ['express:develop:start'],
+        options: {
+          spawn: false,
+          livereload: config.livereload
+        }
       }
     },
 
-    develop: {
-      server: {
-        file: './<%%= config.appDir %>/startapp.js',
-        args: ['--port=9999', '--develop']
+    express: {
+      develop: {
+        options: {
+          script: './<%%= config.appDir %>/startapp.js',
+          args: [
+            '--vendorDir',  '<%%= config.bowerDir %>', 
+            '--staticDir',  '<%%= config.staticDir %>',
+            '--port',       9999,
+            '--livereload', config.livereload 
+          ]
+        }
       }
     },
 
@@ -120,7 +140,6 @@ module.exports = function(grunt) {
       all: [
         // 'Gruntfile.js',
         '<%%= config.clientDir %>/scripts/{,*/}*.js',
-        '!<%%= config.clientDir %>/scripts/vendor/*',
         'test/spec/{,*/}*.js'
       ]
     },
@@ -130,7 +149,7 @@ module.exports = function(grunt) {
       all: {
         options: {
           run: true,
-          urls: ['http://<%%= connect.test.options.hostname %>:<%%= connect.test.options.port %>/index.html']
+          // urls: ['http://<%%= connect.test.options.hostname %>:<%%= connect.test.options.port %>/index.html']
         }
       }
     },
@@ -139,7 +158,7 @@ module.exports = function(grunt) {
     sass: {
       options: {
         loadPath: [
-          'bower_components'
+          '<%%= config.bowerDir %>'
         ]
       },
       dist: {
@@ -151,7 +170,7 @@ module.exports = function(grunt) {
           ext: '.css'
         }]
       },
-      server: {
+      client: {
         files: [{
           expand: true,
           cwd: '<%%= config.clientDir %>/styles',
@@ -163,7 +182,7 @@ module.exports = function(grunt) {
     },
     
     jade: {
-      server: {
+      client: {
         options: {
           client: true,
           amd: true,
@@ -188,7 +207,7 @@ module.exports = function(grunt) {
       // },
       sass: {
         src: ['<%%= config.clientDir %>/styles/{,*/}*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,3}bower_components\//
+        ignorePath: /(\.\.\/){1,3}<%%= config.bowerDir %>\//
       }
     },
 
@@ -330,7 +349,7 @@ module.exports = function(grunt) {
           expand: true,
           dot: true,
           cwd: '.',
-          src: ['bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/*.*'],
+          src: ['<%%= config.bowerDir %>/bootstrap-sass-official/vendor/assets/fonts/bootstrap/*.*'],
           dest: '<%%= config.distDir %>'
         }]
       },
@@ -368,7 +387,7 @@ module.exports = function(grunt) {
     // reference in your app
     modernizr: {
       dist: {
-        devFile: 'bower_components/modernizr/modernizr.js',
+        devFile: '<%%= config.bowerDir %>/modernizr/modernizr.js',
         outputFile: '<%%= config.distDir %>/scripts/vendor/modernizr.js',
         files: {
           src: [
@@ -384,8 +403,8 @@ module.exports = function(grunt) {
     // Run some tasks in parallel to speed up build process
     concurrent: {
       server: [<% if (includeSass) { %>
-        'sass:server',<% } %>
-        'jade:server',
+        'sass:client',<% } %>
+        'jade:client',
         'copy:images',
         'copy:pages',
         'copy:styles',
@@ -414,7 +433,7 @@ module.exports = function(grunt) {
       'wiredep',
       'concurrent:server',
       'autoprefixer',
-      'develop',
+      'express:develop:start',
       'watch'
     ]);
   });

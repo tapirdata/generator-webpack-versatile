@@ -16,12 +16,13 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     _.defaults(this.options, {
       // 'test-framework': 'mocha',
       'app-dir':     'app',
-      'static-dir':  'static',
+      'static-dir':  '.tmp/static',
+      'bower-dir':   'bower_components',
       'dist-dir':    'dist'
     });
 
     _.defaults(this.options, {
-      'client-dir':  path.join(this.options['app-dir'], 'client')
+      'client-dir':  path.join('client')
     });
 
     _.defaults(this.options, {
@@ -31,6 +32,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     this.appDir       = this.options['app-dir'];
     this.staticDir    = this.options['static-dir'];
     this.distDir      = this.options['dist-dir'];
+    this.bowerDir     = this.options['bower-dir'];
     this.clientDir    = this.options['client-dir'];
     this.templatesDir = this.options['templates-dir'];
   },
@@ -182,10 +184,6 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       console.log('copy gruntfile');
       this._branchCopy('Gruntfile.js', 'Gruntfile.js', function(gruntfile){
         return gruntfile;
-        // var GruntfileEditor = require('gruntfile-editor');
-        // gruntfile = new GruntfileEditor(gruntfile);
-        // gruntfile.insertConfig('huhn', JSON.stringify({name: "prillan"}));
-        // return gruntfile.toString();
       });
     },
 

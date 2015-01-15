@@ -3,5 +3,5 @@ dist
 .tmp
 .sass-cache
 .*.swp
-bower_components
+<%= bowerDir %>
 test/bower_components

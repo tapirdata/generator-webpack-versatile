@@ -12,17 +12,14 @@ module.exports = function(options) {
   app.set('view engine', 'jade');
   app.locals.pretty = true;
 
-  var staticDir = path.join(__dirname, '..', 'static');
-  var vendorDir = path.join(__dirname, '..', 'bower_components');
+  app.use(favicon(path.join(options.staticDir, 'images', 'favicon.ico')));
+  app.use(robots(path.join(options.staticDir, 'pages', 'robots.txt')));
+  app.use('/static', express.static(options.staticDir));
+  app.use('/vendor', express.static(options.vendorDir));
 
-  app.use(favicon(path.join(staticDir, 'images', 'favicon.ico')));
-  app.use(robots(path.join(staticDir, 'pages', 'robots.txt')));
-  app.use('/static', express.static(staticDir));
-  app.use('/vendor', express.static(vendorDir));
-
-  if (options.develop) {
+  if (options.livereload) {
     app.use(require('connect-livereload')({
-      port: 35729
+      port: options.livereload
     }));
   }
 
