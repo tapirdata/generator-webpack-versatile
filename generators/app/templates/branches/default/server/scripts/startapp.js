@@ -8,7 +8,7 @@ console.log('argv=', argv);
 var options = {
   port:       argv.port || 9999,
   livereload: (argv.livereload === 'true') ? 35729 : argv.livereload,
-  staticDir:  argv.staticDir,
+  clientDir:  argv.clientDir,
   vendorDir:  argv.vendorDir
 }
 

@@ -8,13 +8,13 @@ var robots = require('robots.txt');
 module.exports = function(options) {
 
   var app = express()
-  app.set('views', path.join(__dirname, 'views'));
+  app.set('views', path.join(__dirname, '..', 'views'));
   app.set('view engine', 'jade');
   app.locals.pretty = true;
 
-  app.use(favicon(path.join(options.staticDir, 'images', 'favicon.ico')));
-  app.use(robots(path.join(options.staticDir, 'pages', 'robots.txt')));
-  app.use('/static', express.static(options.staticDir));
+  app.use(favicon(path.join(options.clientDir, 'images', 'favicon.ico')));
+  app.use(robots(path.join(options.clientDir, 'pages', 'robots.txt')));
+  app.use('/static', express.static(options.clientDir));
   app.use('/vendor', express.static(options.vendorDir));
 
   if (options.livereload) {

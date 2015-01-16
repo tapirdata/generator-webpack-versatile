@@ -15,26 +15,22 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
 
     _.defaults(this.options, {
       // 'test-framework': 'mocha',
-      'app-dir':     'app',
-      'static-dir':  '.tmp/static',
       'bower-dir':   'bower_components',
+      'src-dir':     'src',
+      'develop-dir': '.develop',
       'dist-dir':    'dist'
     });
 
     _.defaults(this.options, {
-      'client-dir':  path.join('client')
+      'server-src-dir':  path.join(this.options['src-dir'], 'server'),
+      'client-src-dir':  path.join(this.options['src-dir'], 'client')
     });
 
-    _.defaults(this.options, {
-      'templates-dir':  path.join(this.options['client-dir'], 'templates')
-    });
-
-    this.appDir       = this.options['app-dir'];
-    this.staticDir    = this.options['static-dir'];
-    this.distDir      = this.options['dist-dir'];
     this.bowerDir     = this.options['bower-dir'];
-    this.clientDir    = this.options['client-dir'];
-    this.templatesDir = this.options['templates-dir'];
+    this.serverSrcDir = this.options['server-src-dir'];
+    this.clientSrcDir = this.options['client-src-dir'];
+    this.developDir   = this.options['develop-dir'];
+    this.distDir      = this.options['dist-dir'];
   },
 
   initializing: function () {
@@ -182,66 +178,36 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
 
     gruntfile: function () {
       console.log('copy gruntfile');
-      this._branchCopy('Gruntfile.js', 'Gruntfile.js', function(gruntfile){
-        return gruntfile;
-      });
+      this._branchCopy('root/Gruntfile.js', 'Gruntfile.js');
     },
 
     projectfiles: function () {
       console.log('copy projectfiles');
-      this._branchCopy('editorconfig', '.editorconfig');
-      this._branchCopy('jshintrc', '.jshintrc');
-      this._branchCopy('gitignore', '.gitignore');
-      this._branchCopy('bowerrc', '.bowerrc');
+      this._branchCopy('root/editorconfig', '.editorconfig');
+      this._branchCopy('root/jshintrc', '.jshintrc');
+      this._branchCopy('root/gitignore', '.gitignore');
+      this._branchCopy('root/bowerrc', '.bowerrc');
     },
 
     pkgfiles: function () {
       console.log('copy pkgfiles');
-      this._branchCopy('_package.json', 'package.json');
-      this._branchCopy('_bower.json', 'bower.json');
-    },
-
-    appdirs: function () {
-      console.log('make appdirs');
-      var appDir = this.appDir;
-      var clientDir = this.clientDir;
-      this.mkdir(appDir);
-      this._mkdirs(appDir, ['views', 'routes']);
-      this._mkdirs(clientDir, ['styles', 'scripts', 'images', 'pages', 'templates']);
-      this._mkdirs(this.staticDir, ['styles', 'scripts', 'images', 'pages']);
+      this._branchCopy('root/_package.json', 'package.json');
+      this._branchCopy('root/_bower.json', 'bower.json');
     },
 
     appfiles: function () {
-      var appDir = this.appDir;
-      var clientDir = this.clientDir;
-      this._branchCopy(path.join('app', 'app-factory.js'), path.join(appDir, 'app-factory.js'));
-      this._branchCopy(path.join('app', 'startapp.js'), path.join(appDir, 'startapp.js'));
-
-      this._branchDirectory(path.join('app', 'routes'), path.join(appDir, 'routes'));
-      this._branchDirectory(path.join('app', 'views'), path.join(appDir, 'views'));
+      this._branchDirectory('server/scripts', path.join(this.serverSrcDir, 'scripts'));
+      this._branchDirectory('server/views', path.join(this.serverSrcDir, 'views'));
     },
 
     clientfiles: function () {
-      var clientDir = this.clientDir;
-      this._branchDirectory(path.join('client', 'styles'), path.join(clientDir, 'styles'));
-      this._branchDirectory(path.join('client', 'scripts'), path.join(clientDir, 'scripts'));
-      this._branchDirectory(path.join('client', 'images'), path.join(clientDir, 'images'));
-      this._branchDirectory(path.join('client', 'pages'), path.join(clientDir, 'pages'));
-      this._branchDirectory(path.join('client', 'templates'), path.join(clientDir, 'templates'));
+      this._branchDirectory(path.join('client', 'styles'), path.join(this.clientSrcDir, 'styles'));
+      this._branchDirectory(path.join('client', 'scripts'), path.join(this.clientSrcDir, 'scripts'));
+      this._branchDirectory(path.join('client', 'images'), path.join(this.clientSrcDir, 'images'));
+      this._branchDirectory(path.join('client', 'pages'), path.join(this.clientSrcDir, 'pages'));
+      this._branchDirectory(path.join('client', 'templates'), path.join(this.clientSrcDir, 'templates'));
     },
 
-
-    // gruntfile: function () {
-    //   console.log('adapt gruntfile');
-    //   console.log('gruntfile=<' + this.gruntfile.toString()+ '>');
-    //   this.gruntfile.insertConfig('huhn', JSON.stringify({name: "prillan"}));
-    // }
-
-    // _testfiles: function () {
-    //   var testFramework = this.optionsest-framework'];
-    //   if (testFramework != 'none')
-    //     this.invoke(testFramework + ':app');
-    // }
   }  
 
 });
