@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     // targets
     developDir: '<%= developDir %>',
     distDir:    '<%= distDir %>',
-    tgtDir:     '<%=o%> config.developDir %>',
+    tgtDir:     '<%=o%> process.env.TGT_DIR || config.developDir %>',
     serverTgtDir: '<%=o%> config.tgtDir %>/server',
     clientTgtDir: '<%=o%> config.tgtDir %>/client',
     // options
@@ -375,6 +375,7 @@ module.exports = function(grunt) {
     concurrent: {
       makeTarget: [<% if (includeSass) { %>
         'sass:client',<% } %>
+        'showConfig',
         'jade:client',
         'copy:clientImages',
         'copy:clientPages',
@@ -425,9 +426,24 @@ module.exports = function(grunt) {
     ]);
   });
 
+  grunt.registerTask('showConfig', function() {
+    console.log('config=', grunt.config('config'));
+  });
+
+  grunt.registerTask('switchTarget', function(name) {
+    var tgtDir;
+    if (name === 'dist') {
+      tgtDir = grunt.config('config.distDir');
+    } else {
+      tgtDir = grunt.config('config.developDir');
+    }  
+    process.env.TGT_DIR = tgtDir;
+  });
+
   grunt.registerTask('build', function() {
-    grunt.config.tgtDir = grunt.config.distDir;
     grunt.task.run([
+      'switchTarget:dist',
+      'showConfig',
       'clean:target',
       'wiredep',
       'concurrent:makeTarget',
