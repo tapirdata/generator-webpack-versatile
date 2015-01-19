@@ -39,11 +39,13 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       },
       op: function(srcPath, tgtPath, opOptions) {
         console.log('op srcPath=', srcPath, 'opOptions=', opOptions);
+        var copyOptions = {};
         if (opOptions.tpl) {
-          self.fs.copyTpl(srcPath, tgtPath, self.settings);
-        } else {
-          self.fs.copy(srcPath, tgtPath);
-        }  
+         copyOptions.process = function(contents) {
+           return self.engine(contents.toString(), self.settings); 
+         }
+        }
+        self.fs.copy(srcPath, tgtPath, copyOptions);
       }
     }
     var bf = new BranchFinder(srcBase, tgtBase, _options);
@@ -68,7 +70,6 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     });
 
     this.settings = {
-      o:            '<%=', 
       appname:      this.appname,
       bowerDir:     this.options['bower-dir'],
       serverSrcDir: this.options['server-src-dir'],
@@ -154,6 +155,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
   writing: {
 
     projectFiles: function () {
+      console.log('engine=>', this.engine('otto isst gerne <%%= lecker (jo) %><%= food %> ', {food: 'Körner'}));
       console.log('copy project files');
       this._branchCopy('root');
     },
