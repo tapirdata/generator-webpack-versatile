@@ -26,9 +26,9 @@ module.exports = function(grunt) {
     // targets
     developDir: '<%= developDir %>',
     distDir:    '<%= distDir %>',
-    tgtDir:     '<%%= config.developDir %>',
-    serverTgtDir: '<%%= config.tgtDir %>/server',
-    clientTgtDir: '<%%= config.tgtDir %>/client',
+    tgtDir:     '<%=o%> config.developDir %>',
+    serverTgtDir: '<%=o%> config.tgtDir %>/server',
+    clientTgtDir: '<%=o%> config.tgtDir %>/client',
     // options
     livereload: true  // use default port 35729
   };
@@ -52,48 +52,49 @@ module.exports = function(grunt) {
       gruntfile: {
         files: ['Gruntfile.js']
       },
+
       // copy tasks (client)
       clientStyles: {
-        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.css'],
+        files: ['<%=o%> config.clientSrcDir %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:clientStyles', 'autoprefixer']
       },
       clientScripts: {
-        files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
+        files: ['<%=o%> config.clientSrcDir %>/scripts/{,*/}*.js'],
         tasks: ['jshint', 'newer:copy:clientScripts']
       },
       clientImages: {
-        files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
+        files: ['<%=o%> config.clientSrcDir %>/images/{,*/}*'],
         tasks: ['newer:copy:clientImages']
       },
       clientPages: {
-        files: ['<%%= config.clientSrcDir %>/pages/{,*/}*'],
+        files: ['<%=o%> config.clientSrcDir %>/pages/{,*/}*'],
         tasks: ['newer:copy:clientPages']
       },
       // transform tasks (client)
       clientSass: {
-        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
+        files: ['<%=o%> config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
         tasks: ['sass:client', 'autoprefixer']
       },
       clientJade: {
-        files: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
+        files: ['<%=o%> config.clientSrcDir %>/templates/{,*/}*.jade'],
         tasks: ['jade:client']
       },
       // copy tasks (server)
       serverScripts: {
-        files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js'],
+        files: ['<%=o%> config.serverSrcDir %>/scripts/{,*/}*.js'],
         tasks: ['jshint', 'newer:copy:serverScripts']
       },
       serverViews: {
-        files: ['<%%= config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
+        files: ['<%=o%> config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
         tasks: ['jshint', 'newer:copy:serverViews']
       },
       // transform tasks (server)
       // reload (client)
       livereload: {
         files: [
-          '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
-          '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
-          '<%%= config.clientTgtDir %>/images/{,*/}*'
+          '<%=o%> config.clientTgtDir %>/styles/{,*/}*.css',
+          '<%=o%> config.clientTgtDir %>/scripts/{,*/}*.js',
+          '<%=o%> config.clientTgtDir %>/images/{,*/}*'
         ],
         options: {
           livereload: config.livereload
@@ -102,8 +103,8 @@ module.exports = function(grunt) {
       // reload (server)
       express: {
         files: [
-          '<%%= config.serverTgtDir %>/scripts/{,*/}*.js',
-          '<%%= config.serverTgtDir %>/views/{,*/}*.{jade,html}',
+          '<%=o%> config.serverTgtDir %>/scripts/{,*/}*.js',
+          '<%=o%> config.serverTgtDir %>/views/{,*/}*.{jade,html}',
         ],
         tasks: ['express:develop:start'],
         options: {
@@ -116,10 +117,10 @@ module.exports = function(grunt) {
     express: {
       develop: {
         options: {
-          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          script: './<%=o%> config.serverTgtDir %>/scripts/startapp.js',
           args: [
-            '--vendorDir',  '<%%= config.bowerDir %>', 
-            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--vendorDir',  '<%=o%> config.bowerDir %>', 
+            '--clientDir',  '<%=o%> config.clientTgtDir %>',
             '--port',       9999,
             '--livereload', config.livereload 
           ]
@@ -130,8 +131,8 @@ module.exports = function(grunt) {
     // Empties folders to start fresh
     clean: {
       target: [
-        '<%%= config.clientTgtDir %>/*',
-        '<%%= config.serverTgtDir %>/*',
+        '<%=o%> config.clientTgtDir %>/*',
+        '<%=o%> config.serverTgtDir %>/*',
       ]
     },
 
@@ -143,7 +144,7 @@ module.exports = function(grunt) {
       },
       all: [
         // 'Gruntfile.js',
-        '<%%= config.clientSrcDir %>/scripts/{,*/}*.js',
+        '<%=o%> config.clientSrcDir %>/scripts/{,*/}*.js',
         'test/spec/{,*/}*.js'
       ]
     },
@@ -153,7 +154,7 @@ module.exports = function(grunt) {
       all: {
         options: {
           run: true,
-          // urls: ['http://<%%= connect.test.options.hostname %>:<%%= connect.test.options.port %>/index.html']
+          // urls: ['http://<%=o%> connect.test.options.hostname %>:<%=o%> connect.test.options.port %>/index.html']
         }
       }
     },
@@ -162,24 +163,24 @@ module.exports = function(grunt) {
     sass: {
       options: {
         loadPath: [
-          '<%%= config.bowerDir %>'
+          '<%=o%> config.bowerDir %>'
         ]
       },
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientSrcDir %>/styles',
+          cwd: '<%=o%> config.clientSrcDir %>/styles',
           src: ['*.scss'],
-          dest: '<%%= config.clientTgtDir %>/styles',
+          dest: '<%=o%> config.clientTgtDir %>/styles',
           ext: '.css'
         }]
       },
       client: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientSrcDir %>/styles',
+          cwd: '<%=o%> config.clientSrcDir %>/styles',
           src: ['*.scss'],
-          dest: '<%%= config.clientTgtDir %>/styles',
+          dest: '<%=o%> config.clientTgtDir %>/styles',
           ext: '.css'
         }]
       }
@@ -197,8 +198,8 @@ module.exports = function(grunt) {
           }
         },
         files: [{
-          src: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
-          dest: '<%%= config.clientTgtDir %>/scripts/templates.js'
+          src: ['<%=o%> config.clientSrcDir %>/templates/{,*/}*.jade'],
+          dest: '<%=o%> config.clientTgtDir %>/scripts/templates.js'
         }]
       }
     },
@@ -206,12 +207,11 @@ module.exports = function(grunt) {
     // Automatically inject Bower components into the app
     wiredep: {
       // app: {
-      //   src: ['<%= yeoman.app %>/index.html'],
       //   ignorePath:  /\.\.\//
       // },
       sass: {
-        src: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,3}<%%= config.bowerDir %>\//
+        src: ['<%=o%> config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
+        ignorePath: /(\.\.\/){1,3}<%=o%> config.bowerDir %>\//
       }
     },
 
@@ -223,9 +223,9 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientTgtDir %>/styles/',
+          cwd: '<%=o%> config.clientTgtDir %>/styles/',
           src: '{,*/}*.css',
-          dest: '<%%= config.clientTgtDir %>/styles/'
+          dest: '<%=o%> config.clientTgtDir %>/styles/'
         }]
       }
     },
@@ -235,11 +235,11 @@ module.exports = function(grunt) {
       dist: {
         files: {
           src: [
-            '<%%= config.distDir %>/scripts/{,*/}*.js',
-            '<%%= config.distDir %>/styles/{,*/}*.css',
-            '<%%= config.distDir %>/images/{,*/}*.*',
-            '<%%= config.distDir %>/styles/fonts/{,*/}*.*',
-            '<%%= config.distDir %>/*.{ico,png}'
+            '<%=o%> config.distDir %>/scripts/{,*/}*.js',
+            '<%=o%> config.distDir %>/styles/{,*/}*.css',
+            '<%=o%> config.distDir %>/images/{,*/}*.*',
+            '<%=o%> config.distDir %>/styles/fonts/{,*/}*.*',
+            '<%=o%> config.distDir %>/*.{ico,png}'
           ]
         }
       }
@@ -250,18 +250,18 @@ module.exports = function(grunt) {
     // additional tasks can operate on them
     useminPrepare: {
       options: {
-        dest: '<%%= config.distDir %>'
+        dest: '<%=o%> config.distDir %>'
       },
-      html: '<%%= config.serverSrcDir %>/index.html'
+      html: '<%=o%> config.serverSrcDir %>/index.html'
     },
 
     // Performs rewrites based on rev and the useminPrepare configuration
     usemin: {
       options: {
-        assetsDirs: ['<%%= config.distDir %>', '<%%= config.distDir %>/images']
+        assetsDirs: ['<%=o%> config.distDir %>', '<%=o%> config.distDir %>/images']
       },
-      html: ['<%%= config.distDir %>/{,*/}*.html'],
-      css: ['<%%= config.distDir %>/styles/{,*/}*.css']
+      html: ['<%=o%> config.distDir %>/{,*/}*.html'],
+      css: ['<%=o%> config.distDir %>/styles/{,*/}*.css']
     },
 
     // The following *-min tasks produce minified files in the dist folder
@@ -269,9 +269,9 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientSrcDir %>/images',
+          cwd: '<%=o%> config.clientSrcDir %>/images',
           src: '{,*/}*.{gif,jpeg,jpg,png}',
-          dest: '<%%= config.distDir %>/images'
+          dest: '<%=o%> config.distDir %>/images'
         }]
       }
     },
@@ -280,9 +280,9 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientSrcDir %>/images',
+          cwd: '<%=o%> config.clientSrcDir %>/images',
           src: '{,*/}*.svg',
-          dest: '<%%= config.distDir %>/images'
+          dest: '<%=o%> config.distDir %>/images'
         }]
       }
     },
@@ -301,102 +301,55 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: '<%%= config.distDir %>',
+          cwd: '<%=o%> config.distDir %>',
           src: '{,*/}*.html',
-          dest: '<%%= config.distDir %>'
+          dest: '<%=o%> config.distDir %>'
         }]
       }
     },
 
-    // By default, your `index.html`'s <!-- Usemin block --> will take care of
-    // minification. These next options are pre-configured if you do not wish
-    // to use the Usemin blocks.
-    // cssmin: {
-    //     dist: {
-    //         files: {
-    //             '<%%= config.distDir %>/styles/main.css': [
-    //                 '.tmp/styles/{,*/}*.css',
-    //                 '<%%= config.clientSrcDir %>/styles/{,*/}*.css'
-    //             ]
-    //         }
-    //     }
-    // },
-    // uglify: {
-    //     dist: {
-    //         files: {
-    //             '<%%= config.distDir %>/scripts/scripts.js': [
-    //                 '<%%= config.distDir %>/scripts/scripts.js'
-    //             ]
-    //         }
-    //     }
-    // },
-    // concat: {
-    //     dist: {}
-    // },
-
     // Copies remaining files to places other tasks can use
     copy: {
-      // dist: {
-      //   files: [{
-      //     expand: true,
-      //     dot: true,
-      //     cwd: '<%%= config.clientSrcDir %>',
-      //     dest: '<%%= config.distDir %>',
-      //     src: [
-      //       '*.{ico,png,txt}',
-      //       '.htaccess',
-      //       'images/{,*/}*.webp',
-      //       '{,*/}*.html',
-      //       'styles/fonts/{,*/}*.*'
-      //     ]
-      //   }, {
-      //     expand: true,
-      //     dot: true,
-      //     cwd: '.',
-      //     src: ['<%%= config.bowerDir %>/bootstrap-sass-official/vendor/assets/fonts/bootstrap/*.*'],
-      //     dest: '<%%= config.distDir %>'
-      //   }]
-      // },
       clientImages: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.clientSrcDir %>/images',
-        dest: '<%%= config.clientTgtDir %>/images/',
+        cwd: '<%=o%> config.clientSrcDir %>/images',
+        dest: '<%=o%> config.clientTgtDir %>/images/',
         src: '{,*/}*'
       },
       clientPages: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.clientSrcDir %>/pages',
-        dest: '<%%= config.clientTgtDir %>/pages/',
+        cwd: '<%=o%> config.clientSrcDir %>/pages',
+        dest: '<%=o%> config.clientTgtDir %>/pages/',
         src: '{,*/}*'
       },
       clientStyles: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.clientSrcDir %>/styles',
-        dest: '<%%= config.clientTgtDir %>/styles/',
+        cwd: '<%=o%> config.clientSrcDir %>/styles',
+        dest: '<%=o%> config.clientTgtDir %>/styles/',
         src: '{,*/}*.css'
       },
       clientScripts: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.clientSrcDir %>/scripts',
-        dest: '<%%= config.clientTgtDir %>/scripts/',
+        cwd: '<%=o%> config.clientSrcDir %>/scripts',
+        dest: '<%=o%> config.clientTgtDir %>/scripts/',
         src: '{,*/}*.js'
       },
       serverScripts: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.serverSrcDir %>/scripts',
-        dest: '<%%= config.serverTgtDir %>/scripts/',
+        cwd: '<%=o%> config.serverSrcDir %>/scripts',
+        dest: '<%=o%> config.serverTgtDir %>/scripts/',
         src: '{,*/}*.js'
       },
       serverViews: {
         expand: true,
         dot: true,
-        cwd: '<%%= config.serverSrcDir %>/views',
-        dest: '<%%= config.serverTgtDir %>/views/',
+        cwd: '<%=o%> config.serverSrcDir %>/views',
+        dest: '<%=o%> config.serverTgtDir %>/views/',
         src: '{,*/}*.{html,jade}'
       }
     },
@@ -405,13 +358,13 @@ module.exports = function(grunt) {
     // reference in your app
     modernizr: {
       dist: {
-        devFile: '<%%= config.bowerDir %>/modernizr/modernizr.js',
-        outputFile: '<%%= config.distDir %>/scripts/vendor/modernizr.js',
+        devFile: '<%=o%> config.bowerDir %>/modernizr/modernizr.js',
+        outputFile: '<%=o%> config.distDir %>/scripts/vendor/modernizr.js',
         files: {
           src: [
-            '<%%= config.distDir %>/scripts/{,*/}*.js',
-            '<%%= config.distDir %>/styles/{,*/}*.css',
-            '!<%%= config.distDir %>/scripts/vendor/*'
+            '<%=o%> config.distDir %>/scripts/{,*/}*.js',
+            '<%=o%> config.distDir %>/styles/{,*/}*.css',
+            '!<%=o%> config.distDir %>/scripts/vendor/*'
           ]
         },
         uglify: true
@@ -445,14 +398,13 @@ module.exports = function(grunt) {
 
   grunt.registerTask('serve', function(target) {
     if (target === 'dist') {
-      return grunt.task.run(['build', 'connect:dist:keepalive']);
+      return grunt.task.run(['build', 'express:dist:keepalive']);
     }
 
     grunt.task.run([
       'clean:target',
       'wiredep',
       'concurrent:makeTarget',
-      'autoprefixer',
       'express:develop:start',
       'watch'
     ]);
@@ -473,20 +425,14 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('build', [
-    'clean:dist',
-    'useminPrepare',
-    'concurrent:dist',
-    'autoprefixer',
-    'concat',
-    'cssmin',
-    'uglify',
-    'copy:dist',
-    'modernizr',
-    'rev',
-    'usemin',
-    'htmlmin'
-  ]);
+  grunt.registerTask('build', function() {
+    grunt.config.tgtDir = grunt.config.distDir;
+    grunt.task.run([
+      'clean:target',
+      'wiredep',
+      'concurrent:makeTarget',
+    ]);
+  });
 
   grunt.registerTask('default', [
     'newer:jshint',

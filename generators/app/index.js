@@ -5,9 +5,50 @@ var yeoman = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
 var _ = require('underscore');
-
+var BranchFinder = require('./lib/branch-finder');
 
 var ExpressDevelopGenerator = yeoman.generators.Base.extend({
+
+  _setupBranches: function() {
+    var settings = this.settings;
+    this.activeBranches = {
+      backbone:  settings.includeBackbone,
+      bootstrap: settings.includeBootstrap,
+      requirejs: settings.includeRequireJS,
+      sass:      settings.includeSass,
+    };
+  },
+
+  _branchCopy: function (source, target, pattern) {
+    var self = this;
+    var srcBase = this.sourceRoot();
+    var tgtBase = target || '';
+    pattern = pattern || '**/*';
+    var _options = {
+      pattern: path.join(source, pattern),
+      tgtRelalative: source,
+      branches: this.activeBranches, 
+      replacer: function(srcName, opOptions) {
+        var m = srcName.match(/^(%)?(.*)/);
+        if (m) {
+          opOptions.tpl = m[1] === '%';
+          return m[2];
+        } else {
+          return srcName;
+        }
+      },
+      op: function(srcPath, tgtPath, opOptions) {
+        console.log('op srcPath=', srcPath, 'opOptions=', opOptions);
+        if (opOptions.tpl) {
+          self.fs.copyTpl(srcPath, tgtPath, self.settings);
+        } else {
+          self.fs.copy(srcPath, tgtPath);
+        }  
+      }
+    }
+    var bf = new BranchFinder(srcBase, tgtBase, _options);
+    bf.run();
+  },
 
   constructor: function () {
     yeoman.generators.Base.apply(this, arguments);
@@ -26,51 +67,15 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       'client-src-dir':  path.join(this.options['src-dir'], 'client')
     });
 
-    this.bowerDir     = this.options['bower-dir'];
-    this.serverSrcDir = this.options['server-src-dir'];
-    this.clientSrcDir = this.options['client-src-dir'];
-    this.developDir   = this.options['develop-dir'];
-    this.distDir      = this.options['dist-dir'];
-  },
-
-  initializing: function () {
-    this.on('end', function () {
-      if (!this.options['skip-install']) {
-        this.installDependencies();
-      }
-    });
-  },
-
-  _setupBranches: function() {
-    var branches = ['default'];
-
-    function pushAll(name, ok) {
-      if (!ok)
-        name = 'no' + name;
-      for (var i=0, l=branches.length; i<l; ++i)
-      {
-        var branch = branches[i];
-        branch = (branch === 'default') ? name : branch + '+' + name; 
-        branches.push(branch);
-      }
-    }
-    pushAll('backbone', this.includeBackbone);
-    pushAll('bootstrap', this.includeBootstrap);
-    pushAll('requirejs', this.includeRequireJS);
-    pushAll('sass', this.includeSass);
-    branches.reverse();
-    var src = this.src;
-    branches = _.filter(branches, function(branch) {
-      if (!src.isDir('branches', branch))
-        return false;
-      if (src.isFile('branches', branch, '.unsupported')) {
-        var msg = src.read(path.join('branches', branch, '.unsupported'));
-        throw new Error(branch + ': ' + msg);
-      }
-      return true;
-    });
-    // this.log('branches=', branches);
-    this.activeBranches = branches;
+    this.settings = {
+      o:            '<%=', 
+      appname:      this.appname,
+      bowerDir:     this.options['bower-dir'],
+      serverSrcDir: this.options['server-src-dir'],
+      clientSrcDir: this.options['client-src-dir'],
+      developDir:   this.options['develop-dir'],
+      distDir:      this.options['dist-dir']
+    };  
   },
 
   prompting: {
@@ -121,14 +126,15 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       this.prompt(prompts, function (answers) {
         function hasFeature(feat) { return answers.features.indexOf(feat) !== -1; }
 
-        this.includeSass = hasFeature('includeSass');
-        this.includeBootstrap = hasFeature('includeBootstrap');
-        this.includeModernizr = hasFeature('includeModernizr');
-        this.includeBackbone = hasFeature('includeBackbone');
-        this.includeRequireJS = hasFeature('includeRequireJS');
+        var settings = this.settings;
+        settings.includeSass = hasFeature('includeSass');
+        settings.includeBootstrap = hasFeature('includeBootstrap');
+        settings.includeModernizr = hasFeature('includeModernizr');
+        settings.includeBackbone = hasFeature('includeBackbone');
+        settings.includeRequireJS = hasFeature('includeRequireJS');
 
-        this.includeLibSass = answers.libsass;
-        this.includeRubySass = !(answers.libsass);
+        settings.includeLibSass = answers.libsass;
+        settings.includeRubySass = !(answers.libsass);
 
         try {
           this._setupBranches();
@@ -142,73 +148,33 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
     }
   },
 
-  _mkdirs: function (base, names) {
-    for (var i=0; i<names.length; ++i) {
-      var name = names[i];
-      this.mkdir(path.join(base, name));
-    }
-  },
-
-  _branchCopy: function (source, destination, process) {
-    for (var i=0, l=this.activeBranches.length; i<l; ++i) {
-      var branch = this.activeBranches[i];
-      var branchSource = path.join('branches', branch, source);
-      // this.log('_branchCopy branchSource=' + branchSource);
-      if (this.src.isFile(branchSource)) {
-        // this.log('_branchCopy branchSource=' + branchSource + ' OK');
-        return this.copy(branchSource, destination, process);
-      }  
-    }
-  },
-
-  _branchDirectory: function (source, destination, process) {
-    for (var i=0, l=this.activeBranches.length; i<l; ++i) {
-      var branch = this.activeBranches[i];
-      var branchSource = path.join('branches', branch, source);
-      if (this.src.isDir(branchSource)) {
-        this.directory(branchSource, destination, process);
-      }  
-    }
-  },
-
   configuring: {
   },
 
   writing: {
 
-    gruntfile: function () {
-      console.log('copy gruntfile');
-      this._branchCopy('root/Gruntfile.js', 'Gruntfile.js');
+    projectFiles: function () {
+      console.log('copy project files');
+      this._branchCopy('root');
     },
 
-    projectfiles: function () {
-      console.log('copy projectfiles');
-      this._branchCopy('root/editorconfig', '.editorconfig');
-      this._branchCopy('root/jshintrc', '.jshintrc');
-      this._branchCopy('root/gitignore', '.gitignore');
-      this._branchCopy('root/bowerrc', '.bowerrc');
-    },
-
-    pkgfiles: function () {
-      console.log('copy pkgfiles');
-      this._branchCopy('root/_package.json', 'package.json');
-      this._branchCopy('root/_bower.json', 'bower.json');
-    },
-
-    appfiles: function () {
-      this._branchDirectory('server/scripts', path.join(this.serverSrcDir, 'scripts'));
-      this._branchDirectory('server/views', path.join(this.serverSrcDir, 'views'));
+    serverFiles: function () {
+      console.log('copy server files');
+      this._branchCopy('server', this.settings.serverSrcDir);
     },
 
     clientfiles: function () {
-      this._branchDirectory(path.join('client', 'styles'), path.join(this.clientSrcDir, 'styles'));
-      this._branchDirectory(path.join('client', 'scripts'), path.join(this.clientSrcDir, 'scripts'));
-      this._branchDirectory(path.join('client', 'images'), path.join(this.clientSrcDir, 'images'));
-      this._branchDirectory(path.join('client', 'pages'), path.join(this.clientSrcDir, 'pages'));
-      this._branchDirectory(path.join('client', 'templates'), path.join(this.clientSrcDir, 'templates'));
+      console.log('copy client files');
+      this._branchCopy('client', this.settings.clientSrcDir);
     },
 
-  }  
+  },
+
+  install: function () {
+    if (!this.options['skip-install']) {
+      this.installDependencies();
+    }
+  },
 
 });
 
