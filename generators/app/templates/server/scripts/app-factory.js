@@ -1,13 +1,12 @@
-"use strict"
+'use strict';
 var path = require('path');
-var express = require('express')
+var express = require('express');
 var routes = require('./routes/main');
 var favicon = require('serve-favicon');
 var robots = require('robots.txt');
 
 module.exports = function(options) {
-
-  var app = express()
+  var app = express();
   app.set('views', path.join(__dirname, '..', 'views'));
   app.set('view engine', 'jade');
   app.locals.pretty = true;
@@ -26,7 +25,7 @@ module.exports = function(options) {
   app.use('/', routes);
 
   return app;
-}
+};
 
 
 

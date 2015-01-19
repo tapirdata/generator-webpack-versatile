@@ -58,10 +58,11 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
 
     _.defaults(this.options, {
       // 'test-framework': 'mocha',
-      'bower-dir':   'bower_components',
-      'src-dir':     'src',
-      'develop-dir': '.develop',
-      'dist-dir':    'dist'
+      'bower-dir':    'bower_components',
+      'src-dir':      'src',
+      'tmp-dev-dir':  '.tmp/dev',
+      'tmp-test-dir': '.tmp/test',
+      'dist-dir':     'dist'
     });
 
     _.defaults(this.options, {
@@ -74,7 +75,8 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       bowerDir:     this.options['bower-dir'],
       serverSrcDir: this.options['server-src-dir'],
       clientSrcDir: this.options['client-src-dir'],
-      developDir:   this.options['develop-dir'],
+      tmpDevDir:    this.options['tmp-dev-dir'],
+      tmpTestDir:   this.options['tmp-test-dir'],
       distDir:      this.options['dist-dir']
     };  
   },

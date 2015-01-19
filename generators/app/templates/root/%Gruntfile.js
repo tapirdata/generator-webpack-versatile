@@ -24,9 +24,10 @@ module.exports = function(grunt) {
     serverSrcDir:    '<%= serverSrcDir %>',
     clientSrcDir:    '<%= clientSrcDir %>',
     // targets
-    developDir: '<%= developDir %>',
+    tmpDevDir : '<%= tmpDevDir  %>',
+    tmpTestDir: '<%= tmpTestDir %>',
     distDir:    '<%= distDir %>',
-    tgtDir:     '<%%= process.env.TGT_DIR || config.developDir %>',
+    tgtDir:     '<%%= process.env.TGT_DIR || config.tmpDevDir  %>',
     serverTgtDir: '<%%= config.tgtDir %>/server',
     clientTgtDir: '<%%= config.tgtDir %>/client',
     // options
@@ -125,6 +126,16 @@ module.exports = function(grunt) {
             '--livereload', config.livereload 
           ]
         }
+      },
+      dist: {
+        options: {
+          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          args: [
+            '--vendorDir',  '<%%= config.bowerDir %>', 
+            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--port',       9999,
+          ]
+        }
       }
     },
 
@@ -143,7 +154,8 @@ module.exports = function(grunt) {
         reporter: require('jshint-stylish')
       },
       all: [
-        // 'Gruntfile.js',
+        'Gruntfile.js',
+        '<%%= config.serverSrcDir %>/scripts/{,*/}*.js',
         '<%%= config.clientSrcDir %>/scripts/{,*/}*.js',
         'test/spec/{,*/}*.js'
       ]
@@ -398,7 +410,11 @@ module.exports = function(grunt) {
 
   grunt.registerTask('serve', function(target) {
     if (target === 'dist') {
-      return grunt.task.run(['build', 'express:dist:keepalive']);
+      return grunt.task.run([
+        'build', 
+        'express:dist', 
+        'keepalive'
+      ]);
     }
 
     grunt.task.run([
@@ -433,8 +449,10 @@ module.exports = function(grunt) {
     var tgtDir;
     if (name === 'dist') {
       tgtDir = grunt.config('config.distDir');
+    } else if (name === 'test') {
+      tgtDir = grunt.config('config.tmpTestDir');
     } else {
-      tgtDir = grunt.config('config.developDir');
+      tgtDir = grunt.config('config.tmpDevDir ');
     }
     process.env.TGT_DIR = tgtDir;
   });
