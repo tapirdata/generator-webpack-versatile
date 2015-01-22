@@ -127,6 +127,16 @@ module.exports = function(grunt) {
           ]
         }
       },
+      test: {
+        options: {
+          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          args: [
+            '--vendorDir',  '<%%= config.bowerDir %>', 
+            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--port',       9999,
+          ]
+        }
+      },
       dist: {
         options: {
           script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
@@ -427,16 +437,17 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('test', function(target) {
-    if (target !== 'watch') {
-      grunt.task.run([
-        'clean:server',
-        'concurrent:test',
-        'autoprefixer'
-      ]);
-    }
-
     grunt.task.run([
-      'connect:test',
+      'switchTarget:test',
+    ]);
+    if (target !== 'fast') {
+      grunt.task.run([
+        'clean:target',
+        'concurrent:makeTarget',
+      ]);
+    }  
+    grunt.task.run([
+      'express:test:start',
       'mocha'
     ]);
   });

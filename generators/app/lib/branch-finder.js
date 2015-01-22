@@ -10,7 +10,7 @@ var BranchFinder = function(srcBase, tgtBase, options) {
   options = options || {};
   this.pattern = options.pattern || '**/*';
   this.branches = options.branches || {};
-  this.reBranch = options.reBranch || /^\.if-(no-)?(\w+)$/;
+  this.reBranch = options.reBranch || /^\.if-(\w+)(-no)?$/;
   this.op = options.op || this.dummyOp.bind(this);
   this.tgtRelalative = options.tgtRelalative || '';
   this.replacer = options.replacer;
@@ -48,8 +48,8 @@ BranchFinder.prototype.run = function(src, tgt) {
     } else if (srcStat.isDirectory()) {
       var m = srcName.match(this.reBranch);
       if (m) {
-        var setNot = m[1];
-        var setName = m[2];
+        var setName = m[1];
+        var setNot  = m[2];
         if (!!this.branches[setName] === !setNot) {
           this.run(srcNext, tgt);
         }

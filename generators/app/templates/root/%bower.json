@@ -11,6 +11,10 @@
     "requirejs": "~2.1.14",<% } %>
     "lodash": "~2.4.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "mocha": "~2.1.0",
+    "chai": "~1.10.0",
+    "chai-as-promised": "~4.1.1"
+  }
 }
 
