@@ -23,6 +23,7 @@ module.exports = function(grunt) {
     bowerDir: JSON.parse(fs.readFileSync('./.bowerrc')).directory,
     serverSrcDir:    '<%= serverSrcDir %>',
     clientSrcDir:    '<%= clientSrcDir %>',
+    testDir:         '<%= testDir %>',
     // targets
     tmpDevDir : '<%= tmpDevDir  %>',
     tmpTestDir: '<%= tmpTestDir %>',
@@ -171,15 +172,23 @@ module.exports = function(grunt) {
       ]
     },
 
-    // Mocha testing framework configuration options
-    mocha: {
+    karma: {
       all: {
-        options: {
-          run: true,
-          // urls: ['http://<%%= connect.test.options.hostname %>:<%%= connect.test.options.port %>/index.html']
-        }
+        files: [
+          { 
+            src: '<%%= config.clientTgtDir %>/test/scripts/test-main.js',
+          },
+          {
+            src: '<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js',
+            included: false
+          },
+        ],
+        frameworks: ['mocha', 'requirejs'],
+        browsers: ['Chrome'],
+        // singleRun: true,
       }
-    },
+    },  
+
 
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
@@ -373,7 +382,14 @@ module.exports = function(grunt) {
         cwd: '<%%= config.serverSrcDir %>/views',
         dest: '<%%= config.serverTgtDir %>/views/',
         src: '{,*/}*.{html,jade}'
-      }
+      },
+      testClientScripts: {
+        expand: true,
+        dot: true,
+        cwd: '<%%= config.testDir %>/client/scripts',
+        dest: '<%%= config.clientTgtDir %>/test/scripts/',
+        src: '{,*/}*.js'
+      },
     },
 
     // Generates a custom Modernizr build that includes only the tests you
@@ -405,15 +421,6 @@ module.exports = function(grunt) {
         'copy:serverScripts',
         'copy:serverViews'
       ],
-      test: [
-        'copy:styles'
-      ],
-      dist: [<% if (includeSass) { %>
-        'sass',<% } %>
-        'copy:styles',
-        'imagemin',
-        'svgmin'
-      ]
     }
   });
 
@@ -444,11 +451,12 @@ module.exports = function(grunt) {
       grunt.task.run([
         'clean:target',
         'concurrent:makeTarget',
+        'copy:testClientScripts',
       ]);
     }  
     grunt.task.run([
       'express:test:start',
-      'mocha'
+      'karma:all'
     ]);
   });
 

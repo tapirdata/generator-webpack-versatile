@@ -26,8 +26,8 @@
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-express-server": "^0.4.19",
-    "grunt-keepalive": "^0.0.1",
-    "grunt-mocha": "~0.4.10",<% if (includeModernizr) { %>
+    "grunt-karma": "^0.10.1",
+    "grunt-keepalive": "^0.0.1",<% if (includeModernizr) { %>
     "grunt-modernizr": "^0.6.0",<% } %>
     "grunt-newer": "^1.1.0",
     "grunt-rev": "~0.1.0",
@@ -36,7 +36,15 @@
     "grunt-sass": "^0.17.0",<% } %>
     "grunt-wiredep": "^2.0.0",
     "jshint-stylish": "^1.0.0",
-    "load-grunt-tasks": "^2.0.0",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-firefox-launcher": "^0.1.4",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-requirejs": "^0.2.2",
+    "load-grunt-tasks": "^3.0.0",
+    "mocha": "^2.1.0",
+    "requirejs": "^2.1.15",
     "time-grunt": "^1.0.0"
   },
   "engines": {

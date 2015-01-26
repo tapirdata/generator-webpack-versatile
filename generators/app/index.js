@@ -60,6 +60,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       // 'test-framework': 'mocha',
       'bower-dir':    'bower_components',
       'src-dir':      'src',
+      'test-dir':     'test',
       'tmp-dev-dir':  '.tmp/dev',
       'tmp-test-dir': '.tmp/test',
       'dist-dir':     'dist'
@@ -75,6 +76,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       bowerDir:     this.options['bower-dir'],
       serverSrcDir: this.options['server-src-dir'],
       clientSrcDir: this.options['client-src-dir'],
+      testDir:      this.options['test-dir'],
       tmpDevDir:    this.options['tmp-dev-dir'],
       tmpTestDir:   this.options['tmp-test-dir'],
       distDir:      this.options['dist-dir']
@@ -157,7 +159,6 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
   writing: {
 
     projectFiles: function () {
-      console.log('engine=>', this.engine('otto isst gerne <%%= lecker (jo) %><%= food %> ', {food: 'Körner'}));
       console.log('copy project files');
       this._branchCopy('root');
     },
@@ -171,6 +172,12 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       console.log('copy client files');
       this._branchCopy('client', this.settings.clientSrcDir);
     },
+
+    testfiles: function () {
+      console.log('copy test files');
+      this._branchCopy('test', this.settings.testDir);
+    },
+
 
   },
 
