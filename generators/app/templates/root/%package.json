@@ -30,10 +30,11 @@
     "grunt-keepalive": "^0.0.1",<% if (includeModernizr) { %>
     "grunt-modernizr": "^0.6.0",<% } %>
     "grunt-newer": "^1.1.0",
-    "grunt-rev": "~0.1.0",
-    "grunt-svgmin": "^2.0.0",
-    "grunt-usemin": "^3.0.0",<% if (includeSass && includeLibSass) { %>
+    "grunt-rev": "~0.1.0",<% if (includeSass && includeLibSass) { %>
     "grunt-sass": "^0.17.0",<% } %>
+    "grunt-svgmin": "^2.0.0",
+    "grunt-template": "^0.2.3",
+    "grunt-usemin": "^3.0.0",
     "grunt-wiredep": "^2.0.0",
     "jshint-stylish": "^1.0.0",
     "karma": "^0.12.31",

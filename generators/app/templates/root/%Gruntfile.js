@@ -47,10 +47,6 @@ module.exports = function(grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-      jstest: {
-        files: ['test/spec/{,*/}*.js'],
-        tasks: ['test:watch']
-      },
       gruntfile: {
         files: ['Gruntfile.js']
       },
@@ -62,7 +58,7 @@ module.exports = function(grunt) {
       },
       clientScripts: {
         files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
-        tasks: ['jshint', 'newer:copy:clientScripts']
+        tasks: ['jshint', 'newer:copy:clientScripts', 'newer:template:clientScripts']
       },
       clientImages: {
         files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
@@ -176,7 +172,7 @@ module.exports = function(grunt) {
       all: {
         files: [
           { 
-            src: '<%%= config.clientTgtDir %>/test/scripts/test-main.js',
+            src: '<%%= config.clientTgtDir %>/test/scripts/main.js',
           },
           {
             src: '<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js',
@@ -184,7 +180,7 @@ module.exports = function(grunt) {
           },
         ],
         frameworks: ['mocha', 'requirejs'],
-        browsers: ['Chrome'],
+        browsers: ['PhantomJS', 'Chrome'],
         // singleRun: true,
       }
     },  
@@ -237,9 +233,6 @@ module.exports = function(grunt) {
 
     // Automatically inject Bower components into the app
     wiredep: {
-      // app: {
-      //   ignorePath:  /\.\.\//
-      // },
       sass: {
         src: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
         ignorePath: /(\.\.\/){1,3}<%%= config.bowerDir %>\//
@@ -367,7 +360,7 @@ module.exports = function(grunt) {
         dot: true,
         cwd: '<%%= config.clientSrcDir %>/scripts',
         dest: '<%%= config.clientTgtDir %>/scripts/',
-        src: '{,*/}*.js'
+        src: ['{,*/}*.js', '!{,*/}*.tpl.js']
       },
       serverScripts: {
         expand: true,
@@ -388,8 +381,48 @@ module.exports = function(grunt) {
         dot: true,
         cwd: '<%%= config.testDir %>/client/scripts',
         dest: '<%%= config.clientTgtDir %>/test/scripts/',
-        src: '{,*/}*.js'
+        src: ['{,*/}*.js', '!{,*/}*.tpl.js']
       },
+    },
+
+    template: {
+      clientScripts: {
+        options: {
+          data: {
+            appBaseUrl: '/app',
+            vendorBaseUrl: '/vendor'
+          }
+        },
+        files: [
+          { 
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.clientSrcDir %>/scripts',
+            dest: '<%%= config.clientTgtDir %>/scripts/',
+            src: ['{,*/}*.tpl.js'],
+            ext: '.js'
+          }
+        ]
+      },
+      testClientScripts: {
+        options: {
+          data: {
+            testBaseUrl: '<%%= config.clientTgtDir %>/test',
+            appBaseUrl: 'http://localhost:9999/app',
+            vendorBaseUrl: 'http://localhost:9999/vendor'
+          }
+        },
+        files: [
+          { 
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.testDir %>/client/scripts',
+            dest: '<%%= config.clientTgtDir %>/test/scripts/',
+            src: ['{,*/}*.tpl.js'],
+            ext: '.js'
+          }
+        ]
+      }
     },
 
     // Generates a custom Modernizr build that includes only the tests you
@@ -418,6 +451,7 @@ module.exports = function(grunt) {
         'copy:clientPages',
         'copy:clientStyles',
         'copy:clientScripts',
+        'template:clientScripts',
         'copy:serverScripts',
         'copy:serverViews'
       ],
@@ -452,6 +486,7 @@ module.exports = function(grunt) {
         'clean:target',
         'concurrent:makeTarget',
         'copy:testClientScripts',
+        'template:testClientScripts',
       ]);
     }  
     grunt.task.run([

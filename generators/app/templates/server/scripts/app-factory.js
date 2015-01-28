@@ -13,7 +13,7 @@ module.exports = function(options) {
 
   app.use(favicon(path.join(options.clientDir, 'images', 'favicon.ico')));
   app.use(robots(path.join(options.clientDir, 'pages', 'robots.txt')));
-  app.use('/static', express.static(options.clientDir));
+  app.use('/app', express.static(options.clientDir));
   app.use('/vendor', express.static(options.vendorDir));
 
   if (options.livereload) {
