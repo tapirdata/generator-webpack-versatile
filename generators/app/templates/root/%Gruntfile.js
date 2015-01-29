@@ -19,7 +19,7 @@ module.exports = function(grunt) {
   require('time-grunt')(grunt);
 
   // Configurable paths
-  var config = {
+  var _config = {
     bowerDir: JSON.parse(fs.readFileSync('./.bowerrc')).directory,
     serverSrcDir:    '<%= serverSrcDir %>',
     clientSrcDir:    '<%= clientSrcDir %>',
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     // Project settings
-    config: config,
+    config: _config,
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
@@ -95,7 +95,7 @@ module.exports = function(grunt) {
           '<%%= config.clientTgtDir %>/images/{,*/}*'
         ],
         options: {
-          livereload: config.livereload
+          livereload: '<%%= config.livereload %>'
         }
       },
       // reload (server)
@@ -107,7 +107,7 @@ module.exports = function(grunt) {
         tasks: ['express:develop:start'],
         options: {
           spawn: false,
-          livereload: config.livereload
+          livereload: '<%%= config.livereload %>'
         }
       }
     },
@@ -120,7 +120,7 @@ module.exports = function(grunt) {
             '--vendorDir',  '<%%= config.bowerDir %>', 
             '--clientDir',  '<%%= config.clientTgtDir %>',
             '--port',       9999,
-            '--livereload', config.livereload 
+            '--livereload', '<%%= config.livereload %>'
           ]
         }
       },
@@ -219,7 +219,7 @@ module.exports = function(grunt) {
           client: true,
           amd: true,
           processName: function(filename) {
-            filename = path.relative( path.join(config.clientSrcDir, 'templates'), filename);
+            filename = path.relative(path.join(grunt.config('config.clientSrcDir'), 'templates'), filename);
             filename = filename.substr(0, filename.lastIndexOf('.'));
             return filename;
           }
