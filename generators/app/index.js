@@ -38,7 +38,7 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
         }
       },
       op: function(srcPath, tgtPath, opOptions) {
-        console.log('op srcPath=', srcPath, 'opOptions=', opOptions);
+        // console.log('op srcPath=', srcPath, 'opOptions=', opOptions);
         var copyOptions = {};
         if (opOptions.tpl) {
          copyOptions.process = function(contents) {

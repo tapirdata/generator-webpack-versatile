@@ -1,4 +1,5 @@
-'use strict'
+'use strict';
+/* global define, describe, it */
 
 define(['jquery', 'when', 'chai', 'app/scripts/templates'], function($, when, chai, templates) {
 

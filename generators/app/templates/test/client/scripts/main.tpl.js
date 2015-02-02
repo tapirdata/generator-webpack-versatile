@@ -1,3 +1,5 @@
+'use strict';
+
 var testBaseUrl = '<%= testBaseUrl %>';
 var appBaseUrl = '<%= appBaseUrl %>';
 var vendorBaseUrl = '<%= vendorBaseUrl %>';

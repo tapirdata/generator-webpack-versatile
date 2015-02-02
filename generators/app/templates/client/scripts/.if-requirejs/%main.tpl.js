@@ -1,6 +1,6 @@
 'use strict';
 
-var appBaseUrl = '<%%= appBaseUrl %>';
+// var appBaseUrl = '<%%= appBaseUrl %>';
 var vendorBaseUrl = '<%%= vendorBaseUrl %>';
 
 require.config({

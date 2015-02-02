@@ -1,3 +1,5 @@
+'use strict';
+/* global define, window */
 
 define(function() {
   var allTestFiles = [];
@@ -19,7 +21,8 @@ define(function() {
     require(allTestFiles, function() {
       window.__karma__.start();
     });
-  }
+  };
+
 });
 
 

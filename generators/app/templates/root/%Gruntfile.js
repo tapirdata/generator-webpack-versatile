@@ -21,14 +21,14 @@ module.exports = function(grunt) {
   // Configurable paths
   var _config = {
     bowerDir: JSON.parse(fs.readFileSync('./.bowerrc')).directory,
-    serverSrcDir:    '<%= serverSrcDir %>',
-    clientSrcDir:    '<%= clientSrcDir %>',
-    testDir:         '<%= testDir %>',
+    serverSrcDir: '<%= serverSrcDir %>',
+    clientSrcDir: '<%= clientSrcDir %>',
+    testDir:      '<%= testDir %>',
     // targets
-    tmpDevDir : '<%= tmpDevDir  %>',
-    tmpTestDir: '<%= tmpTestDir %>',
-    distDir:    '<%= distDir %>',
-    tgtDir:     '<%%= process.env.TGT_DIR || config.tmpDevDir  %>',
+    tmpDevDir :   '<%= tmpDevDir  %>',
+    tmpTestDir:   '<%= tmpTestDir %>',
+    distDir:      '<%= distDir %>',
+    tgtDir:       '<%%= process.env.TGT_DIR || config.tmpDevDir  %>',
     serverTgtDir: '<%%= config.tgtDir %>/server',
     clientTgtDir: '<%%= config.tgtDir %>/client',
     // options
@@ -40,111 +40,6 @@ module.exports = function(grunt) {
 
     // Project settings
     config: _config,
-
-    // Watches files for changes and runs tasks based on the changed files
-    watch: {
-      bower: {
-        files: ['bower.json'],
-        tasks: ['wiredep']
-      },
-      gruntfile: {
-        files: ['Gruntfile.js']
-      },
-
-      // copy tasks (client)
-      clientStyles: {
-        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.css'],
-        tasks: ['newer:copy:clientStyles', 'autoprefixer']
-      },
-      clientScripts: {
-        files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
-        tasks: ['jshint', 'newer:copy:clientScripts', 'newer:template:clientScripts']
-      },
-      clientImages: {
-        files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
-        tasks: ['newer:copy:clientImages']
-      },
-      clientPages: {
-        files: ['<%%= config.clientSrcDir %>/pages/{,*/}*'],
-        tasks: ['newer:copy:clientPages']
-      },
-      // transform tasks (client)
-      clientSass: {
-        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
-        tasks: ['sass:client', 'autoprefixer']
-      },
-      clientJade: {
-        files: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
-        tasks: ['jade:client']
-      },
-      // copy tasks (server)
-      serverScripts: {
-        files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js'],
-        tasks: ['jshint', 'newer:copy:serverScripts']
-      },
-      serverViews: {
-        files: ['<%%= config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
-        tasks: ['jshint', 'newer:copy:serverViews']
-      },
-      // transform tasks (server)
-      // reload (client)
-      livereload: {
-        files: [
-          '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
-          '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
-          '<%%= config.clientTgtDir %>/images/{,*/}*'
-        ],
-        options: {
-          livereload: '<%%= config.livereload %>'
-        }
-      },
-      // reload (server)
-      express: {
-        files: [
-          '<%%= config.serverTgtDir %>/scripts/{,*/}*.js',
-          '<%%= config.serverTgtDir %>/views/{,*/}*.{jade,html}',
-        ],
-        tasks: ['express:develop:start'],
-        options: {
-          spawn: false,
-          livereload: '<%%= config.livereload %>'
-        }
-      }
-    },
-
-    express: {
-      develop: {
-        options: {
-          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
-          args: [
-            '--vendorDir',  '<%%= config.bowerDir %>', 
-            '--clientDir',  '<%%= config.clientTgtDir %>',
-            '--port',       9999,
-            '--livereload', '<%%= config.livereload %>'
-          ]
-        }
-      },
-      test: {
-        options: {
-          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
-          args: [
-            '--vendorDir',  '<%%= config.bowerDir %>', 
-            '--clientDir',  '<%%= config.clientTgtDir %>',
-            '--port',       9999,
-          ]
-        }
-      },
-      dist: {
-        options: {
-          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
-          args: [
-            '--vendorDir',  '<%%= config.bowerDir %>', 
-            '--clientDir',  '<%%= config.clientTgtDir %>',
-            '--port',       9999,
-          ]
-        }
-      }
-    },
 
     // Empties folders to start fresh
     clean: {
@@ -164,27 +59,17 @@ module.exports = function(grunt) {
         'Gruntfile.js',
         '<%%= config.serverSrcDir %>/scripts/{,*/}*.js',
         '<%%= config.clientSrcDir %>/scripts/{,*/}*.js',
-        'test/spec/{,*/}*.js'
+        '<%%= config.testDir %>/client/scripts/{,*/}*.js'
       ]
     },
 
-    karma: {
-      all: {
-        files: [
-          { 
-            src: '<%%= config.clientTgtDir %>/test/scripts/main.js',
-          },
-          {
-            src: '<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js',
-            included: false
-          },
-        ],
-        frameworks: ['mocha', 'requirejs'],
-        browsers: ['PhantomJS', 'Chrome'],
-        // singleRun: true,
+    // Automatically inject Bower components into the app
+    wiredep: {
+      sass: {
+        src: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
+        ignorePath: /(\.\.\/){1,3}<%%= config.bowerDir %>\//
       }
-    },  
-
+    },
 
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
@@ -231,104 +116,20 @@ module.exports = function(grunt) {
       }
     },
 
-    // Automatically inject Bower components into the app
-    wiredep: {
-      sass: {
-        src: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,3}<%%= config.bowerDir %>\//
-      }
-    },
 
-    // Add vendor prefixed styles
-    autoprefixer: {
-      options: {
-        browsers: ['last 1 version']
-      },
+    // Generates a custom Modernizr build that includes only the tests you
+    // reference in your app
+    modernizr: {
       dist: {
-        files: [{
-          expand: true,
-          cwd: '<%%= config.clientTgtDir %>/styles/',
-          src: '{,*/}*.css',
-          dest: '<%%= config.clientTgtDir %>/styles/'
-        }]
-      }
-    },
-
-    // Renames files for browser caching purposes
-    rev: {
-      dist: {
+        devFile: '<%%= config.bowerDir %>/modernizr/modernizr.js',
+        outputFile: '<%%= config.clientTgtDir %>/scripts/modernizr-custom.js',
         files: {
           src: [
-            '<%%= config.distDir %>/scripts/{,*/}*.js',
-            '<%%= config.distDir %>/styles/{,*/}*.css',
-            '<%%= config.distDir %>/images/{,*/}*.*',
-            '<%%= config.distDir %>/styles/fonts/{,*/}*.*',
-            '<%%= config.distDir %>/*.{ico,png}'
+            '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
+            '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
           ]
-        }
-      }
-    },
-
-    // Reads HTML for usemin blocks to enable smart builds that automatically
-    // concat, minify and revision files. Creates configurations in memory so
-    // additional tasks can operate on them
-    useminPrepare: {
-      options: {
-        dest: '<%%= config.distDir %>'
-      },
-      html: '<%%= config.serverSrcDir %>/index.html'
-    },
-
-    // Performs rewrites based on rev and the useminPrepare configuration
-    usemin: {
-      options: {
-        assetsDirs: ['<%%= config.distDir %>', '<%%= config.distDir %>/images']
-      },
-      html: ['<%%= config.distDir %>/{,*/}*.html'],
-      css: ['<%%= config.distDir %>/styles/{,*/}*.css']
-    },
-
-    // The following *-min tasks produce minified files in the dist folder
-    imagemin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '<%%= config.clientSrcDir %>/images',
-          src: '{,*/}*.{gif,jpeg,jpg,png}',
-          dest: '<%%= config.distDir %>/images'
-        }]
-      }
-    },
-
-    svgmin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '<%%= config.clientSrcDir %>/images',
-          src: '{,*/}*.svg',
-          dest: '<%%= config.distDir %>/images'
-        }]
-      }
-    },
-
-    htmlmin: {
-      dist: {
-        options: {
-          collapseBooleanAttributes: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true,
-          removeCommentsFromCDATA: true,
-          removeEmptyAttributes: true,
-          removeOptionalTags: true,
-          removeRedundantAttributes: true,
-          useShortDoctype: true
         },
-        files: [{
-          expand: true,
-          cwd: '<%%= config.distDir %>',
-          src: '{,*/}*.html',
-          dest: '<%%= config.distDir %>'
-        }]
+        uglify: true
       }
     },
 
@@ -425,20 +226,70 @@ module.exports = function(grunt) {
       }
     },
 
-    // Generates a custom Modernizr build that includes only the tests you
-    // reference in your app
-    modernizr: {
-      dist: {
-        devFile: '<%%= config.bowerDir %>/modernizr/modernizr.js',
-        outputFile: '<%%= config.distDir %>/scripts/vendor/modernizr.js',
-        files: {
-          src: [
-            '<%%= config.distDir %>/scripts/{,*/}*.js',
-            '<%%= config.distDir %>/styles/{,*/}*.css',
-            '!<%%= config.distDir %>/scripts/vendor/*'
+    express: {
+      develop: {
+        options: {
+          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          args: [
+            '--vendorDir',  '<%%= config.bowerDir %>', 
+            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--port',       9999,
+            '--livereload', '<%%= config.livereload %>'
           ]
-        },
-        uglify: true
+        }
+      },
+      test: {
+        options: {
+          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          args: [
+            '--vendorDir',  '<%%= config.bowerDir %>', 
+            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--port',       9999,
+          ]
+        }
+      },
+      dist: {
+        options: {
+          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          args: [
+            '--vendorDir',  '<%%= config.bowerDir %>', 
+            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--port',       9999,
+          ]
+        }
+      }
+    },
+
+    karma: {
+      all: {
+        files: [
+          { 
+            src: '<%%= config.clientTgtDir %>/test/scripts/main.js',
+          },
+          {
+            src: '<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js',
+            included: false
+          },
+        ],
+        frameworks: ['mocha', 'requirejs'],
+        browsers: ['PhantomJS', 'Chrome'],
+        // singleRun: true,
+      }
+    },  
+
+
+    // Add vendor prefixed styles
+    autoprefixer: {
+      options: {
+        browsers: ['last 1 version']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%%= config.clientTgtDir %>/styles/',
+          src: '{,*/}*.css',
+          dest: '<%%= config.clientTgtDir %>/styles/'
+        }]
       }
     },
 
@@ -455,7 +306,78 @@ module.exports = function(grunt) {
         'copy:serverScripts',
         'copy:serverViews'
       ],
-    }
+    },
+
+    // Watches files for changes and runs tasks based on the changed files
+    watch: {
+      bower: {
+        files: ['bower.json'],
+        tasks: ['wiredep']
+      },
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
+
+      // copy tasks (client)
+      clientScripts: {
+        files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
+        tasks: ['jshint', 'newer:copy:clientScripts', 'newer:template:clientScripts']
+      },
+      clientStyles: {
+        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.css'],
+        tasks: ['newer:copy:clientStyles', 'autoprefixer']
+      },
+      clientImages: {
+        files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
+        tasks: ['newer:copy:clientImages']
+      },
+      clientPages: {
+        files: ['<%%= config.clientSrcDir %>/pages/{,*/}*'],
+        tasks: ['newer:copy:clientPages']
+      },
+      // transform tasks (client)
+      clientSass: {
+        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
+        tasks: ['sass:client', 'autoprefixer']
+      },
+      clientJade: {
+        files: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
+        tasks: ['jade:client']
+      },
+      // copy tasks (server)
+      serverScripts: {
+        files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js'],
+        tasks: ['jshint', 'newer:copy:serverScripts']
+      },
+      serverViews: {
+        files: ['<%%= config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
+        tasks: ['jshint', 'newer:copy:serverViews']
+      },
+      // transform tasks (server)
+      // reload (client)
+      livereload: {
+        files: [
+          '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
+          '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
+          '<%%= config.clientTgtDir %>/images/{,*/}*'
+        ],
+        options: {
+          livereload: '<%%= config.livereload %>'
+        }
+      },
+      // reload (server)
+      express: {
+        files: [
+          '<%%= config.serverTgtDir %>/scripts/{,*/}*.js',
+          '<%%= config.serverTgtDir %>/views/{,*/}*.{jade,html}',
+        ],
+        tasks: ['express:develop:start'],
+        options: {
+          spawn: false,
+          livereload: '<%%= config.livereload %>'
+        }
+      }
+    },
   });
 
 
@@ -485,11 +407,11 @@ module.exports = function(grunt) {
       grunt.task.run([
         'clean:target',
         'concurrent:makeTarget',
-        'copy:testClientScripts',
-        'template:testClientScripts',
       ]);
     }  
     grunt.task.run([
+      'copy:testClientScripts',
+      'template:testClientScripts',
       'express:test:start',
       'karma:all'
     ]);
