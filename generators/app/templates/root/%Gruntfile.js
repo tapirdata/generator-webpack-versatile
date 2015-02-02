@@ -55,12 +55,26 @@ module.exports = function(grunt) {
         jshintrc: '.jshintrc',
         reporter: require('jshint-stylish')
       },
-      all: [
-        'Gruntfile.js',
-        '<%%= config.serverSrcDir %>/scripts/{,*/}*.js',
-        '<%%= config.clientSrcDir %>/scripts/{,*/}*.js',
-        '<%%= config.testDir %>/client/scripts/{,*/}*.js'
-      ]
+      root: {
+        files: {
+          src: ['Gruntfile.js']
+        }
+      },
+      server: {
+        files: {
+          src: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js']
+        }
+      },
+      client: {
+        files: {
+          src: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js']
+        }
+      },
+      test: {
+        files: {
+          src: ['<%%= config.testDir %>/client/scripts/{,*/}*.js']
+        }
+      }
     },
 
     // Automatically inject Bower components into the app
@@ -135,59 +149,71 @@ module.exports = function(grunt) {
 
     // Copies remaining files to places other tasks can use
     copy: {
-      clientImages: {
-        expand: true,
-        dot: true,
-        cwd: '<%%= config.clientSrcDir %>/images',
-        dest: '<%%= config.clientTgtDir %>/images/',
-        src: '{,*/}*'
+      client: {
+        files: [
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.clientSrcDir %>/images',
+            dest: '<%%= config.clientTgtDir %>/images/',
+            src: '{,*/}*'
+          },
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.clientSrcDir %>/pages',
+            dest: '<%%= config.clientTgtDir %>/pages/',
+            src: '{,*/}*'
+          },
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.clientSrcDir %>/styles',
+            dest: '<%%= config.clientTgtDir %>/styles/',
+            src: '{,*/}*.css'
+          },
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.clientSrcDir %>/scripts',
+            dest: '<%%= config.clientTgtDir %>/scripts/',
+            src: ['{,*/}*.js', '!{,*/}*.tpl.js']
+          },
+        ]
       },
-      clientPages: {
-        expand: true,
-        dot: true,
-        cwd: '<%%= config.clientSrcDir %>/pages',
-        dest: '<%%= config.clientTgtDir %>/pages/',
-        src: '{,*/}*'
+      server: {
+        files: [
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.serverSrcDir %>/scripts',
+            dest: '<%%= config.serverTgtDir %>/scripts/',
+            src: '{,*/}*.js'
+          },
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.serverSrcDir %>/views',
+            dest: '<%%= config.serverTgtDir %>/views/',
+            src: '{,*/}*.{html,jade}'
+          }
+        ]
       },
-      clientStyles: {
-        expand: true,
-        dot: true,
-        cwd: '<%%= config.clientSrcDir %>/styles',
-        dest: '<%%= config.clientTgtDir %>/styles/',
-        src: '{,*/}*.css'
-      },
-      clientScripts: {
-        expand: true,
-        dot: true,
-        cwd: '<%%= config.clientSrcDir %>/scripts',
-        dest: '<%%= config.clientTgtDir %>/scripts/',
-        src: ['{,*/}*.js', '!{,*/}*.tpl.js']
-      },
-      serverScripts: {
-        expand: true,
-        dot: true,
-        cwd: '<%%= config.serverSrcDir %>/scripts',
-        dest: '<%%= config.serverTgtDir %>/scripts/',
-        src: '{,*/}*.js'
-      },
-      serverViews: {
-        expand: true,
-        dot: true,
-        cwd: '<%%= config.serverSrcDir %>/views',
-        dest: '<%%= config.serverTgtDir %>/views/',
-        src: '{,*/}*.{html,jade}'
-      },
-      testClientScripts: {
-        expand: true,
-        dot: true,
-        cwd: '<%%= config.testDir %>/client/scripts',
-        dest: '<%%= config.clientTgtDir %>/test/scripts/',
-        src: ['{,*/}*.js', '!{,*/}*.tpl.js']
+      test: {
+        files: [
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%%= config.testDir %>/client/scripts',
+            dest: '<%%= config.clientTgtDir %>/test/scripts/',
+            src: ['{,*/}*.js', '!{,*/}*.tpl.js']
+          }
+        ]  
       },
     },
 
     template: {
-      clientScripts: {
+      client: {
         options: {
           data: {
             appBaseUrl: '/app',
@@ -205,7 +231,7 @@ module.exports = function(grunt) {
           }
         ]
       },
-      testClientScripts: {
+      test: {
         options: {
           data: {
             testBaseUrl: '<%%= config.clientTgtDir %>/test',
@@ -298,13 +324,9 @@ module.exports = function(grunt) {
       makeTarget: [<% if (includeSass) { %>
         'sass:client',<% } %>
         'jade:client',
-        'copy:clientImages',
-        'copy:clientPages',
-        'copy:clientStyles',
-        'copy:clientScripts',
-        'template:clientScripts',
-        'copy:serverScripts',
-        'copy:serverViews'
+        'copy:client',
+        'template:client',
+        'copy:server',
       ],
     },
 
@@ -315,25 +337,26 @@ module.exports = function(grunt) {
         tasks: ['wiredep']
       },
       gruntfile: {
-        files: ['Gruntfile.js']
+        files: ['Gruntfile.js'],
+        tasks: ['jshint:root']
       },
 
       // copy tasks (client)
       clientScripts: {
         files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
-        tasks: ['jshint', 'newer:copy:clientScripts', 'newer:template:clientScripts']
+        tasks: ['newer:jshint:client', 'newer:copy:client', 'newer:template:client']
       },
       clientStyles: {
         files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.css'],
-        tasks: ['newer:copy:clientStyles', 'autoprefixer']
+        tasks: ['newer:copy:client', 'autoprefixer']
       },
       clientImages: {
         files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
-        tasks: ['newer:copy:clientImages']
+        tasks: ['newer:copy:client']
       },
       clientPages: {
         files: ['<%%= config.clientSrcDir %>/pages/{,*/}*'],
-        tasks: ['newer:copy:clientPages']
+        tasks: ['newer:copy:client']
       },
       // transform tasks (client)
       clientSass: {
@@ -347,11 +370,11 @@ module.exports = function(grunt) {
       // copy tasks (server)
       serverScripts: {
         files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js'],
-        tasks: ['jshint', 'newer:copy:serverScripts']
+        tasks: ['newer:jshint:server', 'newer:copy:server']
       },
       serverViews: {
         files: ['<%%= config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
-        tasks: ['jshint', 'newer:copy:serverViews']
+        tasks: ['newer:copy:server']
       },
       // transform tasks (server)
       // reload (client)
@@ -393,6 +416,7 @@ module.exports = function(grunt) {
     grunt.task.run([
       'clean:target',
       'wiredep',
+      'jshint',
       'concurrent:makeTarget',
       'express:develop:start',
       'watch'
@@ -410,8 +434,8 @@ module.exports = function(grunt) {
       ]);
     }  
     grunt.task.run([
-      'copy:testClientScripts',
-      'template:testClientScripts',
+      'copy:test',
+      'template:test',
       'express:test:start',
       'karma:all'
     ]);
