@@ -14,27 +14,29 @@
     "grunt-autoprefixer": "^2.1.0",
     "grunt-concurrent": "^1.0.0",
     "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-connect": "^0.9.0",
+    "grunt-contrib-coffee": "^0.12.0",<% if (includeCoffee) { %>
+    "grunt-contrib-connect": "^0.9.0",<% } %>
     "grunt-contrib-copy": "^0.7.0",
     "grunt-contrib-jade": "^0.14.0",
-    "grunt-contrib-jshint": "^0.10.0",<% if (includeSass && includeRubySass) { %>
+    "grunt-contrib-jshint": "^0.10.0",<% if (includeRubySass) { %>
     "grunt-contrib-sass": "^0.8.1",<% } %>
     "grunt-contrib-watch": "~0.6.1",
     "grunt-express-server": "^0.4.19",
     "grunt-karma": "^0.10.1",
     "grunt-keepalive": "^0.0.1",<% if (includeModernizr) { %>
     "grunt-modernizr": "^0.6.0",<% } %>
-    "grunt-newer": "^1.1.0",<% if (includeSass && includeLibSass) { %>
+    "grunt-newer": "^1.1.0",<% if (includeLibSass) { %>
     "grunt-sass": "^0.17.0",<% } %>
     "grunt-template": "^0.2.3",
     "grunt-wiredep": "^2.0.0",
     "jshint-stylish": "^1.0.0",
     "karma": "^0.12.31",
-    "karma-chrome-launcher": "^0.1.7",
+    "karma-chrome-launcher": "^0.1.7",<% if (includeCurlJS) { %>
+    "karma-curl-amd": "0.0.4",<% } %>
     "karma-firefox-launcher": "^0.1.4",
     "karma-mocha": "^0.1.10",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "karma-requirejs": "^0.2.2",
+    "karma-phantomjs-launcher": "^0.1.4",<% if (includeRequireJS) { %>
+    "karma-requirejs": "^0.2.2",<% } %>
     "load-grunt-tasks": "^3.0.0",
     "mocha": "^2.1.0",
     "requirejs": "^2.1.15",

@@ -1,0 +1,30 @@
+'use strict';
+/* global curl */
+
+var appBaseUrl = '<%%= appBaseUrl %>';
+var vendorBaseUrl = '<%%= vendorBaseUrl %>';
+
+curl.config({
+  paths: {
+    curl:       vendorBaseUrl + '/curl/src/curl',
+    jquery:     vendorBaseUrl + '/jquery/dist/jquery',
+    underscore: vendorBaseUrl + '/lodash/dist/lodash',<% if (includeBackbone) { %>
+    backbone: {
+      location: vendorBaseUrl + '/backbone/backbone',
+      transform: 'curl/cjsm11'
+    },<% } %><% if (includeBootstrap) { %>
+    bootstrap:  vendorBaseUrl + '/bootstrap-sass-official/assets/javascripts/bootstrap',<% } %>
+    jade:       vendorBaseUrl + '/jade/runtime',
+    mocha:      vendorBaseUrl + '/mocha/mocha',
+    chai:       vendorBaseUrl + '/chai/chai',
+    chaiAsPromises: vendorBaseUrl + '/chai/chai-as-promised'
+  },
+  preloads: ['jquery']
+});
+
+curl([
+  appBaseUrl + '/scripts/app'<% if (includeBootstrap) { %>,
+  'bootstrap'<% } %>
+], function (App) {
+  App.initialize();
+});

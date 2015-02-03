@@ -15,6 +15,8 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
       backbone:  settings.includeBackbone,
       bootstrap: settings.includeBootstrap,
       requirejs: settings.includeRequireJS,
+      curljs:    settings.includeCurlJS,
+      coffee:    settings.includeCoffee,
       sass:      settings.includeSass,
     };
   },
@@ -109,14 +111,21 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
           value: 'includeModernizr',
           checked: true
         },{
-          name: 'RequireJS',
-          value: 'includeRequireJS',
-          checked: true
-        },{
           name: 'Sass',
           value: 'includeSass',
           checked: true
-        }]
+        },{
+          name: 'Coffee',
+          value: 'includeCoffee',
+          checked: true
+        },
+       
+        ]
+      }, {
+          name: 'amdLib',
+          message: 'What AMD-Library would you like to use?',
+          type: 'list',
+          choices: ['requireJS', 'curlJS'] 
       }, {
         when: function (answers) {
           return answers.features.indexOf('includeSass') !== -1;
@@ -130,16 +139,19 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
 
       this.prompt(prompts, function (answers) {
         function hasFeature(feat) { return answers.features.indexOf(feat) !== -1; }
+        console.log('answers=', answers);
 
         var settings = this.settings;
         settings.includeSass = hasFeature('includeSass');
         settings.includeBootstrap = hasFeature('includeBootstrap');
         settings.includeModernizr = hasFeature('includeModernizr');
-        settings.includeBackbone = hasFeature('includeBackbone');
-        settings.includeRequireJS = hasFeature('includeRequireJS');
-
-        settings.includeLibSass = answers.libsass;
-        settings.includeRubySass = !(answers.libsass);
+        settings.includeBackbone  = hasFeature('includeBackbone');
+        settings.includeCoffee    = hasFeature('includeCoffee');
+        settings.includeLibSass   = settings.includeSass && answers.libsass;
+        settings.includeRubySass  = settings.includeSass && !answers.libsass;
+        settings.includeRequireJS = answers.amdLib === 'requireJS';
+        settings.includeCurlJS    = answers.amdLib === 'curlJS';
+        console.log('settings=', settings);
 
         try {
           this._setupBranches();
