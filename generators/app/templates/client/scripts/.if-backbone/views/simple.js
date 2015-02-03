@@ -1,7 +1,7 @@
 'use strict';
 /* global define */
 
-define(['backbone', 'templates'], function (Backbone, templates) {
+define(['backbone', '../templates'], function (Backbone, templates) {
   var View = Backbone.View.extend({
     initialize: function (options) {
       this.templateName = options.templateName;

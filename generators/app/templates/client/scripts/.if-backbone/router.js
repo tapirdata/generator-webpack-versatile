@@ -1,7 +1,7 @@
 'use strict';
 /* global define */
 
-define(['backbone', 'views/simple'], function (Backbone, SimpleView) {
+define(['backbone', './views/simple'], function (Backbone, SimpleView) {
   var AppRouter = Backbone.Router.extend({
     routes: {
       '':         'showHome',

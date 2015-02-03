@@ -234,7 +234,7 @@ module.exports = function(grunt) {
       test: {
         options: {
           data: {
-            testBaseUrl: '<%%= config.clientTgtDir %>/test',
+            testBaseUrl: '/base/<%%= config.clientTgtDir %>/test',
             appBaseUrl: 'http://localhost:9999/app',
             vendorBaseUrl: 'http://localhost:9999/vendor'
           }
@@ -286,6 +286,17 @@ module.exports = function(grunt) {
       }
     },
 
+    setupKarma: {
+      all: {
+        files: [
+          {
+            cwd: '<%%= config.clientTgtDir %>/test/scripts',
+            src: '**/*.test.js',
+          }
+        ]
+      }   
+    },
+
     karma: {
       all: {
         files: [
@@ -297,8 +308,15 @@ module.exports = function(grunt) {
             included: false
           },
         ],
-        frameworks: ['mocha', 'requirejs'],
-        browsers: ['PhantomJS', 'Chrome'],
+        frameworks: [
+          'mocha'<% if (includeRequireJS) { %>,
+          'requirejs'<% } %><% if (includeCurlJS) { %>,
+          'curl-amd'<% } %>
+        ],
+        browsers: [
+          'PhantomJS', 
+          'Chrome'
+        ],
         // singleRun: true,
       }
     },  
@@ -423,6 +441,12 @@ module.exports = function(grunt) {
     ]);
   });
 
+  grunt.registerMultiTask('setupKarma', function() {
+    var testFiles = this.filesSrc;
+    console.log('target=', this.target, 'testFiles=', testFiles);
+    grunt.config.set('karma.' + this.target + '.client.testFiles', testFiles);
+  });
+
   grunt.registerTask('test', function(target) {
     grunt.task.run([
       'switchTarget:test',
@@ -437,6 +461,7 @@ module.exports = function(grunt) {
       'copy:test',
       'template:test',
       'express:test:start',
+      'setupKarma:all',
       'karma:all'
     ]);
   });

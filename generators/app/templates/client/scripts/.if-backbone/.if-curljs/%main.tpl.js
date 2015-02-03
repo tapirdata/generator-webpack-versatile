@@ -13,7 +13,13 @@ curl.config({
       location: vendorBaseUrl + '/backbone/backbone',
       transform: 'curl/cjsm11'
     },<% } %><% if (includeBootstrap) { %>
-    bootstrap:  vendorBaseUrl + '/bootstrap-sass-official/assets/javascripts/bootstrap',<% } %>
+    bootstrap: {
+      location: vendorBaseUrl + '/bootstrap-sass-official/assets/javascripts/bootstrap',
+      config: {
+        loader: 'curl/loader/legacy',
+        factory: function() {}
+      }
+    },<% } %>
     jade:       vendorBaseUrl + '/jade/runtime',
     mocha:      vendorBaseUrl + '/mocha/mocha',
     chai:       vendorBaseUrl + '/chai/chai',

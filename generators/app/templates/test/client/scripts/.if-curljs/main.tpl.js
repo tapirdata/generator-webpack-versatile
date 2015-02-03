@@ -1,10 +1,11 @@
 'use strict';
+/* global curl */
 
 var testBaseUrl = '<%= testBaseUrl %>';
 var appBaseUrl = '<%= appBaseUrl %>';
 var vendorBaseUrl = '<%= vendorBaseUrl %>';
 
-require.config({
+curl.config({
   // Karma serves files under /base, which is the basePath from your config file
   baseUrl: '/base',
 
@@ -30,13 +31,11 @@ require.config({
     }
   ],
 
-  // we have to kickoff runner
-  callback: function() {
-    // console.log('files=', window.__karma__.files);
-    require(['poly', 'chai', 'chaiAsPromised', 'test/scripts/runner'], 
-    function(poly, chai, chaiAsPromised, runner) {
-      chai.use(chaiAsPromised);
-      runner();
-    });
-  }
 });
+
+curl(['poly', 'chai', 'chaiAsPromised', 'test/scripts/runner'], 
+  function(poly, chai, chaiAsPromised, runner) {
+    chai.use(chaiAsPromised);
+    runner();
+  }
+);

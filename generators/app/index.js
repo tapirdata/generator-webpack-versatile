@@ -125,7 +125,8 @@ var ExpressDevelopGenerator = yeoman.generators.Base.extend({
           name: 'amdLib',
           message: 'What AMD-Library would you like to use?',
           type: 'list',
-          choices: ['requireJS', 'curlJS'] 
+          choices: ['curlJS', 'requireJS'],
+          default: 0
       }, {
         when: function (answers) {
           return answers.features.indexOf('includeSass') !== -1;
