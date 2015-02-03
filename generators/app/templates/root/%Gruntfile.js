@@ -28,7 +28,7 @@ module.exports = function(grunt) {
     tmpDevDir :   '<%= tmpDevDir  %>',
     tmpTestDir:   '<%= tmpTestDir %>',
     distDir:      '<%= distDir %>',
-    tgtDir:       '<%%= process.env.TGT_DIR || config.tmpDevDir  %>',
+    tgtDir:       '<%%= process.env.TARGET === "dist" ? config.distDir : (process.env.TARGET === "test" ? config.tmpTestDir : config.tmpDevDir) %>',
     serverTgtDir: '<%%= config.tgtDir %>/server',
     clientTgtDir: '<%%= config.tgtDir %>/client',
     // options
@@ -317,6 +317,7 @@ module.exports = function(grunt) {
           'PhantomJS', 
           'Chrome'
         ],
+        background: true,
         // singleRun: true,
       }
     },  
@@ -395,6 +396,11 @@ module.exports = function(grunt) {
         tasks: ['newer:copy:server']
       },
       // transform tasks (server)
+      // copy tasks (test)
+      testScripts: {
+        files: ['<%%= config.testDir %>/client/scripts/{,*/}*.js'],
+        tasks: ['newer:jshint:server', 'newer:copy:test']
+      },
       // reload (client)
       livereload: {
         files: [
@@ -416,6 +422,14 @@ module.exports = function(grunt) {
         options: {
           spawn: false,
           livereload: '<%%= config.livereload %>'
+        }
+      },
+      // reload (karma)
+      karma: {
+        files: ['<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js'],
+        tasks: ['karma:all:run'],
+        options: {
+          atBegin: true
         }
       }
     },
@@ -442,9 +456,28 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('setupKarma', function() {
-    var testFiles = this.filesSrc;
-    console.log('target=', this.target, 'testFiles=', testFiles);
-    grunt.config.set('karma.' + this.target + '.client.testFiles', testFiles);
+    var configBase = 'karma.' + this.target;
+    for (var i=0; i<arguments.length; ++i) {
+      var arg = arguments[i];
+      switch (arg) {
+        case 'files':
+          var testFiles = this.filesSrc;
+          console.log('target=', this.target, 'testFiles=', testFiles);
+          grunt.config.set(configBase + '.client.testFiles', testFiles);
+          break;
+        case 'single':
+          grunt.config.set(configBase + '.background', false);
+          grunt.config.set(configBase + '.singleRun', true);
+          break;
+        case 'back':
+          grunt.config.set(configBase + '.background', true);
+          grunt.config.set(configBase + '.singleRun', false);
+          break;
+        default:
+          console.log('setupKarma: unexpected arg %s', arg);
+      }
+    }
+
   });
 
   grunt.registerTask('test', function(target) {
@@ -461,9 +494,19 @@ module.exports = function(grunt) {
       'copy:test',
       'template:test',
       'express:test:start',
-      'setupKarma:all',
-      'karma:all'
     ]);
+    if (target === 'watch') {
+      grunt.task.run([
+        'setupKarma:all:files:back',
+        'karma:all',
+        'watch'
+      ]);
+    } else {
+      grunt.task.run([
+        'setupKarma:all:files:single',
+        'karma:all',
+      ]);
+    }
   });
 
   grunt.registerTask('showConfig', function() {
@@ -471,15 +514,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('switchTarget', function(name) {
-    var tgtDir;
-    if (name === 'dist') {
-      tgtDir = grunt.config('config.distDir');
-    } else if (name === 'test') {
-      tgtDir = grunt.config('config.tmpTestDir');
-    } else {
-      tgtDir = grunt.config('config.tmpDevDir ');
-    }
-    process.env.TGT_DIR = tgtDir;
+    process.env.TARGET = name;
   });
 
   grunt.registerTask('build', function() {

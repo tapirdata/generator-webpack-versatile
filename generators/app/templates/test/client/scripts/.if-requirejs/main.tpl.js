@@ -10,11 +10,12 @@ require.config({
 
   paths: {
     test: testBaseUrl,
-    app: appBaseUrl,
-    jade:   vendorBaseUrl + '/jade/runtime',
-    jquery: vendorBaseUrl + '/jquery/dist/jquery',
-    chai: vendorBaseUrl + '/chai/chai',
-    chaiAsPromised: vendorBaseUrl + '/chai-as-promised/lib/chai-as-promised'
+    app:  appBaseUrl,
+    jade:           vendorBaseUrl + '/jade/runtime',
+    jquery:         vendorBaseUrl + '/jquery/dist/jquery',
+    chai:           vendorBaseUrl + '/chai/chai',
+    chaiAsPromised: vendorBaseUrl + '/chai-as-promised/lib/chai-as-promised',
+    chaiJq:         vendorBaseUrl + '/chai-jq/chai-jq'
   },
 
   packages: [
@@ -32,10 +33,7 @@ require.config({
 });
 
 // console.log('files=', window.__karma__.files);
-require(['poly', 'chai', 'chaiAsPromised', 'test/scripts/runner'], 
-  function(poly, chai, chaiAsPromised, runner) {
-    chai.use(chaiAsPromised);
-    runner();
-  }
-);
+require(['test/scripts/runner'], function(runner) {
+  runner();
+});
 

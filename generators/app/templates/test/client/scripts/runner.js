@@ -10,10 +10,22 @@ define(['require'], function(require) {
     allTestFiles.push('./' + mod);
   });
 
+  function prepared(cb) {
+    require(['poly', 'chai', 'chaiAsPromised', 'chaiJq'], 
+      function(poly, chai, chaiAsPromised, chaiJq) {
+        chai.use(chaiAsPromised);
+        chai.use(chaiJq);
+        cb();
+      }
+    );
+  }
+
   // console.log('allTestFiles=', allTestFiles);
   return function() {
-    require(allTestFiles, function() {
-      window.__karma__.start();
+    prepared(function() {
+      require(allTestFiles, function() {
+        window.__karma__.start();
+      });  
     });
   };
 

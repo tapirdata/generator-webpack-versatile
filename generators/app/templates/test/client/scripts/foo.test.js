@@ -1,11 +1,17 @@
 'use strict';
-/* global define, describe, it */
+/* global define, describe, before, it */
 
 define(['jquery', 'when', 'chai', 'app/scripts/templates'], function($, when, chai, templates) {
 
   var expect = chai.expect;
 
   describe('The Foo Tests', function () {
+
+    var $testMain;
+
+    before(function() {
+      $testMain = $('<div class="test-main" />').appendTo('body');
+    });
 
     it ('should equal', function() {
       expect(3 * 2).equal(6);

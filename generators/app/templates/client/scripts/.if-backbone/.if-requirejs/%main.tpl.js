@@ -10,9 +10,10 @@ require.config({
     backbone:   vendorBaseUrl + '/backbone/backbone'<% } %><% if (includeBootstrap) { %>,
     bootstrap:  vendorBaseUrl + '/bootstrap-sass-official/assets/javascripts/bootstrap'<% } %>,
     jade:       vendorBaseUrl + '/jade/runtime',
-    mocha:      vendorBaseUrl + '/mocha/mocha',
-    chai:       vendorBaseUrl + '/chai/chai',
-    chaiAsPromises: vendorBaseUrl + '/chai/chai-as-promised'
+    // mocha:          vendorBaseUrl + '/mocha/mocha',
+    // chai:           vendorBaseUrl + '/chai/chai',
+    // chaiAsPromises: vendorBaseUrl + '/chai/chai-as-promised'
+    // chaiJq:         vendorBaseUrl + '/chai-jq/chai-jq'
   },
   shim: {
     'bootstrap': {
