@@ -9,6 +9,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var _ = require('lodash');
 
 module.exports = function(grunt) {
 
@@ -430,10 +431,7 @@ module.exports = function(grunt) {
       // reload (karma)
       karma: {
         files: ['<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js'],
-        tasks: ['karma:all:run'],
-        options: {
-          atBegin: true
-        }
+        tasks: ['karma:all:run']
       }
     },
   });
@@ -483,11 +481,15 @@ module.exports = function(grunt) {
 
   });
 
-  grunt.registerTask('test', function(target) {
+  grunt.registerTask('test', function() {
+    var targets = _.object(_.map(arguments, function(arg) {return [arg, true]; }));
+    if (!targets.watch && !targets.single) {
+      targets.single = true;
+    }
     grunt.task.run([
       'switchTarget:test',
     ]);
-    if (target !== 'fast') {
+    if (!targets.fast) {
       grunt.task.run([
         'clean:target',
         'concurrent:makeTarget',
@@ -498,16 +500,17 @@ module.exports = function(grunt) {
       'template:test',
       'express:test:start',
     ]);
-    if (target === 'watch') {
+    if (targets.single) {
+      grunt.task.run([
+        'setupKarma:all:files:single',
+        'karma:all',
+      ]);
+    }
+    if (targets.watch) {
       grunt.task.run([
         'setupKarma:all:files:back',
         'karma:all',
         'watch'
-      ]);
-    } else {
-      grunt.task.run([
-        'setupKarma:all:files:single',
-        'karma:all',
       ]);
     }
   });
