@@ -32,6 +32,7 @@ module.exports = function(grunt) {
     serverTgtDir: '<%%= config.tgtDir %>/server',
     clientTgtDir: '<%%= config.tgtDir %>/client',
     // options
+    serverPort:   '<%%= process.env.TARGET === "dist" ? 8000 : (process.env.TARGET === "test" ? 8001 : 8002) %>',
     livereload: true  // use default port 35729
   };
 
@@ -235,8 +236,8 @@ module.exports = function(grunt) {
         options: {
           data: {
             testBaseUrl: '/base/<%%= config.clientTgtDir %>/test',
-            appBaseUrl: 'http://localhost:9999/app',
-            vendorBaseUrl: 'http://localhost:9999/vendor'
+            appBaseUrl: 'http://localhost:<%%= config.serverPort %>/app',
+            vendorBaseUrl: 'http://localhost:<%%= config.serverPort %>/vendor'
           }
         },
         files: [
@@ -259,7 +260,7 @@ module.exports = function(grunt) {
           args: [
             '--vendorDir',  '<%%= config.bowerDir %>', 
             '--clientDir',  '<%%= config.clientTgtDir %>',
-            '--port',       9999,
+            '--port',       '<%%= config.serverPort %>',
             '--livereload', '<%%= config.livereload %>'
           ]
         }
@@ -270,7 +271,7 @@ module.exports = function(grunt) {
           args: [
             '--vendorDir',  '<%%= config.bowerDir %>', 
             '--clientDir',  '<%%= config.clientTgtDir %>',
-            '--port',       9999,
+            '--port',       '<%%= config.serverPort %>',
           ]
         }
       },
@@ -280,7 +281,7 @@ module.exports = function(grunt) {
           args: [
             '--vendorDir',  '<%%= config.bowerDir %>', 
             '--clientDir',  '<%%= config.clientTgtDir %>',
-            '--port',       9999,
+            '--port',       '<%%= config.serverPort %>',
           ]
         }
       }
@@ -317,8 +318,10 @@ module.exports = function(grunt) {
           'PhantomJS', 
           'Chrome'
         ],
-        background: true,
+        // background: true,
         // singleRun: true,
+        // browserNoActivityTimeout: 100000,
+        // captureTimeout: 5000,
       }
     },  
 
