@@ -89,6 +89,39 @@ module.exports = function(grunt) {
       }
     },
 
+    <% if (includeCoffee) { %>coffee: {
+      client: {
+        files: [{
+          expand: true,
+          cwd: '<%%= config.clientSrcDir %>/scripts',
+          src: ['{,*/}*.coffee'],
+          dest: '<%%= config.clientTgtDir %>/scripts',
+          extDot: 'last',
+          ext: '.js'
+        }]
+      },
+      server: {
+        files: [{
+          expand: true,
+          cwd: '<%%= config.serverSrcDir %>/scripts',
+          src: ['{,*/}*.coffee'],
+          dest: '<%%= config.serverTgtDir %>/scripts',
+          extDot: 'last',
+          ext: '.js'
+        }]
+      },
+      test: {
+        files: [{
+          expand: true,
+          cwd: '<%%= config.testDir %>/client/scripts',
+          src: ['{,*/}*.coffee'],
+          dest: '<%%= config.clientTgtDir %>/test/scripts/',
+          extDot: 'last',
+          ext: '.js'
+        }]
+      }   
+    },<% } %>
+
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
       options: {
@@ -349,9 +382,11 @@ module.exports = function(grunt) {
       makeTarget: [<% if (includeSass) { %>
         'sass:client',<% } %>
         'jade:client',
-        'copy:client',
+        'copy:client',<% if (includeCoffee) { %>
+        'coffee:client',<% } %>
         'template:client',
-        'copy:server',
+        'copy:server',<% if (includeCoffee) { %>
+        'coffee:server',<% } %>
       ],
     },
 
@@ -388,7 +423,11 @@ module.exports = function(grunt) {
             tasks: ['newer:copy:client']
           },
           // transform tasks (client)
-          clientSass: {
+          <% if (includeCoffee) { %>clientCoffee: {
+            files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.coffee'],
+            tasks: ['newer:coffee:client']
+          },
+          <% } %>clientSass: {
             files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
             tasks: ['sass:client', 'autoprefixer']
           },
@@ -406,13 +445,25 @@ module.exports = function(grunt) {
             tasks: ['newer:copy:server']
           },
           // transform tasks (server)
-          // copy tasks (test)
+          <% if (includeCoffee) { %>serverCoffee: {
+            files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.coffee'],
+            tasks: ['newer:coffee:server']
+          },
+          <% } %>// copy tasks (test)
           testScripts: {
             scope: 'test',
             files: ['<%%= config.testDir %>/client/scripts/{,*/}*.js'],
             tasks: ['newer:jshint:server', 'newer:copy:test']
           },
-          // reload (client)
+          // transform tasks (test)
+          <% if (includeCoffee) { %>testCoffee: {
+            files: [
+              '<%%= config.testDir %>/client/scripts/{,*/}*.coffee',
+              '<%%= config.testDir %>/server/scripts/{,*/}*.coffee'
+            ],
+            tasks: ['newer:coffee:test']
+          },
+          <% } %>// reload (client)
           livereload: {
             scope: 'develop',
             files: [
@@ -507,7 +558,7 @@ module.exports = function(grunt) {
       switch (arg) {
         case 'files':
           var testFiles = this.filesSrc;
-          console.log('target=', this.target, 'testFiles=', testFiles);
+          console.log('target=%s testFiles=', this.target, testFiles);
           grunt.config.set(configBase + '.client.testFiles', testFiles);
           break;
         case 'single':
@@ -541,7 +592,8 @@ module.exports = function(grunt) {
     }  
     grunt.task.run([
       'copy:test',
-      'template:test',
+      'template:test',<% if (includeCoffee) { %>
+      'coffee:test',<% } %>
       'express:test:start',
     ]);
     if (targets.single) {
