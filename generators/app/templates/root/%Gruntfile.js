@@ -13,6 +13,8 @@ var _ = require('lodash');
 
 module.exports = function(grunt) {
 
+  process.env.TARGET = process.env.TARGET || 'develop';
+
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
 
@@ -353,86 +355,99 @@ module.exports = function(grunt) {
       ],
     },
 
-    // Watches files for changes and runs tasks based on the changed files
-    watch: {
-      bower: {
-        files: ['bower.json'],
-        tasks: ['wiredep']
-      },
-      gruntfile: {
-        files: ['Gruntfile.js'],
-        tasks: ['jshint:root']
-      },
+    watch: {},
 
-      // copy tasks (client)
-      clientScripts: {
-        files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:client', 'newer:copy:client', 'newer:template:client']
-      },
-      clientStyles: {
-        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.css'],
-        tasks: ['newer:copy:client', 'autoprefixer']
-      },
-      clientImages: {
-        files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
-        tasks: ['newer:copy:client']
-      },
-      clientPages: {
-        files: ['<%%= config.clientSrcDir %>/pages/{,*/}*'],
-        tasks: ['newer:copy:client']
-      },
-      // transform tasks (client)
-      clientSass: {
-        files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
-        tasks: ['sass:client', 'autoprefixer']
-      },
-      clientJade: {
-        files: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
-        tasks: ['jade:client']
-      },
-      // copy tasks (server)
-      serverScripts: {
-        files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:server', 'newer:copy:server']
-      },
-      serverViews: {
-        files: ['<%%= config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
-        tasks: ['newer:copy:server']
-      },
-      // transform tasks (server)
-      // copy tasks (test)
-      testScripts: {
-        files: ['<%%= config.testDir %>/client/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:server', 'newer:copy:test']
-      },
-      // reload (client)
-      livereload: {
-        files: [
-          '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
-          '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
-          '<%%= config.clientTgtDir %>/images/{,*/}*'
-        ],
-        options: {
-          livereload: '<%%= config.livereload %>'
+    // Watches files for changes and runs tasks based on the changed files
+    setupWatch: {
+      all: {
+        tasks: {
+          bower: {
+            files: ['bower.json'],
+            tasks: ['wiredep']
+          },
+          gruntfile: {
+            files: ['Gruntfile.js'],
+            tasks: ['jshint:root']
+          },
+
+          // copy tasks (client)
+          clientScripts: {
+            files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
+            tasks: ['newer:jshint:client', 'newer:copy:client', 'newer:template:client']
+          },
+          clientStyles: {
+            files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.css'],
+            tasks: ['newer:copy:client', 'autoprefixer']
+          },
+          clientImages: {
+            files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
+            tasks: ['newer:copy:client']
+          },
+          clientPages: {
+            files: ['<%%= config.clientSrcDir %>/pages/{,*/}*'],
+            tasks: ['newer:copy:client']
+          },
+          // transform tasks (client)
+          clientSass: {
+            files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
+            tasks: ['sass:client', 'autoprefixer']
+          },
+          clientJade: {
+            files: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
+            tasks: ['jade:client']
+          },
+          // copy tasks (server)
+          serverScripts: {
+            files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js'],
+            tasks: ['newer:jshint:server', 'newer:copy:server']
+          },
+          serverViews: {
+            files: ['<%%= config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
+            tasks: ['newer:copy:server']
+          },
+          // transform tasks (server)
+          // copy tasks (test)
+          testScripts: {
+            scope: 'test',
+            files: ['<%%= config.testDir %>/client/scripts/{,*/}*.js'],
+            tasks: ['newer:jshint:server', 'newer:copy:test']
+          },
+          // reload (client)
+          livereload: {
+            scope: 'develop',
+            files: [
+              '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
+              '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
+              '<%%= config.clientTgtDir %>/images/{,*/}*'
+            ],
+            options: {
+              livereload: '<%%= config.livereload %>'
+            }
+          },
+          // reload (server)
+          express: {
+            files: [
+              '<%%= config.serverTgtDir %>/scripts/{,*/}*.js',
+              '<%%= config.serverTgtDir %>/views/{,*/}*.{jade,html}',
+            ],
+            tasks: ['express:develop:start'],
+            options: {
+              spawn: false,
+              livereload: '<%%= config.livereload %>'
+            }
+          },
+          // reload (karma)
+          karma: {
+            scope: 'test',
+            files: [
+              // '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
+              '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
+              '<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js'
+            ],
+            tasks: ['karma:all:run']
+          }
         }
-      },
-      // reload (server)
-      express: {
-        files: [
-          '<%%= config.serverTgtDir %>/scripts/{,*/}*.js',
-          '<%%= config.serverTgtDir %>/views/{,*/}*.{jade,html}',
-        ],
-        tasks: ['express:develop:start'],
-        options: {
-          spawn: false,
-          livereload: '<%%= config.livereload %>'
-        }
-      },
-      // reload (karma)
-      karma: {
-        files: ['<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js'],
-        tasks: ['karma:all:run']
-      }
+      }         
     },
   });
 
@@ -452,9 +467,38 @@ module.exports = function(grunt) {
       'jshint',
       'concurrent:makeTarget',
       'express:develop:start',
+      'setupWatch',
       'watch'
     ]);
   });
+
+  grunt.registerMultiTask('setupWatch', function() {
+    var tasks = this.data.tasks;
+    var targetScope = process.env.TARGET;
+    // console.log('tasks=', tasks);
+    tasks = _.transform(tasks, function(tasks, task, name) {
+      var ok;
+      var scope = task.scope;
+      if (!scope) {
+        ok = true;
+      } else {
+        if (_.isString(scope)) {
+          scope = scope.split(',').map(_.trim);
+        }
+        if (_.isArray(scope)) {
+          if (_.indexOf(scope, targetScope) >= 0) {
+            ok = true;
+          }
+        }
+      }
+      if (ok) {
+        tasks[name] = _.omit(task, 'scope');
+      }
+    });
+    // console.log('..tasks=', tasks);
+    grunt.config.set('watch', tasks);
+  });
+
 
   grunt.registerMultiTask('setupKarma', function() {
     var configBase = 'karma.' + this.target;
@@ -510,18 +554,21 @@ module.exports = function(grunt) {
       grunt.task.run([
         'setupKarma:all:files:back',
         'karma:all',
+        'setupWatch',
         'watch'
       ]);
     }
   });
 
-  grunt.registerTask('showConfig', function() {
-    console.log('config=', grunt.config('config'));
-  });
-
   grunt.registerTask('switchTarget', function(name) {
     process.env.TARGET = name;
   });
+
+  grunt.registerTask('showConfig', function(name) {
+    name = name || 'config';
+    console.log('config("%s")=', name, grunt.config(name));
+  });
+
 
   grunt.registerTask('build', function() {
     grunt.task.run([
