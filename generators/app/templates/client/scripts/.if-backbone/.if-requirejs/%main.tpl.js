@@ -6,8 +6,8 @@ var vendorBaseUrl = '<%%= vendorBaseUrl %>';
 require.config({
   paths: {
     jquery:     vendorBaseUrl + '/jquery/dist/jquery',
-    underscore: vendorBaseUrl + '/lodash/dist/lodash'<% if (includeBackbone) { %>,
-    backbone:   vendorBaseUrl + '/backbone/backbone'<% } %><% if (includeBootstrap) { %>,
+    underscore: vendorBaseUrl + '/lodash/dist/lodash'<% if (use.backbone) { %>,
+    backbone:   vendorBaseUrl + '/backbone/backbone'<% } %><% if (use.bootstrap) { %>,
     bootstrap:  vendorBaseUrl + '/bootstrap-sass-official/assets/javascripts/bootstrap'<% } %>,
     jade:       vendorBaseUrl + '/jade/runtime',
     // mocha:          vendorBaseUrl + '/mocha/mocha',
@@ -23,7 +23,7 @@ require.config({
 });
 
 require([
-  'app'<% if (includeBootstrap) { %>,
+  'app'<% if (use.bootstrap) { %>,
   'bootstrap'<% } %>
 ], function (App) {
   App.initialize();

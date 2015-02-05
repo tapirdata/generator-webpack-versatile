@@ -24,24 +24,24 @@ block content
         a.btn.btn-lg.btn-success(href='#') Splendid!
 
     .row.marketing
-      .col-lg-6<% if (includeBackbone) { %>
+      .col-lg-6<% if (use.backbone) { %>
         h4 Backbone
         p
           | Backbone.js gives structure to web applications by providing models with key-value binding and custom events, collections
           | with a rich API of enumerable functions, views with declarative event handling, and connects it all to your existing API over a RESTful JSON interface.
-        <% } %><% if (includeBootstrap) { %>
+        <% } %><% if (use.bootstrap) { %>
         h4 Bootstrap
         p 
           | Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.
-        <% } %><% if (includeModernizr) { %>
+        <% } %><% if (use.modernizr) { %>
         h4 Modernizr
         p 
           | Modernizr is a JavaScript library that detects HTML5 and CSS3 features in the user’s browser.
-        <% } %><% if (includeRequireJS) { %>
+        <% } %><% if (use.amd === 'requirejs') { %>
         h4 RequireJS
         p 
           | Modernizr is a JavaScript library that detects HTML5 and CSS3 features in the user’s browser.
-        <% } %><% if (includeSass) { %>
+        <% } %><% if (use.sass) { %>
         h4 Sass
         p 
           | Sass is the most mature, stable, and powerful professional grade CSS extension language in the world.

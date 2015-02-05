@@ -23,17 +23,19 @@ module.exports = function(grunt) {
 
   // Configurable paths
   var _config = {
-    bowerDir: JSON.parse(fs.readFileSync('./.bowerrc')).directory,
-    serverSrcDir: '<%= serverSrcDir %>',
-    clientSrcDir: '<%= clientSrcDir %>',
-    testDir:      '<%= testDir %>',
-    // targets
-    tmpDevDir :   '<%= tmpDevDir  %>',
-    tmpTestDir:   '<%= tmpTestDir %>',
-    distDir:      '<%= distDir %>',
-    tgtDir:       '<%%= process.env.TARGET === "dist" ? config.distDir : (process.env.TARGET === "test" ? config.tmpTestDir : config.tmpDevDir) %>',
-    serverTgtDir: '<%%= config.tgtDir %>/server',
-    clientTgtDir: '<%%= config.tgtDir %>/client',
+    dirs: {
+      bower: JSON.parse(fs.readFileSync('./.bowerrc')).directory,
+      serverSrc: '<%= dirs.serverSrc %>',
+      clientSrc: '<%= dirs.clientSrc %>',
+      test:      '<%= dirs.test %>',
+      // targets
+      tmpDev :   '<%= dirs.tmpDev  %>',
+      tmpTest:   '<%= dirs.tmpTest %>',
+      dist:      '<%= dirs.dist %>',
+      tgt:       '<%%= process.env.TARGET === "dist" ? config.dirs.dist : (process.env.TARGET === "test" ? config.dirs.tmpTest : config.dirs.tmpDev) %>',
+      serverTgt: '<%%= config.dirs.tgt %>/server',
+      clientTgt: '<%%= config.dirs.tgt %>/client',
+    },  
     // options
     serverPort:   '<%%= process.env.TARGET === "dist" ? 8000 : (process.env.TARGET === "test" ? 8001 : 8002) %>',
     livereload: true  // use default port 35729
@@ -48,8 +50,8 @@ module.exports = function(grunt) {
     // Empties folders to start fresh
     clean: {
       target: [
-        '<%%= config.clientTgtDir %>/*',
-        '<%%= config.serverTgtDir %>/*',
+        '<%%= config.dirs.clientTgt %>/*',
+        '<%%= config.dirs.serverTgt %>/*',
       ]
     },
 
@@ -66,17 +68,17 @@ module.exports = function(grunt) {
       },
       server: {
         files: {
-          src: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js']
+          src: ['<%%= config.dirs.serverSrc %>/scripts/{,*/}*.js']
         }
       },
       client: {
         files: {
-          src: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js']
+          src: ['<%%= config.dirs.clientSrc %>/scripts/{,*/}*.js']
         }
       },
       test: {
         files: {
-          src: ['<%%= config.testDir %>/client/scripts/{,*/}*.js']
+          src: ['<%%= config.dirs.test %>/client/scripts/{,*/}*.js']
         }
       }
     },
@@ -84,18 +86,18 @@ module.exports = function(grunt) {
     // Automatically inject Bower components into the app
     wiredep: {
       sass: {
-        src: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,3}<%%= config.bowerDir %>\//
+        src: ['<%%= config.dirs.clientSrc %>/styles/{,*/}*.{scss,sass}'],
+        ignorePath: /(\.\.\/){1,3}<%%= config.dirs.bower %>\//
       }
     },
 
-    <% if (includeCoffee) { %>coffee: {
+    <% if (use.coffee) { %>coffee: {
       client: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientSrcDir %>/scripts',
+          cwd: '<%%= config.dirs.clientSrc %>/scripts',
           src: ['{,*/}*.coffee'],
-          dest: '<%%= config.clientTgtDir %>/scripts',
+          dest: '<%%= config.dirs.clientTgt %>/scripts',
           extDot: 'last',
           ext: '.js'
         }]
@@ -103,9 +105,9 @@ module.exports = function(grunt) {
       server: {
         files: [{
           expand: true,
-          cwd: '<%%= config.serverSrcDir %>/scripts',
+          cwd: '<%%= config.dirs.serverSrc %>/scripts',
           src: ['{,*/}*.coffee'],
-          dest: '<%%= config.serverTgtDir %>/scripts',
+          dest: '<%%= config.dirs.serverTgt %>/scripts',
           extDot: 'last',
           ext: '.js'
         }]
@@ -113,9 +115,9 @@ module.exports = function(grunt) {
       test: {
         files: [{
           expand: true,
-          cwd: '<%%= config.testDir %>/client/scripts',
+          cwd: '<%%= config.dirs.test %>/client/scripts',
           src: ['{,*/}*.coffee'],
-          dest: '<%%= config.clientTgtDir %>/test/scripts/',
+          dest: '<%%= config.dirs.clientTgt %>/test/scripts/',
           extDot: 'last',
           ext: '.js'
         }]
@@ -126,24 +128,24 @@ module.exports = function(grunt) {
     sass: {
       options: {
         loadPath: [
-          '<%%= config.bowerDir %>'
+          '<%%= config.dirs.bower %>'
         ]
       },
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientSrcDir %>/styles',
+          cwd: '<%%= config.dirs.clientSrc %>/styles',
           src: ['*.scss'],
-          dest: '<%%= config.clientTgtDir %>/styles',
+          dest: '<%%= config.dirs.clientTgt %>/styles',
           ext: '.css'
         }]
       },
       client: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientSrcDir %>/styles',
+          cwd: '<%%= config.dirs.clientSrc %>/styles',
           src: ['*.scss'],
-          dest: '<%%= config.clientTgtDir %>/styles',
+          dest: '<%%= config.dirs.clientTgt %>/styles',
           ext: '.css'
         }]
       }
@@ -155,14 +157,14 @@ module.exports = function(grunt) {
           client: true,
           amd: true,
           processName: function(filename) {
-            filename = path.relative(path.join(grunt.config('config.clientSrcDir'), 'templates'), filename);
+            filename = path.relative(path.join(grunt.config('config.dirs.clientSrc'), 'templates'), filename);
             filename = filename.substr(0, filename.lastIndexOf('.'));
             return filename;
           }
         },
         files: [{
-          src: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
-          dest: '<%%= config.clientTgtDir %>/scripts/templates.js'
+          src: ['<%%= config.dirs.clientSrc %>/templates/{,*/}*.jade'],
+          dest: '<%%= config.dirs.clientTgt %>/scripts/templates.js'
         }]
       }
     },
@@ -172,12 +174,12 @@ module.exports = function(grunt) {
     // reference in your app
     modernizr: {
       dist: {
-        devFile: '<%%= config.bowerDir %>/modernizr/modernizr.js',
-        outputFile: '<%%= config.clientTgtDir %>/scripts/modernizr-custom.js',
+        devFile: '<%%= config.dirs.bower %>/modernizr/modernizr.js',
+        outputFile: '<%%= config.dirs.clientTgt %>/scripts/modernizr-custom.js',
         files: {
           src: [
-            '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
-            '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
+            '<%%= config.dirs.clientTgt %>/scripts/{,*/}*.js',
+            '<%%= config.dirs.clientTgt %>/styles/{,*/}*.css',
           ]
         },
         uglify: true
@@ -191,29 +193,29 @@ module.exports = function(grunt) {
           {
             expand: true,
             dot: true,
-            cwd: '<%%= config.clientSrcDir %>/images',
-            dest: '<%%= config.clientTgtDir %>/images/',
+            cwd: '<%%= config.dirs.clientSrc %>/images',
+            dest: '<%%= config.dirs.clientTgt %>/images/',
             src: '{,*/}*'
           },
           {
             expand: true,
             dot: true,
-            cwd: '<%%= config.clientSrcDir %>/pages',
-            dest: '<%%= config.clientTgtDir %>/pages/',
+            cwd: '<%%= config.dirs.clientSrc %>/pages',
+            dest: '<%%= config.dirs.clientTgt %>/pages/',
             src: '{,*/}*'
           },
           {
             expand: true,
             dot: true,
-            cwd: '<%%= config.clientSrcDir %>/styles',
-            dest: '<%%= config.clientTgtDir %>/styles/',
+            cwd: '<%%= config.dirs.clientSrc %>/styles',
+            dest: '<%%= config.dirs.clientTgt %>/styles/',
             src: '{,*/}*.css'
           },
           {
             expand: true,
             dot: true,
-            cwd: '<%%= config.clientSrcDir %>/scripts',
-            dest: '<%%= config.clientTgtDir %>/scripts/',
+            cwd: '<%%= config.dirs.clientSrc %>/scripts',
+            dest: '<%%= config.dirs.clientTgt %>/scripts/',
             src: ['{,*/}*.js', '!{,*/}*.tpl.js']
           },
         ]
@@ -223,15 +225,15 @@ module.exports = function(grunt) {
           {
             expand: true,
             dot: true,
-            cwd: '<%%= config.serverSrcDir %>/scripts',
-            dest: '<%%= config.serverTgtDir %>/scripts/',
+            cwd: '<%%= config.dirs.serverSrc %>/scripts',
+            dest: '<%%= config.dirs.serverTgt %>/scripts/',
             src: '{,*/}*.js'
           },
           {
             expand: true,
             dot: true,
-            cwd: '<%%= config.serverSrcDir %>/views',
-            dest: '<%%= config.serverTgtDir %>/views/',
+            cwd: '<%%= config.dirs.serverSrc %>/views',
+            dest: '<%%= config.dirs.serverTgt %>/views/',
             src: '{,*/}*.{html,jade}'
           }
         ]
@@ -241,8 +243,8 @@ module.exports = function(grunt) {
           {
             expand: true,
             dot: true,
-            cwd: '<%%= config.testDir %>/client/scripts',
-            dest: '<%%= config.clientTgtDir %>/test/scripts/',
+            cwd: '<%%= config.dirs.test %>/client/scripts',
+            dest: '<%%= config.dirs.clientTgt %>/test/scripts/',
             src: ['{,*/}*.js', '!{,*/}*.tpl.js']
           }
         ]  
@@ -261,8 +263,8 @@ module.exports = function(grunt) {
           { 
             expand: true,
             dot: true,
-            cwd: '<%%= config.clientSrcDir %>/scripts',
-            dest: '<%%= config.clientTgtDir %>/scripts/',
+            cwd: '<%%= config.dirs.clientSrc %>/scripts',
+            dest: '<%%= config.dirs.clientTgt %>/scripts/',
             src: ['{,*/}*.tpl.js'],
             ext: '.js'
           }
@@ -271,7 +273,7 @@ module.exports = function(grunt) {
       test: {
         options: {
           data: {
-            testBaseUrl: '/base/<%%= config.clientTgtDir %>/test',
+            testBaseUrl: '/base/<%%= config.dirs.clientTgt %>/test',
             appBaseUrl: 'http://localhost:<%%= config.serverPort %>/app',
             vendorBaseUrl: 'http://localhost:<%%= config.serverPort %>/vendor'
           }
@@ -280,8 +282,8 @@ module.exports = function(grunt) {
           { 
             expand: true,
             dot: true,
-            cwd: '<%%= config.testDir %>/client/scripts',
-            dest: '<%%= config.clientTgtDir %>/test/scripts/',
+            cwd: '<%%= config.dirs.test %>/client/scripts',
+            dest: '<%%= config.dirs.clientTgt %>/test/scripts/',
             src: ['{,*/}*.tpl.js'],
             ext: '.js'
           }
@@ -292,10 +294,10 @@ module.exports = function(grunt) {
     express: {
       develop: {
         options: {
-          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          script: './<%%= config.dirs.serverTgt %>/scripts/startapp.js',
           args: [
-            '--vendorDir',  '<%%= config.bowerDir %>', 
-            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--vendorDir',  '<%%= config.dirs.bower %>', 
+            '--clientDir',  '<%%= config.dirs.clientTgt %>',
             '--port',       '<%%= config.serverPort %>',
             '--livereload', '<%%= config.livereload %>'
           ]
@@ -303,20 +305,20 @@ module.exports = function(grunt) {
       },
       test: {
         options: {
-          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          script: './<%%= config.dirs.serverTgt %>/scripts/startapp.js',
           args: [
-            '--vendorDir',  '<%%= config.bowerDir %>', 
-            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--vendorDir',  '<%%= config.dirs.bower %>', 
+            '--clientDir',  '<%%= config.dirs.clientTgt %>',
             '--port',       '<%%= config.serverPort %>',
           ]
         }
       },
       dist: {
         options: {
-          script: './<%%= config.serverTgtDir %>/scripts/startapp.js',
+          script: './<%%= config.dirs.serverTgt %>/scripts/startapp.js',
           args: [
-            '--vendorDir',  '<%%= config.bowerDir %>', 
-            '--clientDir',  '<%%= config.clientTgtDir %>',
+            '--vendorDir',  '<%%= config.dirs.bower %>', 
+            '--clientDir',  '<%%= config.dirs.clientTgt %>',
             '--port',       '<%%= config.serverPort %>',
           ]
         }
@@ -327,7 +329,7 @@ module.exports = function(grunt) {
       all: {
         files: [
           {
-            cwd: '<%%= config.clientTgtDir %>/test/scripts',
+            cwd: '<%%= config.dirs.clientTgt %>/test/scripts',
             src: '**/*.test.js',
           }
         ]
@@ -338,16 +340,16 @@ module.exports = function(grunt) {
       all: {
         files: [
           { 
-            src: '<%%= config.clientTgtDir %>/test/scripts/main.js',
+            src: '<%%= config.dirs.clientTgt %>/test/scripts/main.js',
           },
           {
-            src: '<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js',
+            src: '<%%= config.dirs.clientTgt %>/test/scripts/{,*/}*.js',
             included: false
           },
         ],
         frameworks: [
-          'mocha'<% if (includeRequireJS) { %>,
-          'requirejs'<% } %><% if (includeCurlJS) { %>,
+          'mocha'<% if (use.amd === 'requirejs') { %>,
+          'requirejs'<% } %><% if (use.amd === 'curl') { %>,
           'curl-amd'<% } %>
         ],
         browsers: [
@@ -370,22 +372,22 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%%= config.clientTgtDir %>/styles/',
+          cwd: '<%%= config.dirs.clientTgt %>/styles/',
           src: '{,*/}*.css',
-          dest: '<%%= config.clientTgtDir %>/styles/'
+          dest: '<%%= config.dirs.clientTgt %>/styles/'
         }]
       }
     },
 
     // Run some tasks in parallel to speed up build process
     concurrent: {
-      makeTarget: [<% if (includeSass) { %>
+      makeTarget: [<% if (use.sass) { %>
         'sass:client',<% } %>
         'jade:client',
-        'copy:client',<% if (includeCoffee) { %>
+        'copy:client',<% if (use.coffee) { %>
         'coffee:client',<% } %>
         'template:client',
-        'copy:server',<% if (includeCoffee) { %>
+        'copy:server',<% if (use.coffee) { %>
         'coffee:server',<% } %>
       ],
     },
@@ -407,59 +409,59 @@ module.exports = function(grunt) {
 
           // copy tasks (client)
           clientScripts: {
-            files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.js'],
+            files: ['<%%= config.dirs.clientSrc %>/scripts/{,*/}*.js'],
             tasks: ['newer:jshint:client', 'newer:copy:client', 'newer:template:client']
           },
           clientStyles: {
-            files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.css'],
+            files: ['<%%= config.dirs.clientSrc %>/styles/{,*/}*.css'],
             tasks: ['newer:copy:client', 'autoprefixer']
           },
           clientImages: {
-            files: ['<%%= config.clientSrcDir %>/images/{,*/}*'],
+            files: ['<%%= config.dirs.clientSrc %>/images/{,*/}*'],
             tasks: ['newer:copy:client']
           },
           clientPages: {
-            files: ['<%%= config.clientSrcDir %>/pages/{,*/}*'],
+            files: ['<%%= config.dirs.clientSrc %>/pages/{,*/}*'],
             tasks: ['newer:copy:client']
           },
           // transform tasks (client)
-          <% if (includeCoffee) { %>clientCoffee: {
-            files: ['<%%= config.clientSrcDir %>/scripts/{,*/}*.coffee'],
+          <% if (use.coffee) { %>clientCoffee: {
+            files: ['<%%= config.dirs.clientSrc %>/scripts/{,*/}*.coffee'],
             tasks: ['newer:coffee:client']
           },
           <% } %>clientSass: {
-            files: ['<%%= config.clientSrcDir %>/styles/{,*/}*.{scss,sass}'],
+            files: ['<%%= config.dirs.clientSrc %>/styles/{,*/}*.{scss,sass}'],
             tasks: ['sass:client', 'autoprefixer']
           },
           clientJade: {
-            files: ['<%%= config.clientSrcDir %>/templates/{,*/}*.jade'],
+            files: ['<%%= config.dirs.clientSrc %>/templates/{,*/}*.jade'],
             tasks: ['jade:client']
           },
           // copy tasks (server)
           serverScripts: {
-            files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.js'],
+            files: ['<%%= config.dirs.serverSrc %>/scripts/{,*/}*.js'],
             tasks: ['newer:jshint:server', 'newer:copy:server']
           },
           serverViews: {
-            files: ['<%%= config.serverSrcDir %>/views/{,*/}*.{jade,html}'],
+            files: ['<%%= config.dirs.serverSrc %>/views/{,*/}*.{jade,html}'],
             tasks: ['newer:copy:server']
           },
           // transform tasks (server)
-          <% if (includeCoffee) { %>serverCoffee: {
-            files: ['<%%= config.serverSrcDir %>/scripts/{,*/}*.coffee'],
+          <% if (use.coffee) { %>serverCoffee: {
+            files: ['<%%= config.dirs.serverSrc %>/scripts/{,*/}*.coffee'],
             tasks: ['newer:coffee:server']
           },
           <% } %>// copy tasks (test)
           testScripts: {
             scope: 'test',
-            files: ['<%%= config.testDir %>/client/scripts/{,*/}*.js'],
+            files: ['<%%= config.dirs.test %>/client/scripts/{,*/}*.js'],
             tasks: ['newer:jshint:server', 'newer:copy:test']
           },
           // transform tasks (test)
-          <% if (includeCoffee) { %>testCoffee: {
+          <% if (use.coffee) { %>testCoffee: {
             files: [
-              '<%%= config.testDir %>/client/scripts/{,*/}*.coffee',
-              '<%%= config.testDir %>/server/scripts/{,*/}*.coffee'
+              '<%%= config.dirs.test %>/client/scripts/{,*/}*.coffee',
+              '<%%= config.dirs.test %>/server/scripts/{,*/}*.coffee'
             ],
             tasks: ['newer:coffee:test']
           },
@@ -467,9 +469,9 @@ module.exports = function(grunt) {
           livereload: {
             scope: 'develop',
             files: [
-              '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
-              '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
-              '<%%= config.clientTgtDir %>/images/{,*/}*'
+              '<%%= config.dirs.clientTgt %>/styles/{,*/}*.css',
+              '<%%= config.dirs.clientTgt %>/scripts/{,*/}*.js',
+              '<%%= config.dirs.clientTgt %>/images/{,*/}*'
             ],
             options: {
               livereload: '<%%= config.livereload %>'
@@ -478,8 +480,8 @@ module.exports = function(grunt) {
           // reload (server)
           express: {
             files: [
-              '<%%= config.serverTgtDir %>/scripts/{,*/}*.js',
-              '<%%= config.serverTgtDir %>/views/{,*/}*.{jade,html}',
+              '<%%= config.dirs.serverTgt %>/scripts/{,*/}*.js',
+              '<%%= config.dirs.serverTgt %>/views/{,*/}*.{jade,html}',
             ],
             tasks: ['express:develop:start'],
             options: {
@@ -491,9 +493,9 @@ module.exports = function(grunt) {
           karma: {
             scope: 'test',
             files: [
-              // '<%%= config.clientTgtDir %>/styles/{,*/}*.css',
-              '<%%= config.clientTgtDir %>/scripts/{,*/}*.js',
-              '<%%= config.clientTgtDir %>/test/scripts/{,*/}*.js'
+              // '<%%= config.dirs.clientTgt %>/styles/{,*/}*.css',
+              '<%%= config.dirs.clientTgt %>/scripts/{,*/}*.js',
+              '<%%= config.dirs.clientTgt %>/test/scripts/{,*/}*.js'
             ],
             tasks: ['karma:all:run']
           }
@@ -592,7 +594,7 @@ module.exports = function(grunt) {
     }  
     grunt.task.run([
       'copy:test',
-      'template:test',<% if (includeCoffee) { %>
+      'template:test',<% if (use.coffee) { %>
       'coffee:test',<% } %>
       'express:test:start',
     ]);

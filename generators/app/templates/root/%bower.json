@@ -1,14 +1,14 @@
 {
   "name": "<%= _.slugify(appname) %>",
   "version": "0.0.0",
-  "dependencies": {<% if (includeBackbone) { %>
-    "backbone": "~1.1.2",<% } %><% if (includeBootstrap && !includeSass) { %>
-    "bootstrap": "~3.3.1",<% } %><% if (includeBootstrap && includeSass) { %>
-    "bootstrap-sass-official": "~3.3.1",<% } %><% if (includeCurlJS) { %>
+  "dependencies": {<% if (use.backbone) { %>
+    "backbone": "~1.1.2",<% } %><% if (use.bootstrap && !use.sass) { %>
+    "bootstrap": "~3.3.1",<% } %><% if (use.bootstrap && use.sass) { %>
+    "bootstrap-sass-official": "~3.3.1",<% } %><% if (use.amd === 'curl') { %>
     "curl": "~0.8.12",<% } %>
     "jade": "~1.9.0",
     "jquery": "~1.11.0",
-    "modernizr": "~2.8.3",<% if (includeRequireJS) { %>
+    "modernizr": "~2.8.3",<% if (use.amd === 'requirejs') { %>
     "requirejs": "~2.1.14",<% } %>
     "lodash": "~2.4.1",
     "poly": "~0.6.0",
