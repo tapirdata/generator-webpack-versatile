@@ -58,7 +58,7 @@ module.exports = function(grunt) {
     // Make sure code styles are up to par and there are no obvious mistakes
     jshint: {
       options: {
-        jshintrc: '.jshintrc',
+        jshintrc: 'jshint.json',
         reporter: require('jshint-stylish')
       },
       root: {
@@ -82,6 +82,27 @@ module.exports = function(grunt) {
         }
       }
     },
+
+    <% if (use.coffee) { %>coffeelint: {
+      options: {
+        configFile: 'coffeelint.json'
+      },
+      server: {
+        files: {
+          src: ['<%%= config.dirs.serverSrc %>/scripts/{,*/}*.coffee']
+        }
+      },
+      client: {
+        files: {
+          src: ['<%%= config.dirs.clientSrc %>/scripts/{,*/}*.coffee']
+        }
+      },
+      test: {
+        files: {
+          src: ['<%%= config.dirs.test %>/client/scripts/{,*/}*.coffee']
+        }
+      }
+    },<% } %>
 
     // Automatically inject Bower components into the app
     wiredep: {
@@ -427,7 +448,7 @@ module.exports = function(grunt) {
           // transform tasks (client)
           <% if (use.coffee) { %>clientCoffee: {
             files: ['<%%= config.dirs.clientSrc %>/scripts/{,*/}*.coffee'],
-            tasks: ['newer:coffee:client']
+            tasks: ['newer:coffeelint:client', 'newer:coffee:client']
           },
           <% } %>clientSass: {
             files: ['<%%= config.dirs.clientSrc %>/styles/{,*/}*.{scss,sass}'],
@@ -449,7 +470,7 @@ module.exports = function(grunt) {
           // transform tasks (server)
           <% if (use.coffee) { %>serverCoffee: {
             files: ['<%%= config.dirs.serverSrc %>/scripts/{,*/}*.coffee'],
-            tasks: ['newer:coffee:server']
+            tasks: ['newer:coffeelint:server', 'newer:coffee:server']
           },
           <% } %>// copy tasks (test)
           testScripts: {
@@ -459,11 +480,12 @@ module.exports = function(grunt) {
           },
           // transform tasks (test)
           <% if (use.coffee) { %>testCoffee: {
+            scope: 'test',
             files: [
               '<%%= config.dirs.test %>/client/scripts/{,*/}*.coffee',
               '<%%= config.dirs.test %>/server/scripts/{,*/}*.coffee'
             ],
-            tasks: ['newer:coffee:test']
+            tasks: ['newer:coffeelint:test', 'newer:coffee:test']
           },
           <% } %>// reload (client)
           livereload: {
@@ -517,7 +539,8 @@ module.exports = function(grunt) {
     grunt.task.run([
       'clean:target',
       'wiredep',
-      'jshint',
+      'jshint',<% if (use.coffee) { %>
+      'coffeelint',<% } %>
       'concurrent:makeTarget',
       'express:develop:start',
       'setupWatch',
@@ -585,6 +608,8 @@ module.exports = function(grunt) {
     }
     grunt.task.run([
       'switchTarget:test',
+      'jshint',<% if (use.coffee) { %>
+      'coffeelint',<% } %>
     ]);
     if (!targets.fast) {
       grunt.task.run([
@@ -634,7 +659,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', [
-    'newer:jshint',
     'test',
     'build'
   ]);

@@ -3,7 +3,7 @@
 ### global define ###
 
 define [ './router' ], (Router) ->
-  App = 
+  App =
     initialize: ->
       console.log 'App.initialize'
       new Router(app: this)

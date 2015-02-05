@@ -3,7 +3,7 @@
 http = require('http')
 argv = require('optimist').argv
 # console.log('argv=', argv);
-options = 
+options =
   port: argv.port or 9999
   livereload: if argv.livereload == 'true' then 35729 else argv.livereload
   clientDir: argv.clientDir
