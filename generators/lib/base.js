@@ -3,6 +3,9 @@
 var path = require('path');
 var _ = require('lodash');
 var yeoman = require('yeoman-generator');
+var coffeeScript = require('coffee-script');
+
+
 var BranchFinder = require('../.././lib/branch-finder');
 
 var BaseGenerator = yeoman.generators.Base.extend({
@@ -28,6 +31,19 @@ var BaseGenerator = yeoman.generators.Base.extend({
         tgt: '$1',
         fn: function(s) {
           return self.engine(s, self.config.getAll());
+        }
+      }
+    },
+    decoffee: function() {
+      var self = this;
+      return {
+        name: 'decoffee',
+        src: /(.*).coffee$/,
+        tgt: '$1.js',
+        fn: function(s) {
+          return coffeeScript.compile(s, {
+            bare: true
+          });
         }
       }
     }
@@ -58,6 +74,9 @@ var BaseGenerator = yeoman.generators.Base.extend({
 
   _branchCopy: function (source, target, pattern) {
     var transNames = ['template'];
+    if (!this.config.get('use').coffee) {
+      transNames.push('decoffee');
+    }
     var srcBase = this.sourceRoot();
     var tgtBase = target || '';
     pattern = pattern || '**/*';
