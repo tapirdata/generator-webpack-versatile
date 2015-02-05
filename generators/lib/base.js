@@ -6,7 +6,7 @@ var yeoman = require('yeoman-generator');
 var coffeeScript = require('coffee-script');
 
 
-var BranchFinder = require('../.././lib/branch-finder');
+var BranchFinder = require('./branch-finder');
 
 var BaseGenerator = yeoman.generators.Base.extend({
 

@@ -1,4 +1,6 @@
 'use strict'
+# coffee quotes "static"
+###jshint quotmark: false ###
 path = require('path')
 express = require('express')
 routes = require('./routes/main')

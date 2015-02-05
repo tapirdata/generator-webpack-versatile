@@ -27,6 +27,7 @@ BranchFinder.prototype.getTi = function(srcName, opOptions) {
       if (transformer.fn) {
         transFns.push(transformer.fn);
       }  
+      srcName = tgtName;
     }
   });
   return {
