@@ -107,6 +107,7 @@ var BaseGenerator = yeoman.generators.Base.extend({
     var dirs = config.get('dirs');
     config.set('dirs', _.defaults(dirs, {
         bower:     options['bower-dir'],
+        src:       options['src-dir'],
         serverSrc: options['server-src-dir'],
         clientSrc: options['client-src-dir'],
         test:      options['test-dir'],

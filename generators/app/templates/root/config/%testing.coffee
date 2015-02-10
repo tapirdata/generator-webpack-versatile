@@ -1,7 +1,9 @@
 _config =
   dirs:
     tgt:
-      root: '.tmp/test'
+      root: '<%= dirs.tmpTest %>'
+  server:
+    port: 8002
 
 module.exports = _config
 

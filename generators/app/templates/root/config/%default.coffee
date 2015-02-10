@@ -1,14 +1,4 @@
-_config =
-  dirs: 
-    src:
-      root:   'src'
-      server: 'src/server'
-      client: 'src/client'
-    test:
-      root:   'test'
-      server: 'test/server'
-      client: 'test/client'
-
+_config = {}
 module.exports = _config
 
 

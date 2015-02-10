@@ -8,20 +8,26 @@ plugins = require('gulp-load-plugins')()
 runSequence = require 'run-sequence'
 through = require 'through2'
 
-
-# console.log 'NODE_ENV=', process.env.NODE_ENV
-# console.log 'config=', config
-
-dirs = _.clone config.dirs
-
-_.defaults dirs,
+dirs = 
   bower:  JSON.parse(fs.readFileSync './.bowerrc').directory
+  src: 
+    root:   '<%= dirs.src %>'
+    server: '<%= dirs.serverSrc %>'
+    client: '<%= dirs.clientSrc %>'
+  test:
+    root:   '<%= dirs.test %>'
+  tgt: _.clone(config.dirs.tgt) || {}
+
+_.defaults dirs.tgt,
+  root: '.tmp'
 
 _.defaults dirs.tgt,
   server: path.join dirs.tgt.root, 'server'
   client: path.join dirs.tgt.root, 'client'
 
 console.log 'dirs=', dirs
+
+serverPort = config.server.port || 8000
 
 renameTpl = (path) -> 
   path.basename = path.basename.replace /(.*)\.tpl/, '$1'
@@ -110,7 +116,7 @@ gulp.task 'make-client-templates', ->
 gulp.task 'serve', ->
   starter = require './' + dirs.tgt.server + '/scripts/startapp'
   starter
-    port: 8001
+    port: serverPort
     clientDir: dirs.tgt.client
     vendorDir: dirs.bower
 
