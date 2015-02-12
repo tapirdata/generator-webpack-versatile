@@ -36,10 +36,10 @@ serverPort = config.server.port || 8000
 runningServer = null
 
 startServer = (done) ->
-  if (global.runningServer)
+  done = done or ->
+  if global.runningServer
     console.log 'server already running'
-    if (done)
-      done()
+    done()
     return
   starter = require './' + dirs.tgt.server + '/scripts/startapp'
   runningServer = starter {
@@ -48,29 +48,26 @@ startServer = (done) ->
     vendorDir: dirs.bower
     }, -> 
       global.runningServer = runningServer
-      if (done)
-        done()
-      return
+      done()
 
 stopServer = (done) ->
-  if (runningServer)
+  done = done or ->
+  if runningServer
     global.runningServer.close ->
       console.log 'server stopped'
       global.runningServer = null
-      if (done)
-        done()
+      done()
       return
   else  
     console.log 'no server running'
-    if (done)
-      done()
+    done()
     return
 
 restartServer = (done) ->
+  done = done or ->
   stopServer ->
     startServer ->
-      if (done)
-        done()
+      done()
       return
 
 
@@ -98,7 +95,7 @@ scriptPipe = ->
     testBaseUrl: '/base/' + dirs.tgt.client + '/test'
   coffeeFilter = plugins.filter ['**/*.coffee']
   tplFilter = plugins.filter ['**/*.tpl.*']
-  lp = lazypipe()
+  do lazypipe()
   .pipe -> tplFilter
   .pipe plugins.template, tplData
   .pipe plugins.rename, renameTplPath
@@ -106,13 +103,12 @@ scriptPipe = ->
   .pipe -> coffeeFilter
   .pipe plugins.coffee
   .pipe coffeeFilter.restore
-  lp()
 
 
-postJade = (basePath) ->
+postJadeTemplate = (basePath) ->
   transform = (file, enc, callback) ->
-    if (!file.isBuffer())
-      this.push file
+    if not file.isBuffer()
+      @push file
       callback()
       return
     name = (path.relative basePath, file.path).replace /.js$/, ''
@@ -120,11 +116,12 @@ postJade = (basePath) ->
     to = 'templates[\'' + name + '\'] = function(';
     contents = file.contents.toString().replace(from, to);
     file.contents = new Buffer(contents);
-    this.push file
+    @push file
     callback()
+    return
   through.obj transform
 
-amdTemplates = ->
+amdJadeTemplates = ->
   return plugins.insert.wrap 'define([\'jade\'], function(jade) {\nvar templates={};\n', '\nreturn templates;\n})\n'
 
 gulp.task 'clean', ->
@@ -175,9 +172,9 @@ gulp.task 'build-client-templates', ->
   gulp.src ['**/*.jade'], cwd: srcpath
   .pipe(plugins.debug(title: 'client-jade'))
   .pipe plugins.jade client: true
-  .pipe postJade srcpath
+  .pipe postJadeTemplate srcpath
   .pipe plugins.concat 'templates.js'
-  .pipe amdTemplates()
+  .pipe amdJadeTemplates()
   .pipe gulp.dest dirs.tgt.client + '/scripts'
 
 gulp.task 'build-test-client-scripts', ->
