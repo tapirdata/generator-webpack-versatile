@@ -7,7 +7,6 @@ gulp = require 'gulp'
 gutil = require 'gulp-util'
 plugins = require('gulp-load-plugins')()
 runSequence = require 'run-sequence'
-through = require 'through2'
 lazypipe = require 'lazypipe'
 browserSync = require 'browser-sync'
 
@@ -113,7 +112,7 @@ scriptPipe = ->
 
 
 postJadeTemplate = (basePath) ->
-  through.obj (file, enc, callback) ->
+  return plugins.tap(file, t) ->
     if not file.isNull()
       name = path.relative(basePath, file.path).replace /.js$/, ''
       from = 'function template'
@@ -126,10 +125,8 @@ postJadeTemplate = (basePath) ->
           'postJadeTemplate'
           'streams are not supported yet'
         ) 
-        return  
-    @push file
-    callback()
-    return
+    return  
+
 
 amdJadeTemplates = ->
   return plugins.insert.wrap 'define([\'jade\'], function(jade) {\nvar templates={};\n', '\nreturn templates;\n})\n'
