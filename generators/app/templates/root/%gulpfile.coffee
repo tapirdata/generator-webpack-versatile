@@ -33,43 +33,49 @@ _.defaults dirs.tgt,
 
 # console.log 'dirs=', dirs
 
-serverPort = config.server.port || 8000
-runningServer = null
-
-startServer = (done) ->
-  done = done or ->
-  if runningServer
-    console.log 'server already running'
-    done()
-    return
-  starter = require './' + dirs.tgt.server + '/scripts/startapp'
-  server = starter {
-    port: serverPort
-    clientDir: dirs.tgt.client
-    vendorDir: dirs.bower
-    }, -> 
-      runningServer = server
-      done()
-
-stopServer = (done) ->
-  done = done or ->
-  if runningServer
-    runningServer.close ->
-      console.log 'server stopped'
-      runningServer = null
+si = 
+  port: config.server.port || 8000
+  server: null
+  isRunning: () ->
+    !! @server
+  start: (done) ->
+    done = done or ->
+    if @isRunning()
+      console.log 'server already running'
       done()
       return
-  else  
-    console.log 'no server running'
-    done()
-    return
+    starter = require './' + dirs.tgt.server + '/scripts/startapp'
+    server = starter {
+      port: @port
+      clientDir: dirs.tgt.client
+      vendorDir: dirs.bower
+      }, (err) => 
+        if not err
+          @server = server
+        done err
 
-restartServer = (done) ->
-  done = done or ->
-  stopServer ->
-    startServer ->
+  stop: (done) ->
+    done = done or ->
+    if @isRunning()
+      @server.close (err) =>
+        console.log 'server stopped'
+        @server = null
+        done err
+        return
+    else  
+      console.log 'no server running'
       done()
       return
+
+  restart: (done) ->
+    done = done or ->
+    @stop (err) =>
+      if err
+        done err
+      else  
+        @start (err) ->
+          done err
+          return
 
 
 SCRIPTS = '**/*.@(js|coffee)'
@@ -82,11 +88,11 @@ renameTplPath = (path) ->
   return
 
 mapScript = (p) -> 
-  diname = path.dirname(p)
+  dirname = path.dirname(p)
   extname = path.extname(p)
   basename = path.basename(p, extname)
-  basename = renameTpl basename + '.js'
-  path.join(dirname, basename)
+  basename = renameTpl basename
+  path.join(dirname, basename + '.js')
 
 
 scriptPipe = ->
@@ -190,13 +196,13 @@ gulp.task 'build-test-client-scripts', ->
 
 
 gulp.task 'serve', (done) ->
-  startServer done
+  si.start done
   return  
 
 
 gulp.task 'bs', (done) ->
   browserSync
-    proxy: 'localhost:' + serverPort
+    proxy: 'localhost:' + si.port
     done
 
 
@@ -222,15 +228,15 @@ gulp.task 'karma', ->
       'Chrome'
     ]
     proxies: 
-      '/vendor': 'http://localhost:' + serverPort + '/vendor'
-      '/app':    'http://localhost:' + serverPort + '/app'
+      '/vendor': 'http://localhost:' + si.port + '/vendor'
+      '/app':    'http://localhost:' + si.port + '/app'
     client: 
       testFiles: ['foo.test']
     singleRun: true  
 
   server.start karmaConf, (exitCode) ->  
     console.log 'karma done. code=%s', exitCode
-    stopServer()
+    si.stop()
 
 
 gulp.task 'build-server', [
@@ -257,7 +263,7 @@ gulp.task 'build', [
 
 gulp.task 'reload-server', ->
   console.log 'reload server...'
-  restartServer()
+  si.restart()
 
 gulp.task 'reload-client', ->
   console.log 'reload client...'
