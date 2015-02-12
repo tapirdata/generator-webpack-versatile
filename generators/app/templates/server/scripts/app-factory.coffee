@@ -9,7 +9,7 @@ robots = require('robots.txt')
 
 module.exports = (options) ->
   app = express()
-  app.set 'views', path.join(__dirname, '..', 'views')
+  app.set 'views', path.join(__dirname, '..', 'templates')
   app.set 'view engine', 'jade'
   app.locals.pretty = true
   app.use favicon(path.join(options.clientDir, 'images', 'favicon.ico'))
