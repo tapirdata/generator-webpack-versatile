@@ -4,6 +4,7 @@ path = require 'path'
 _ = require 'lodash'
 config = require 'config'
 gulp = require 'gulp'
+gutil = require 'gulp-util'
 plugins = require('gulp-load-plugins')()
 runSequence = require 'run-sequence'
 through = require 'through2'
@@ -81,11 +82,11 @@ renameTplPath = (path) ->
   return
 
 mapScript = (p) -> 
-  dir = path.dirname(p)
-  base = path.basename(p)
-  baseParts = base.match(/^(.*)\.(.*)$/)
-  base = renameTpl baseParts[1] + '.js'
-  path.join(dir, base)
+  diname = path.dirname(p)
+  extname = path.extname(p)
+  basename = path.basename(p, extname)
+  basename = renameTpl basename + '.js'
+  path.join(dirname, basename)
 
 
 scriptPipe = ->
@@ -106,20 +107,23 @@ scriptPipe = ->
 
 
 postJadeTemplate = (basePath) ->
-  transform = (file, enc, callback) ->
-    if not file.isBuffer()
-      @push file
-      callback()
-      return
-    name = (path.relative basePath, file.path).replace /.js$/, ''
-    from = 'function template(';
-    to = 'templates[\'' + name + '\'] = function(';
-    contents = file.contents.toString().replace(from, to);
-    file.contents = new Buffer(contents);
+  through.obj (file, enc, callback) ->
+    if not file.isNull()
+      name = path.relative(basePath, file.path).replace /.js$/, ''
+      from = 'function template'
+      to = 'templates[\'' + name + '\'] = function'
+      if file.isBuffer()
+        contents = file.contents.toString().replace(from, to)
+        file.contents = new Buffer(contents)
+      else  
+        callback new gutil.PluginError(
+          'postJadeTemplate'
+          'streams are not supported yet'
+        ) 
+        return  
     @push file
     callback()
     return
-  through.obj transform
 
 amdJadeTemplates = ->
   return plugins.insert.wrap 'define([\'jade\'], function(jade) {\nvar templates={};\n', '\nreturn templates;\n})\n'
@@ -190,9 +194,10 @@ gulp.task 'serve', (done) ->
   return  
 
 
-gulp.task 'bs', ->
+gulp.task 'bs', (done) ->
   browserSync
     proxy: 'localhost:' + serverPort
+    done
 
 
 gulp.task 'karma', ->
