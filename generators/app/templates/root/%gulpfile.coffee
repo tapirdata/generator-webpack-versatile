@@ -38,25 +38,25 @@ runningServer = null
 
 startServer = (done) ->
   done = done or ->
-  if global.runningServer
+  if runningServer
     console.log 'server already running'
     done()
     return
   starter = require './' + dirs.tgt.server + '/scripts/startapp'
-  runningServer = starter {
+  server = starter {
     port: serverPort
     clientDir: dirs.tgt.client
     vendorDir: dirs.bower
     }, -> 
-      global.runningServer = runningServer
+      runningServer = server
       done()
 
 stopServer = (done) ->
   done = done or ->
   if runningServer
-    global.runningServer.close ->
+    runningServer.close ->
       console.log 'server stopped'
-      global.runningServer = null
+      runningServer = null
       done()
       return
   else  
