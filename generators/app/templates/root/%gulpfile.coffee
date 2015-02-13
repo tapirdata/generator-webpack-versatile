@@ -39,7 +39,7 @@ si =
   start: (done) ->
     done = done or ->
     if @isActive()
-      console.log 'server already running!'
+      gutils.log 'server already running!'
       done()
       return
     starter = require './' + dirs.tgt.server + '/scripts/startapp'
@@ -56,12 +56,12 @@ si =
     done = done or ->
     if @isActive()
       @server.close (err) =>
-        # console.log 'server stopped.'
+        # gutils.log 'server stopped.'
         @server = null
         done err
         return
     else  
-      console.log 'no server running!'
+      gutils.log 'no server running!'
       done()
       return
 
@@ -106,9 +106,9 @@ ki =
         testFiles: ['foo.test']
       singleRun: singleRun  
 
-    # console.log 'karma start...'
+    # gutils.log 'karma start...'
     karma.server.start karmaConf, (exitCode) =>  
-      # console.log 'karma start done. code=%s', exitCode
+      # gutils.log 'karma start done. code=%s', exitCode
       @server = null
       if done
         done()
@@ -116,9 +116,9 @@ ki =
 
   run: _.debounce( 
     (done) ->
-      # console.log 'karma run...'
+      # gutils.log 'karma run...'
       karma.runner.run {}, (exitCode) ->  
-        # console.log 'karma run done. code=%s', exitCode
+        # gutils.log 'karma run done. code=%s', exitCode
         if done
           done()
     1000)
@@ -136,27 +136,27 @@ streams =
 
   reloadServer: ->  
     plugins.tap -> 
-      # console.log 'reloadServer'
+      # gutils.log 'reloadServer'
       if si.isActive()
-        # console.log 'yeah'
+        # gutils.log 'yeah'
         si.restart -> 
           if browserSync.active
-            # console.log 'yeah browserSync'
+            # gutils.log 'yeah browserSync'
             browserSync.reload()
           if ki.isActive()
-            # console.log 'yeah karma'
+            # gutils.log 'yeah karma'
             ki.run()
 
 
   reloadClient: ->
-    # console.log 'reloadClient'
+    # gutils.log 'reloadClient'
     if browserSync.active
-      # console.log 'yeah browserSync'
+      # gutils.log 'yeah browserSync'
       browserSync.reload stream: true
     else
       plugins.tap ->
         if ki.isActive()
-          # console.log 'yeah karma'
+          # gutils.log 'yeah karma'
           ki.run()
 
 
@@ -170,11 +170,7 @@ renameTplPath = (path) ->
   return
 
 mapScript = (p) -> 
-  dirname = path.dirname(p)
-  extname = path.extname(p)
-  basename = path.basename(p, extname)
-  basename = renameTpl basename
-  path.join(dirname, basename + '.js')
+  gutil.replaceExtension(p, '.js')
 
 
 scriptPipe = ->
@@ -264,7 +260,6 @@ gulp.task 'build-client-styles', ->
     bootstrap: dirs.bower + '/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss'
   .pipe sassFilter
   .pipe plugins.sass()
-  .on 'error', (err) -> console.log err.message
   .pipe sassFilter.restore()
   .pipe gulp.dest dirs.tgt.client + '/styles'
   .pipe streams.reloadClient()
@@ -343,8 +338,20 @@ gulp.task 'watch-src', ->
 gulp.task 'watch-test', ->
   gulp.watch [dirs.test.client + '/scripts/' + SCRIPTS], ['build-test-client-scripts']
 
+gulp.task 'clean-build', (done) -> 
+  runSequence 'clean', 'build', done
 
-gulp.task 'run', -> 
-  runSequence 'clean', 'build', 'serve'
+gulp.task 'run', (done) -> 
+  runSequence 'clean-build', 'serve', done
 
+gulp.task 'test', (done) -> 
+  runSequence 'clean-build', 'build-test', ['serve', 'karma-single'], done
+
+gulp.task 'run-watch', (done) -> 
+  runSequence 'clean-build', ['serve', 'bs'], 'watch-src', done
+
+gulp.task 'test-watch', (done) -> 
+  runSequence 'clean-build', 'build-test', ['serve', 'karma'], ['watch-src', 'watch-test'], done
+
+gulp.task 'default', ['run-watch']
 
