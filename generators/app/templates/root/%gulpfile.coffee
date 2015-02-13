@@ -11,6 +11,11 @@ runSequence = require 'run-sequence'
 lazypipe = require 'lazypipe'
 browserSync = require 'browser-sync'
 karma = require 'karma'
+jsStylish = require 'jshint-stylish'<% if (use.coffee) { %>
+coffeeStylish = require 'jshint-stylish'<% } %>
+
+jshintConfig = require './.jshint.json'<% if (use.coffee) { %>
+coffeelintConfig = require './.coffeelint.json'<% } %>
 
 
 dirs = 
@@ -92,8 +97,9 @@ ki =
         }  
       ]
       frameworks: [
-       'mocha'
-       'curl-amd'
+       'mocha'<% if (use.amd == 'curl') { %>
+       'curl-amd'<% } %><% if (use.amd == 'requirejs') { %>
+       'requirejs'<% } %>
       ]
       browsers: [
         'PhantomJS'
@@ -162,11 +168,12 @@ streams =
 
 
 G_ALL    = '**/*'
-G_JS     = '**/*.js'
+G_JS     = '**/*.js'<% if (use.coffee) { %>
 G_COFFEE = '**/*.coffee'
-G_SCRIPT = '**/*.@(js|coffee)'
+G_SCRIPT = '**/*.@(js|coffee)'<% } else { %>
+G_SCRIPT = G_JS<% } %>
 G_JADE   = '**/*.jade'
-G_CSS    = '**/*.scss'
+G_CSS    = '**/*.css'
 G_SASS   = '**/*.sass'
 G_SCSS   = '**/*.scss'
 G_TPL    = '**/*.tpl.*'
@@ -182,8 +189,8 @@ scriptPipe = ->
   tplData =
     appBaseUrl: '/app'
     vendorBaseUrl: '/vendor'
-    testBaseUrl: '/base/' + dirs.tgt.client + '/test'
-  coffeeFilter = plugins.filter [G_COFFEE]
+    testBaseUrl: '/base/' + dirs.tgt.client + '/test'<% if (use.coffee) { %>
+  coffeeFilter = plugins.filter [G_COFFEE]<% } %>
   tplFilter = plugins.filter [G_TPL]
   do lazypipe()
   .pipe -> tplFilter
@@ -191,10 +198,14 @@ scriptPipe = ->
   .pipe plugins.rename, (path) -> 
     path.basename = renameTpl path.basename
     return
-  .pipe tplFilter.restore
+  .pipe tplFilter.restore<% if (use.coffee) { %>
   .pipe -> coffeeFilter
+  .pipe plugins.coffeelint, coffeelintConfig
+  .pipe plugins.coffeelint.reporter
   .pipe plugins.coffee
-  .pipe coffeeFilter.restore
+  .pipe coffeeFilter.restore<% } %>
+  .pipe plugins.jshint, jshintConfig
+  .pipe plugins.jshint.reporter, jsStylish
 
 
 postJadeTemplate = (basePath) ->

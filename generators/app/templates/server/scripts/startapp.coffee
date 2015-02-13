@@ -7,8 +7,6 @@ module.exports = (options, done) ->
   _.defaults options,
     port: 8000
 
-  # console.log 'options=', options  
-  
   app = appFactory options
   # console.log 'app=', app
   http.createServer(app).listen options.port, ->

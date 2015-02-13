@@ -13,14 +13,15 @@
   "devDependencies": {
     "browser-sync": "^2.0.1",
     "del": "^1.1.1",
-    "gulp": "^3.8.10",
-    "gulp-clean": "^0.3.1",
-    "gulp-coffee": "^2.3.1",
-    "gulp-concat": "^2.4.3",
+    "gulp": "^3.8.10",<% if (use.coffee) { %>
+    "gulp-coffee": "^2.3.1",<% } %>
+    "gulp-concat": "^2.4.3",<% if (use.coffee) { %>
+    "gulp-coffeelint": "^0.4.0",<% } %>
     "gulp-debug": "^2.0.0",
     "gulp-filter": "^2.0.1",
     "gulp-insert": "^0.4.0",
     "gulp-jade": "^0.11.0",
+    "gulp-jshint": "^1.9.2",
     "gulp-load-plugins": "^0.8.0",
     "gulp-newer": "^0.5.0",
     "gulp-plumber": "^0.6.6",

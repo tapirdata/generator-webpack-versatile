@@ -1,12 +1,11 @@
 doctype html
 html
-  unless omitHead
-    head
-      title= title
-      link(rel='stylesheet', href='/app/styles/main.css')<% if (use.modernizr) { %>
-      script(rel='javascript', src='/vendor/modernizr/modernizr.js')<% } %><% if (use.amd === 'requirejs') { %>
-      script(rel='javascript', src='/vendor/requirejs/require.js', data-main='/app/scripts/main')<% } %><% if (use.amd === 'curl') { %>
-      script(rel='javascript', src='/vendor/curl/src/curl.js')
-      script(rel='javascript', src='/app/scripts/main.js')<% } %>
+  head
+    title= title
+    link(rel='stylesheet', href='/app/styles/main.css')<% if (use.modernizr) { %>
+    script(rel='javascript', src='/vendor/modernizr/modernizr.js')<% } %><% if (use.amd === 'requirejs') { %>
+    script(rel='javascript', src='/vendor/requirejs/require.js', data-main='/app/scripts/main')<% } %><% if (use.amd === 'curl') { %>
+    script(rel='javascript', src='/vendor/curl/src/curl.js')
+    script(rel='javascript', src='/app/scripts/main.js')<% } %>
   body
     block content

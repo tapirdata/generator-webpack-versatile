@@ -10,6 +10,7 @@ define [
     routes:
       '': 'showHome'
       'about': 'showAbout'
+      'contact': 'showContact'
       '*actions': 'defaultAction'
     targetEl: '#body-container'
     initialize: (options) ->
@@ -23,6 +24,10 @@ define [
         el: @targetEl
         templateName: 'about'
         app: @app)
+      @contactView = new SimpleView(
+        el: @targetEl
+        templateName: 'contact'
+        app: @app)
       Backbone.history.start()
       return
     showHome: ->
@@ -30,6 +35,9 @@ define [
       return
     showAbout: ->
       @aboutView.render()
+      return
+    showContact: ->
+      @contactView.render()
       return
     defaultAction: ->
       console.log 'defaultAction'
