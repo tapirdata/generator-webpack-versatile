@@ -34,11 +34,11 @@ _.defaults dirs.tgt,
 si = 
   port: config.server.port || 8000
   server: null
-  isRunning: () ->
+  isActive: () ->
     !! @server
   start: (done) ->
     done = done or ->
-    if @isRunning()
+    if @isActive()
       console.log 'server already running!'
       done()
       return
@@ -54,7 +54,7 @@ si =
 
   stop: (done) ->
     done = done or ->
-    if @isRunning()
+    if @isActive()
       @server.close (err) =>
         # console.log 'server stopped.'
         @server = null
@@ -75,73 +75,89 @@ si =
           done err
           return
 
-startKarma = (singleRun, done) ->
-  karmaConf = 
-    files: [
-      {
-        pattern: dirs.tgt.client + '/test/scripts/main.js'
-      }  
-      {
-        pattern: dirs.tgt.client + '/test/scripts/**/*.js'
-        included: false
-      }  
-    ]
-    frameworks: [
-     'mocha'
-     'curl-amd'
-    ]
-    browsers: [
-      'PhantomJS'
-      'Chrome'
-      'Firefox'
-    ]
-    proxies: 
-      '/vendor': 'http://localhost:' + si.port + '/vendor'
-      '/app':    'http://localhost:' + si.port + '/app'
-    client: 
-      testFiles: ['foo.test']
-    singleRun: singleRun  
+ki = 
+  server: null
+  isActive: () ->
+    !! @server
+  start: (singleRun, done) ->
+    karmaConf = 
+      files: [
+        {
+          pattern: dirs.tgt.client + '/test/scripts/main.js'
+        }  
+        {
+          pattern: dirs.tgt.client + '/test/scripts/**/*.js'
+          included: false
+        }  
+      ]
+      frameworks: [
+       'mocha'
+       'curl-amd'
+      ]
+      browsers: [
+        'PhantomJS'
+        'Chrome'
+        'Firefox'
+      ]
+      proxies: 
+        '/vendor': 'http://localhost:' + si.port + '/vendor'
+        '/app':    'http://localhost:' + si.port + '/app'
+      client: 
+        testFiles: ['foo.test']
+      singleRun: singleRun  
 
-  # console.log 'karma start...'
-  karma.server.start karmaConf, (exitCode) ->  
-    # console.log 'karma start done. code=%s', exitCode
-    if done
-      done()
+    # console.log 'karma start...'
+    karma.server.start karmaConf, (exitCode) =>  
+      # console.log 'karma start done. code=%s', exitCode
+      @server = null
+      if done
+        done()
+    @server = true    
 
-runKarma = (done) ->
-  # console.log 'karma run...'
-  karma.runner.run {}, (exitCode) ->  
-    # console.log 'karma run done. code=%s', exitCode
-    if done
-      done()
+  run: _.debounce( 
+    (done) ->
+      # console.log 'karma run...'
+      karma.runner.run {}, (exitCode) ->  
+        # console.log 'karma run done. code=%s', exitCode
+        if done
+          done()
+    1000)
 
-runKarma = _.debounce(runKarma, 1000)
+
+streams = 
+  plumber: ->
+    plugins.plumber
+      errorHandler: (err) ->
+        gutil.log(
+          gutil.colors.red('Error:\n')
+          err.toString()
+        )  
+        @emit 'end'
+
+  reloadServer: ->  
+    plugins.tap -> 
+      # console.log 'reloadServer'
+      if si.isActive()
+        # console.log 'yeah'
+        si.restart -> 
+          if browserSync.active
+            # console.log 'yeah browserSync'
+            browserSync.reload()
+          if ki.isActive()
+            # console.log 'yeah karma'
+            ki.run()
 
 
-reloadServer = ->  
-  plugins.tap -> 
-    # console.log 'reloadServer'
-    if si.isRunning()
-      # console.log 'yeah'
-      si.restart -> 
-        if browserSync.active
-          # console.log 'yeah browserSync'
-          browserSync.reload()
-        if si.karmaRunning
+  reloadClient: ->
+    # console.log 'reloadClient'
+    if browserSync.active
+      # console.log 'yeah browserSync'
+      browserSync.reload stream: true
+    else
+      plugins.tap ->
+        if ki.isActive()
           # console.log 'yeah karma'
-          runKarma()
-
-
-reloadClient = ->
-  # console.log 'reloadClient'
-  if browserSync.active
-    # console.log 'yeah browserSync'
-    browserSync.reload stream: true
-  else
-    plugins.tap ->
-      if si.karmaRunning
-        # console.log 'yeah karma'
-        runKarma()
+          ki.run()
 
 
 SCRIPTS = '**/*.@(js|coffee)'
@@ -205,39 +221,45 @@ gulp.task 'clean', ->
 gulp.task 'build-server-scripts', ->
   dest = dirs.tgt.server + '/scripts'
   gulp.src SCRIPTS, cwd: dirs.src.server + '/scripts'
+  .pipe streams.plumber()
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
   .pipe gulp.dest dest
-  .pipe reloadServer()
+  .pipe streams.reloadServer()
 
 gulp.task 'build-server-templates', ->
   dest = dirs.tgt.server + '/templates'
   gulp.src ['**/*.jade'], cwd: dirs.src.server + '/templates'
+  .pipe streams.plumber()
   .pipe plugins.newer dest: dest
   .pipe gulp.dest dest
-  .pipe reloadServer()
+  .pipe streams.reloadServer()
 
 gulp.task 'build-client-scripts', ->
   dest = dirs.tgt.client + '/scripts'
   gulp.src SCRIPTS, cwd: dirs.src.client + '/scripts'
+  .pipe streams.plumber()
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
   .pipe gulp.dest dest
-  .pipe reloadClient()
+  .pipe streams.reloadClient()
 
 gulp.task 'build-client-images', ->
   gulp.src ['**/*'], cwd: dirs.src.client + '/images'
+  .pipe streams.plumber()
   .pipe gulp.dest dirs.tgt.client + '/images'
-  .pipe reloadClient()
+  .pipe streams.reloadClient()
 
 gulp.task 'build-client-pages', ->
   gulp.src ['**/*'], cwd: dirs.src.client + '/pages'
+  .pipe streams.plumber()
   .pipe gulp.dest dirs.tgt.client + '/pages'
-  .pipe reloadClient()
+  .pipe streams.reloadClient()
 
 gulp.task 'build-client-styles', ->
   sassFilter = plugins.filter ['**/*.sass', '**/*.scss']
   gulp.src ['**/*.css', '**/*.sass', '**/*.scss'], cwd: dirs.src.client + '/styles'
+  .pipe streams.plumber()
   .pipe plugins.template 
     bootstrap: dirs.bower + '/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss'
   .pipe sassFilter
@@ -245,22 +267,24 @@ gulp.task 'build-client-styles', ->
   .on 'error', (err) -> console.log err.message
   .pipe sassFilter.restore()
   .pipe gulp.dest dirs.tgt.client + '/styles'
-  .pipe reloadClient()
+  .pipe streams.reloadClient()
   
 gulp.task 'build-client-templates', ->
   srcpath = dirs.src.client + '/templates'
   gulp.src ['**/*.jade'], cwd: srcpath
+  .pipe streams.plumber()
   .pipe(plugins.debug(title: 'client-jade'))
   .pipe plugins.jade client: true
   .pipe postJadeTemplate srcpath
   .pipe plugins.concat 'templates.js'
   .pipe amdJadeTemplates()
   .pipe gulp.dest dirs.tgt.client + '/scripts'
-  .pipe reloadClient()
+  .pipe streams.reloadClient()
 
 gulp.task 'build-test-client-scripts', ->
   dest = dirs.tgt.client + '/test/scripts'
   gulp.src SCRIPTS, cwd: dirs.test.client + '/scripts'
+  .pipe streams.plumber()
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
   .pipe gulp.dest dest
@@ -277,12 +301,11 @@ gulp.task 'bs', (done) ->
     done
 
 gulp.task 'karma-single', ->
-  startKarma true, ->
+  ki.start true, ->
     si.stop()
 
 gulp.task 'karma', ->
-  startKarma false
-  si.karmaRunning = true
+  ki.start false
 
 
 gulp.task 'build-server', [
