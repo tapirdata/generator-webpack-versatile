@@ -18,7 +18,7 @@ var BaseGenerator = yeoman.generators.Base.extend({
       requirejs: use.amd === 'requirejs',
       curl:      use.amd === 'curl',
       coffee:    use.coffee,
-      sass:      !!use.sass,
+      sass:      use.sass,
     };
   },
 
@@ -147,7 +147,7 @@ var BaseGenerator = yeoman.generators.Base.extend({
       bootstrap: true,
       modernizr: true,
       coffee:    true,
-      sass:      'ruby',
+      sass:      true,
       amd:       'curl',
     }));
   },

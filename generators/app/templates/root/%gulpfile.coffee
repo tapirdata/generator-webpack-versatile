@@ -1,6 +1,7 @@
 
 fs = require 'fs'
 path = require 'path'
+del = require 'del'
 _ = require 'lodash'
 config = require 'config'
 gulp = require 'gulp'
@@ -86,7 +87,7 @@ ki =
           pattern: dirs.tgt.client + '/test/scripts/main.js'
         }  
         {
-          pattern: dirs.tgt.client + '/test/scripts/**/*.js'
+          pattern: dirs.tgt.client + '/test/scripts/' + G_JS
           included: false
         }  
       ]
@@ -160,17 +161,21 @@ streams =
           ki.run()
 
 
-SCRIPTS = '**/*.@(js|coffee)'
+G_ALL    = '**/*'
+G_JS     = '**/*.js'
+G_COFFEE = '**/*.coffee'
+G_SCRIPT = '**/*.@(js|coffee)'
+G_JADE   = '**/*.jade'
+G_CSS    = '**/*.scss'
+G_SASS   = '**/*.sass'
+G_SCSS   = '**/*.scss'
+G_TPL    = '**/*.tpl.*'
 
 renameTpl = (name) -> 
-  name.replace /(.*)\.tpl/, '$1'
-
-renameTplPath = (path) -> 
-  path.basename = renameTpl path.basename
-  return
+  name.replace /\.tpl$/, ''
 
 mapScript = (p) -> 
-  gutil.replaceExtension(p, '.js')
+  gutil.replaceExtension p, '.js'
 
 
 scriptPipe = ->
@@ -178,12 +183,14 @@ scriptPipe = ->
     appBaseUrl: '/app'
     vendorBaseUrl: '/vendor'
     testBaseUrl: '/base/' + dirs.tgt.client + '/test'
-  coffeeFilter = plugins.filter ['**/*.coffee']
-  tplFilter = plugins.filter ['**/*.tpl.*']
+  coffeeFilter = plugins.filter [G_COFFEE]
+  tplFilter = plugins.filter [G_TPL]
   do lazypipe()
   .pipe -> tplFilter
   .pipe plugins.template, tplData
-  .pipe plugins.rename, renameTplPath
+  .pipe plugins.rename, (path) -> 
+    path.basename = renameTpl path.basename
+    return
   .pipe tplFilter.restore
   .pipe -> coffeeFilter
   .pipe plugins.coffee
@@ -210,13 +217,12 @@ postJadeTemplate = (basePath) ->
 amdJadeTemplates = ->
   return plugins.insert.wrap 'define([\'jade\'], function(jade) {\nvar templates={};\n', '\nreturn templates;\n})\n'
 
-gulp.task 'clean', ->
-  gulp.src dirs.tgt.root, read: false
-  .pipe plugins.clean()
+gulp.task 'clean', (done) ->
+  del dirs.tgt.root, done
 
 gulp.task 'build-server-scripts', ->
   dest = dirs.tgt.server + '/scripts'
-  gulp.src SCRIPTS, cwd: dirs.src.server + '/scripts'
+  gulp.src G_SCRIPT, cwd: dirs.src.server + '/scripts'
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
@@ -225,7 +231,7 @@ gulp.task 'build-server-scripts', ->
 
 gulp.task 'build-server-templates', ->
   dest = dirs.tgt.server + '/templates'
-  gulp.src ['**/*.jade'], cwd: dirs.src.server + '/templates'
+  gulp.src [G_JADE], cwd: dirs.src.server + '/templates'
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest
   .pipe gulp.dest dest
@@ -233,7 +239,7 @@ gulp.task 'build-server-templates', ->
 
 gulp.task 'build-client-scripts', ->
   dest = dirs.tgt.client + '/scripts'
-  gulp.src SCRIPTS, cwd: dirs.src.client + '/scripts'
+  gulp.src G_SCRIPT, cwd: dirs.src.client + '/scripts'
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
@@ -241,32 +247,36 @@ gulp.task 'build-client-scripts', ->
   .pipe streams.reloadClient()
 
 gulp.task 'build-client-images', ->
-  gulp.src ['**/*'], cwd: dirs.src.client + '/images'
+  gulp.src [G_ALL], cwd: dirs.src.client + '/images'
   .pipe streams.plumber()
   .pipe gulp.dest dirs.tgt.client + '/images'
   .pipe streams.reloadClient()
 
 gulp.task 'build-client-pages', ->
-  gulp.src ['**/*'], cwd: dirs.src.client + '/pages'
+  gulp.src [G_ALL], cwd: dirs.src.client + '/pages'
   .pipe streams.plumber()
   .pipe gulp.dest dirs.tgt.client + '/pages'
   .pipe streams.reloadClient()
 
 gulp.task 'build-client-styles', ->
-  sassFilter = plugins.filter ['**/*.sass', '**/*.scss']
-  gulp.src ['**/*.css', '**/*.sass', '**/*.scss'], cwd: dirs.src.client + '/styles'
+  sassFilter = plugins.filter [G_SASS]
+  scssFilter = plugins.filter [G_SCSS]
+  gulp.src [G_CSS, G_SASS, G_SCSS], cwd: dirs.src.client + '/styles'
   .pipe streams.plumber()
   .pipe plugins.template 
     bootstrap: dirs.bower + '/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss'
   .pipe sassFilter
-  .pipe plugins.sass()
+  .pipe plugins.sass indentedSyntax: true
   .pipe sassFilter.restore()
+  .pipe scssFilter
+  .pipe plugins.sass()
+  .pipe scssFilter.restore()
   .pipe gulp.dest dirs.tgt.client + '/styles'
   .pipe streams.reloadClient()
   
 gulp.task 'build-client-templates', ->
   srcpath = dirs.src.client + '/templates'
-  gulp.src ['**/*.jade'], cwd: srcpath
+  gulp.src [G_JADE], cwd: srcpath
   .pipe streams.plumber()
   .pipe(plugins.debug(title: 'client-jade'))
   .pipe plugins.jade client: true
@@ -278,7 +288,7 @@ gulp.task 'build-client-templates', ->
 
 gulp.task 'build-test-client-scripts', ->
   dest = dirs.tgt.client + '/test/scripts'
-  gulp.src SCRIPTS, cwd: dirs.test.client + '/scripts'
+  gulp.src G_SCRIPT, cwd: dirs.test.client + '/scripts'
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
@@ -327,16 +337,16 @@ gulp.task 'build', [
 
 
 gulp.task 'watch-src', ->
-  gulp.watch [dirs.src.server + '/scripts/' + SCRIPTS], ['build-server-scripts']
-  gulp.watch [dirs.src.server + '/templates/**/*' ], ['build-server-templates']
-  gulp.watch [dirs.src.client + '/scripts/' + SCRIPTS], ['build-client-scripts']
-  gulp.watch [dirs.src.client + '/styles/**/*' ], ['build-client-styles']
-  gulp.watch [dirs.src.client + '/images/**/*' ], ['build-client-images']
-  gulp.watch [dirs.src.client + '/pages/**/*' ], ['build-client-pages']
-  gulp.watch [dirs.src.client + '/templates/**/*' ], ['build-client-templates']
+  gulp.watch [dirs.src.server + '/scripts/' + G_SCRIPT], ['build-server-scripts']
+  gulp.watch [dirs.src.server + '/templates/' + G_ALL], ['build-server-templates']
+  gulp.watch [dirs.src.client + '/scripts/' + G_SCRIPT], ['build-client-scripts']
+  gulp.watch [dirs.src.client + '/styles/' + G_ALL], ['build-client-styles']
+  gulp.watch [dirs.src.client + '/images/' + G_ALL], ['build-client-images']
+  gulp.watch [dirs.src.client + '/pages/' + G_ALL], ['build-client-pages']
+  gulp.watch [dirs.src.client + '/templates/' + G_ALL], ['build-client-templates']
 
 gulp.task 'watch-test', ->
-  gulp.watch [dirs.test.client + '/scripts/' + SCRIPTS], ['build-test-client-scripts']
+  gulp.watch [dirs.test.client + '/scripts/' + G_SCRIPT], ['build-test-client-scripts']
 
 gulp.task 'clean-build', (done) -> 
   runSequence 'clean', 'build', done

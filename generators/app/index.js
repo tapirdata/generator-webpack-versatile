@@ -58,15 +58,6 @@ var ExpressDevelopGenerator = BaseGenerator.extend({
           type: 'list',
           choices: ['curl', 'requireJS'],
           default: (use.amd === 'requirejs') ? 1 : 0
-      }, {
-        when: function (answers) {
-          return answers.features.indexOf('sass') !== -1;
-        },
-        type: 'confirm',
-        name: 'libsass',
-        value: 'useLibSass',
-        message: 'Would you like to use libsass? Read up more at \n' + chalk.green('https://github.com/andrew/node-sass#reporting-sass-compilation-and-syntax-issues'),
-        default: false
       }];
 
       this.prompt(prompts, function (answers) {
@@ -76,7 +67,7 @@ var ExpressDevelopGenerator = BaseGenerator.extend({
         use.bootstrap = hasFeature('bootstrap');
         use.modernizr = hasFeature('modernizr');
         use.backbone  = hasFeature('backbone');
-        use.sass      = hasFeature('sass') ? (answers.libsass ? 'lib' : 'ruby') : false;
+        use.sass      = hasFeature('sass');
         use.coffee    = hasFeature('coffee');
         use.amd       = (answers.amdLib === 'requireJS') ? 'requirejs' : 'curl';
         console.log('use=', use);
