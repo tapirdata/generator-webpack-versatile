@@ -299,41 +299,43 @@ gulp.task 'serve', (done) ->
   si.start done
   return  
 
-
 gulp.task 'bs', (done) ->
   browserSync
     proxy: 'localhost:' + si.port
     done
 
-gulp.task 'karma-single', ->
+gulp.task 'karma-single', (done) ->
   ki.start true, ->
-    si.stop()
+    si.stop(done)
 
 gulp.task 'karma', ->
   ki.start false
 
+gulp.task 'build-server', (done) ->
+  runSequence [
+    'build-server-scripts' 
+    'build-server-templates' 
+  ], done
 
-gulp.task 'build-server', [
-  'build-server-scripts' 
-  'build-server-templates' 
-  ]  
+gulp.task 'build-client', (done) ->
+  runSequence [
+    'build-client-scripts' 
+    'build-client-images' 
+    'build-client-styles'
+    'build-client-pages'
+    'build-client-templates'
+  ], done
 
-gulp.task 'build-client', [
-  'build-client-scripts' 
-  'build-client-images' 
-  'build-client-styles'
-  'build-client-pages'
-  'build-client-templates'
-  ]
+gulp.task 'build-test', (done) -> 
+  runSequence [
+    'build-test-client-scripts' 
+  ], done
 
-gulp.task 'build-test', [
-  'build-test-client-scripts' 
-  ]
-
-gulp.task 'build', [
-  'build-server' 
-  'build-client' 
-  ]
+gulp.task 'build', (done) -> 
+  runSequence [
+    'build-server' 
+    'build-client' 
+  ], done
 
 
 gulp.task 'watch-src', ->
