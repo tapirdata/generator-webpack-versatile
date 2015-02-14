@@ -56,7 +56,7 @@ ExpressDevelopGenerator = BaseGenerator.extend(
         type: 'list'
         choices: [
           'curl'
-          'requireJS'
+          'requirejs'
         ]
         default: if use.amd == 'requirejs' then 1 else 0
       }
@@ -72,7 +72,7 @@ ExpressDevelopGenerator = BaseGenerator.extend(
       use.backbone = hasFeature('backbone')
       use.sass = hasFeature('sass')
       use.coffee = hasFeature('coffee')
-      use.amd = if answers.amdLib == 'requireJS' then 'requirejs' else 'curl'
+      use.amd = if answers.amdLib == 'requirejs' then 'requirejs' else 'curl'
       # console.log 'use=', use
       config.set 'use', use
       done()
