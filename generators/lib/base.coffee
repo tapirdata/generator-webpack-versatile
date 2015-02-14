@@ -4,6 +4,7 @@ _ = require('lodash')
 yeoman = require('yeoman-generator')
 coffeeScript = require('coffee-script')
 BranchFinder = require('./branch-finder')
+
 BaseGenerator = yeoman.generators.Base.extend(
   _getBranches: ->
     use = @config.get('use')
@@ -128,7 +129,7 @@ BaseGenerator = yeoman.generators.Base.extend(
     @_initConfig()
     @_optionConfig()
     @_defaultConfig()
-    console.log '..config=', @config.getAll()
+    # console.log '..config=', @config.getAll()
     return
 )
 module.exports = BaseGenerator

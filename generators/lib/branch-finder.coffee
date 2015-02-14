@@ -45,7 +45,7 @@ BranchFinder::run = (src, tgt) ->
         throw new Error(msg)
       ti = @getTi(srcName)
       tgtName = ti.tgtName
-      console.log '%s -> %s', srcName, tgtName
+      # console.log '%s -> %s', srcName, tgtName
       tgtOk = minimatch(path.join(tgt, tgtName), @pattern, dot: true)
       if tgtOk
         tgtPath = path.join(@tgtBase, path.relative(@tgtRelalative, tgt), tgtName)

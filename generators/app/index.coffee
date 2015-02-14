@@ -66,14 +66,14 @@ ExpressDevelopGenerator = BaseGenerator.extend(
       hasFeature = (feat) ->
         answers.features.indexOf(feat) != -1
 
-      console.log 'answers=', answers
+      # console.log 'answers=', answers
       use.bootstrap = hasFeature('bootstrap')
       use.modernizr = hasFeature('modernizr')
       use.backbone = hasFeature('backbone')
       use.sass = hasFeature('sass')
       use.coffee = hasFeature('coffee')
       use.amd = if answers.amdLib == 'requireJS' then 'requirejs' else 'curl'
-      console.log 'use=', use
+      # console.log 'use=', use
       config.set 'use', use
       done()
       return

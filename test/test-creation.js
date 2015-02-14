@@ -9,7 +9,6 @@ describe('express-develop generator', function () {
       if (err) {
         return done(err);
       }
-
       this.app = helpers.createGenerator('express-develop:app', [
           '../../generators/app',
         ],
@@ -23,19 +22,19 @@ describe('express-develop generator', function () {
   it('creates expected files', function (done) {
     var expected = [
       // add files you expect to exist here.
-      '.jshintrc',
+      '.jshint.json',
       '.editorconfig',
       '.gitignore',
-      'static/favicon.ico',
-      'static/robots.txt',
-      'static/404.html'
+      'src/client/images/favicon.ico',
+      'src/client/pages/robots.txt',
+      'src/client/pages/404.html'
     ];
 
     helpers.mockPrompt(this.app, {
       'features': []
     });
     this.app.options['skip-install'] = true;
-    this.app.run({}, function () {
+    this.app.run(function () {
       helpers.assertFile(expected);
       done();
     });
