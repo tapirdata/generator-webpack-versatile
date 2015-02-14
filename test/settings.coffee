@@ -8,7 +8,8 @@ class TestSetting
        this[name] = !!options[name]
        return
     @amd = if options.requirejs then 'requirejs' else 'curl'
-    @unsupported = options.unsupported
+    @unsupported = !! options.unsupported
+    @full = !! options.full
 
   activeFeatures: -> 
     names = []
@@ -38,8 +39,8 @@ exports.testSettings = [
   'sass,bootstrap,backbone,curl'
   'sass,coffee,curl'
   'sass,coffee,backbone,curl'
-  'sass,coffee,bootstrap,curl'
-  'sass,coffee,bootstrap,backbone,curl'
+  'sass,coffee,bootstrap,curl,full'
+  'sass,coffee,bootstrap,backbone,curl,nofull'
   'requirejs'
   'backbone,requirejs'
   'bootstrap,requirejs,unsupported'

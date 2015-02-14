@@ -106,6 +106,12 @@ ki =
         'Chrome'
         'Firefox'
       ]
+      reporters: [
+        'progress'
+        'junit'
+      ]
+      junitReporter: 
+        outputFile: 'test-results.xml'
       proxies: 
         '/vendor': 'http://localhost:' + si.port + '/vendor'
         '/app':    'http://localhost:' + si.port + '/app'

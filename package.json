@@ -31,7 +31,9 @@
     "yosay": "^1.0.1"
   },
   "devDependencies": {
-    "mocha": "^2.1.0"
+    "mocha": "^2.1.0",
+    "rimraf": "^2.2.8",
+    "xml2js": "^0.4.5"
   },
   "peerDependencies": {
     "yo": ">=1.0.0"

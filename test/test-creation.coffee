@@ -3,6 +3,7 @@
 'use strict'
 path = require('path')
 helpers = require('yeoman-generator').test
+assert = require('yeoman-generator').assert
 settings = require('./settings')
 
 for ts in settings.testSettings
@@ -14,13 +15,13 @@ for ts in settings.testSettings
     describe 'express-develop generator ' + ts.toString(), ->
       before (done) ->
         # @timeout 1000
-        helpers.testDirectory path.join(__dirname, 'temp'), ((err) ->
+        helpers.testDirectory path.join(__dirname, 'temp'), (err) =>
           if err
-            return done(err)
+            done(err)
+            return 
           @app = helpers.createGenerator('express-develop:app', [ '../../generators/app' ], [], 'test-framework': 'none')
           done()
           return
-        ).bind(this)
         return
       it 'creates expected files', (done) ->
         expected = [
@@ -65,7 +66,7 @@ for ts in settings.testSettings
         helpers.mockPrompt @app, 'features': ts.activeFeatures(), amdLib: ts.amd
         @app.options['skip-install'] = true
         @app.run ->
-          helpers.assertFile expected
+          assert.file expected
           done()
           return
         return
