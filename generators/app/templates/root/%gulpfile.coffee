@@ -45,7 +45,7 @@ si =
   start: (done) ->
     done = done or ->
     if @isActive()
-      gutils.log 'server already running!'
+      gutil.log 'server already running!'
       done()
       return
     starter = require './' + dirs.tgt.server + '/scripts/startapp'
@@ -62,12 +62,12 @@ si =
     done = done or ->
     if @isActive()
       @server.close (err) =>
-        # gutils.log 'server stopped.'
+        # gutil.log 'server stopped.'
         @server = null
         done err
         return
     else  
-      gutils.log 'no server running!'
+      gutil.log 'no server running!'
       done()
       return
 
@@ -113,9 +113,9 @@ ki =
         testFiles: ['foo.test']
       singleRun: singleRun  
 
-    # gutils.log 'karma start...'
+    # gutil.log 'karma start...'
     karma.server.start karmaConf, (exitCode) =>  
-      # gutils.log 'karma start done. code=%s', exitCode
+      # gutil.log 'karma start done. code=%s', exitCode
       @server = null
       if done
         done()
@@ -123,9 +123,9 @@ ki =
 
   run: _.debounce( 
     (done) ->
-      # gutils.log 'karma run...'
+      # gutil.log 'karma run...'
       karma.runner.run {}, (exitCode) ->  
-        # gutils.log 'karma run done. code=%s', exitCode
+        # gutil.log 'karma run done. code=%s', exitCode
         if done
           done()
     1000)
@@ -143,27 +143,27 @@ streams =
 
   reloadServer: ->  
     plugins.tap -> 
-      # gutils.log 'reloadServer'
+      # gutil.log 'reloadServer'
       if si.isActive()
-        # gutils.log 'yeah'
+        # gutil.log 'yeah'
         si.restart -> 
           if browserSync.active
-            # gutils.log 'yeah browserSync'
+            # gutil.log 'yeah browserSync'
             browserSync.reload()
           if ki.isActive()
-            # gutils.log 'yeah karma'
+            # gutil.log 'yeah karma'
             ki.run()
 
 
   reloadClient: ->
-    # gutils.log 'reloadClient'
+    # gutil.log 'reloadClient'
     if browserSync.active
-      # gutils.log 'yeah browserSync'
+      # gutil.log 'yeah browserSync'
       browserSync.reload stream: true
     else
       plugins.tap ->
         if ki.isActive()
-          # gutils.log 'yeah karma'
+          # gutil.log 'yeah karma'
           ki.run()
 
 
