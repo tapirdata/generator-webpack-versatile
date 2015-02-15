@@ -40,7 +40,7 @@ exports.testSettings = [
   'sass,coffee,curl'
   'sass,coffee,backbone,curl'
   'sass,coffee,bootstrap,curl,full'
-  'sass,coffee,bootstrap,backbone,curl,nofull'
+  'sass,coffee,bootstrap,backbone,curl,full'
   'requirejs'
   'backbone,requirejs'
   'bootstrap,requirejs,unsupported'
@@ -55,8 +55,8 @@ exports.testSettings = [
   'sass,bootstrap,backbone,requirejs'
   'sass,coffee,requirejs'
   'sass,coffee,backbone,requirejs'
-  'sass,coffee,bootstrap,requirejs'
-  'sass,coffee,bootstrap,backbone,requirejs'
+  'sass,coffee,bootstrap,requirejs,full'
+  'sass,coffee,bootstrap,backbone,requirejs,full'
 ].map (s) -> 
   parts = s.split(/, */)
   options = _.object _.map parts, (name) -> [name, true]

@@ -2,8 +2,9 @@
 fs = require 'fs'
 path = require 'path'
 del = require 'del'
+glob = require 'glob'
+optimist = require 'optimist'
 _ = require 'lodash'
-config = require 'config'
 gulp = require 'gulp'
 gutil = require 'gulp-util'
 plugins = require('gulp-load-plugins')()
@@ -17,6 +18,17 @@ coffeeStylish = require 'jshint-stylish'<% } %>
 jshintConfig = require './.jshint.json'<% if (use.coffee) { %>
 coffeelintConfig = require './.coffeelint.json'<% } %>
 
+process.env.NODE_ENV = do ->
+  env = optimist.argv.env or ''
+  console.log 'env=', env
+  if env.match /^prod/
+    'production'
+  else if env.match /^test/
+    'testing'
+  else
+    'development'
+
+config = require 'config'
 
 dirs = 
   bower:  JSON.parse(fs.readFileSync './.bowerrc').directory
@@ -83,49 +95,63 @@ si =
 
 ki = 
   server: null
+  browsers:
+    work: [
+      'PhantomJS'
+      'Chrome'
+      'Firefox'
+    ]
+    ci: [
+      'PhantomJS'
+    ]
+  reporters:
+    work: [
+      'progress'
+    ]
+    ci: [
+      'junit'
+    ]
+
   isActive: () ->
     !! @server
-  start: (singleRun, done) ->
-    karmaConf = 
-      files: [
-        {
-          pattern: dirs.tgt.client + '/test/scripts/main.js'
-        }  
-        {
-          pattern: dirs.tgt.client + '/test/scripts/' + G_JS
-          included: false
-        }  
-      ]
-      frameworks: [
-       'mocha'<% if (use.amd == 'curl') { %>
-       'curl-amd'<% } %><% if (use.amd == 'requirejs') { %>
-       'requirejs'<% } %>
-      ]
-      browsers: [
-        'PhantomJS'
-        'Chrome'
-        'Firefox'
-      ]
-      reporters: [
-        'progress'
-        'junit'
-      ]
-      junitReporter: 
-        outputFile: 'test-results.xml'
-      proxies: 
-        '/vendor': 'http://localhost:' + si.port + '/vendor'
-        '/app':    'http://localhost:' + si.port + '/app'
-      client: 
-        testFiles: ['foo.test']
-      singleRun: singleRun  
+  start: (options, done) ->
+    glob '**/*.test.js', {cwd: dirs.tgt.client + '/test/scripts'}, (err, testFiles) =>
+      if err
+        done err
+        return
+      karmaConf =
+        files: [
+          {
+            pattern: dirs.tgt.client + '/test/scripts/main.js'
+          }
+          {
+            pattern: dirs.tgt.client + '/test/scripts/' + G_JS
+            included: false
+          }
+        ]
+        frameworks: [
+         'mocha'<% if (use.amd == 'curl') { %>
+         'curl-amd'<% } %><% if (use.amd == 'requirejs') { %>
+         'requirejs'<% } %>
+        ]
+        browsers: if options.ci then @browsers.ci else @browsers.work
+        reporters: if options.ci then @reporters.ci else @reporters.work
+        junitReporter:
+          outputFile: 'test-results.xml'
+        proxies:
+          '/vendor': 'http://localhost:' + si.port + '/vendor'
+          '/app':    'http://localhost:' + si.port + '/app'
+        client:
+          testFiles: testFiles
+        singleRun: options.singleRun
 
-    # gutil.log 'karma start...'
-    karma.server.start karmaConf, (exitCode) =>  
-      # gutil.log 'karma start done. code=%s', exitCode
-      @server = null
-      if done
-        done()
-    @server = true    
+      # gutil.log 'karma start...'
+      karma.server.start karmaConf, (exitCode) =>
+        # gutil.log 'karma start done. code=%s', exitCode
+        @server = null
+        if done
+          done()
+      @server = true
 
   run: _.debounce( 
     (done) ->
@@ -295,7 +321,7 @@ gulp.task 'build-client-templates', ->
   srcpath = dirs.src.client + '/templates'
   gulp.src [G_JADE], cwd: srcpath
   .pipe streams.plumber()
-  .pipe(plugins.debug(title: 'client-jade'))
+  # .pipe(plugins.debug(title: 'client-jade'))
   .pipe plugins.jade client: true
   .pipe postJadeTemplate srcpath
   .pipe plugins.concat 'templates.js'
@@ -310,6 +336,7 @@ gulp.task 'build-test-client-scripts', ->
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
   .pipe gulp.dest dest
+  .pipe streams.reloadClient()
 
 
 gulp.task 'serve', (done) ->
@@ -321,12 +348,17 @@ gulp.task 'bs', (done) ->
     proxy: 'localhost:' + si.port
     done
 
-gulp.task 'karma-single', (done) ->
-  ki.start true, ->
+gulp.task 'karma-work', (done) ->
+  ki.start singleRun: true, ->
     si.stop(done)
 
-gulp.task 'karma', ->
-  ki.start false
+gulp.task 'karma-ci', (done) ->
+  ki.start singleRun: true, ci: true, ->
+    si.stop(done)
+
+gulp.task 'karma-watch', ->
+  ki.start singleRun: false
+
 
 gulp.task 'build-server', (done) ->
   runSequence [
@@ -367,20 +399,23 @@ gulp.task 'watch-src', ->
 gulp.task 'watch-test', ->
   gulp.watch [dirs.test.client + '/scripts/' + G_SCRIPT], ['build-test-client-scripts']
 
-gulp.task 'clean-build', (done) -> 
+gulp.task 'clean-build', (done) ->
   runSequence 'clean', 'build', done
 
-gulp.task 'run', (done) -> 
+gulp.task 'run', (done) ->
   runSequence 'clean-build', 'serve', done
 
-gulp.task 'test', (done) -> 
-  runSequence 'clean-build', 'build-test', ['serve', 'karma-single'], done
+gulp.task 'test-work', (done) ->
+  runSequence 'clean-build', 'build-test', ['serve', 'karma-work'], done
 
-gulp.task 'run-watch', (done) -> 
+gulp.task 'test-ci', (done) ->
+  runSequence 'clean-build', 'build-test', ['serve', 'karma-ci'], done
+
+gulp.task 'run-watch', (done) ->
   runSequence 'clean-build', ['serve', 'bs'], 'watch-src', done
 
-gulp.task 'test-watch', (done) -> 
-  runSequence 'clean-build', 'build-test', ['serve', 'karma'], ['watch-src', 'watch-test'], done
+gulp.task 'test-watch', (done) ->
+  runSequence 'clean-build', 'build-test', ['serve', 'karma-watch'], ['watch-src', 'watch-test'], done
 
 gulp.task 'default', ['run-watch']
 

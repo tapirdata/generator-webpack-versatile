@@ -2,12 +2,7 @@
 
 ### global define, describe, before, it ###
 
-define [
-  'jquery'
-  'when'
-  'chai'
-  'app/scripts/templates'
-], ($, w, chai<% if (use.backbone) { %>, templates<% } %>) ->
+define ['jquery', 'when', 'chai'], ($, w, chai) ->
   expect = chai.expect
   describe 'The Foo Tests', ->
     $testMain = undefined
@@ -22,9 +17,6 @@ define [
       return
     it 'promise should resolve', ->
       p = w(6 * 4)
-      expect(p).to.eventually.be.equal 24
-    <% if (use.backbone) { %>it 'templates should have "about"', ->
-      expect(templates).to.have.property 'about'
-      return
-    <% } %>return
+      expect(p).to.eventually.be.equal 24, 'promised multiplication'
+    return
   return
