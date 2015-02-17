@@ -9,11 +9,11 @@
     "serve-favicon": "^2.0.1",
     "robots.txt": "^1.0.0",
     "jade": "^1.3.1",
-    "lodash": "^3.1.0",
-    "optimist": "^0.6.1"
+    "lodash": "^3.1.0"
   },
   "devDependencies": {
-    "browser-sync": "^2.0.1",
+    "browser-sync": "^2.0.1",<% if (use.coffee) { %>
+    "coffee-script": "^1.9.0",<% } %>
     "del": "^1.1.1",
     "glob": "^4.3.5",
     "gulp": "^3.8.10",<% if (use.coffee) { %>
@@ -43,6 +43,7 @@
     "karma-phantomjs-launcher": "^0.1.4",<% if (use.amd === 'requirejs') { %>
     "karma-requirejs": "^0.2.2",<% } %>
     "lazypipe": "^0.2.2",
+    "minimist": "^1.1.0",
     "mocha": "^2.1.0",
     "requirejs": "^2.1.15",
     "run-sequence": "^1.0.2",

@@ -3,7 +3,7 @@ fs = require 'fs'
 path = require 'path'
 del = require 'del'
 glob = require 'glob'
-optimist = require 'optimist'
+minimist = require 'minimist'
 _ = require 'lodash'
 gulp = require 'gulp'
 gutil = require 'gulp-util'
@@ -18,15 +18,17 @@ coffeeStylish = require 'jshint-stylish'<% } %>
 jshintConfig = require './.jshint.json'<% if (use.coffee) { %>
 coffeelintConfig = require './.coffeelint.json'<% } %>
 
+argv = minimist process.argv.slice 2
+
 process.env.NODE_ENV = do ->
-  env = optimist.argv.env or ''
-  console.log 'env=', env
-  if env.match /^prod/
-    'production'
-  else if env.match /^test/
-    'testing'
-  else
-    'development'
+  env = argv.env or process.env.NODE_ENV
+  if env
+    if env.match /^prod/
+      'production'
+    else if env.match /^test/
+      'testing'
+    else
+      'development'
 
 config = require 'config'
 
