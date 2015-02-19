@@ -21,14 +21,13 @@ coffeelintConfig = require './.coffeelint.json'<% } %>
 argv = minimist process.argv.slice 2
 
 process.env.NODE_ENV = do ->
-  env = argv.env or process.env.NODE_ENV
-  if env
-    if env.match /^prod/
-      'production'
-    else if env.match /^test/
-      'testing'
-    else
-      'development'
+  env = argv.env or process.env.NODE_ENV or ''
+  if env.match /^prod/
+    'production'
+  else if env.match /^test/
+    'testing'
+  else
+    'development'
 
 config = require 'config'
 
