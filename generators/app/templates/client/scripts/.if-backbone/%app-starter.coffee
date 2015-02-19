@@ -3,10 +3,13 @@
 ### global define ###
 
 define [ './router' ], (Router) ->
-  App =
+  app =
     initialize: ->
-      console.log 'App.initialize'
+      console.log 'app.initialize'
       new Router(app: this)
       return
     title: '<%= _.capitalize(appname) %>'
-  App
+
+  ->
+    app.initialize()
+    app

@@ -4,8 +4,10 @@
 
 appBaseUrl = '<%%= appBaseUrl %>'
 vendorBaseUrl = '<%%= vendorBaseUrl %>'
+
 curl.config
   paths:
+    app: appBaseUrl
     curl: vendorBaseUrl + '/curl/src/curl'
     jquery: vendorBaseUrl + '/jquery/dist/jquery'
     underscore: vendorBaseUrl + '/lodash/dist/lodash'<% if (use.backbone) { %>
@@ -19,10 +21,24 @@ curl.config
         loader: 'curl/loader/legacy'
         factory: ->
     <% } %>jade: vendorBaseUrl + '/jade/runtime'
-  preloads: [ 'jquery' ]
+  packages: [
+    {
+      name: 'poly'
+      location: vendorBaseUrl + '/poly'
+      main: 'poly'
+    }
+    {
+      name: 'when'
+      location: vendorBaseUrl + '/when'
+      main: 'when'
+    }
+  ]<% if (use.bootstrap) { %>
+  preloads: ['jquery']<% } %>
+
+
 curl [
-  appBaseUrl + '/scripts/app'<% if (use.bootstrap) { %>
+  'app/scripts/app-starter'<% if (use.bootstrap) { %>
   'bootstrap'<% } %>
-], (App) ->
-  App.initialize()
+], (appStarter) ->
+  appStarter()
   return
