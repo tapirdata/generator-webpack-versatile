@@ -98,7 +98,7 @@ ki =
   server: null
   browsers:
     work: [
-      'PhantomJS'
+      # 'PhantomJS'
       'Chrome'
       'Firefox'
     ]
@@ -144,6 +144,9 @@ ki =
           '/app':    'http://localhost:' + si.port + '/app'
         client:
           testFiles: testFiles
+          captureConsole: true
+          mocha:
+            bail: true
         singleRun: options.singleRun
 
       # gutil.log 'karma start...'
