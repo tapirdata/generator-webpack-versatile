@@ -23,12 +23,13 @@ define [
       return
     it 'should show the home page', ->
       expect($ 'div.jumbotron').to.have.length 1
+      expect($ 'ul.nav li:nth-child(1)').$class 'active'
     it 'should show the about page', ->
       w()
       .delay 200
       .then ->
         console.log 'click about'
-        sm.activateLink sm.$at $('ul.nav li a'), 1
+        sm.activateLink $ 'ul.nav li:nth-child(2) a'
       .then -> sm.retry ->
         expect($ 'div.jumbotron').to.have.length 0
     it 'should show something', ->
