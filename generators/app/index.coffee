@@ -50,16 +50,16 @@ ExpressDevelopGenerator = BaseGenerator.extend(
           }
         ]
       }
-      {
-        name: 'amdLib'
-        message: 'What AMD-Library would you like to use?'
-        type: 'list'
-        choices: [
-          'curl'
-          'requirejs'
-        ]
-        default: if use.amd == 'requirejs' then 1 else 0
-      }
+      # {
+      #   name: 'amdLib'
+      #   message: 'What AMD-Library would you like to use?'
+      #   type: 'list'
+      #   choices: [
+      #     'curl'
+      #     'requirejs'
+      #   ]
+      #   default: if use.amd == 'requirejs' then 1 else 0
+      # }
     ]
     @prompt prompts, ((answers) ->
 
@@ -72,8 +72,7 @@ ExpressDevelopGenerator = BaseGenerator.extend(
       use.backbone = hasFeature('backbone')
       use.sass = hasFeature('sass')
       use.coffee = hasFeature('coffee')
-      use.amd = if answers.amdLib == 'requirejs' then 'requirejs' else 'curl'
-      # console.log 'use=', use
+      # use.amd = if answers.amdLib == 'requirejs' then 'requirejs' else 'curl'
       config.set 'use', use
       done()
       return

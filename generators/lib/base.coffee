@@ -11,8 +11,8 @@ BaseGenerator = yeoman.generators.Base.extend(
     {
       backbone: use.backbone
       bootstrap: use.bootstrap
-      requirejs: use.amd == 'requirejs'
-      curl: use.amd == 'curl'
+      # requirejs: use.amd == 'requirejs'
+      # curl: use.amd == 'curl'
       coffee: use.coffee
       sass: use.sass
     }
@@ -121,7 +121,8 @@ BaseGenerator = yeoman.generators.Base.extend(
       modernizr: true
       coffee: true
       sass: true
-      amd: 'curl')
+      # amd: 'curl'
+    )
     return
   constructor: ->
     yeoman.generators.Base.apply this, arguments

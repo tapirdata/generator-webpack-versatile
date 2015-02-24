@@ -1,20 +1,14 @@
 'use strict'
 
-### global define ###
+$ = require 'jquery'
+Backbone = require 'backbone'
 
-define [
-  'backbone'
-  '../templates'
-], (Backbone, templates) ->
-  View = Backbone.View.extend(
-    initialize: (options) ->
-      @templateName = options.templateName
-      @app = options.app
-      return
-    render: ->
-      templateName = @templateName
-      template = templates[templateName]
-      @$el.html template(title: @app.title)
-      this
-  )
-  View
+module.exports = Backbone.View.extend
+  initialize: (options) ->
+    @template = options.template
+    @app = options.app
+    return
+  render: ->
+    @$el.html @template(title: @app.title)
+    this
+

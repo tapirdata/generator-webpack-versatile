@@ -10,6 +10,14 @@ gutil = require 'gulp-util'
 plugins = require('gulp-load-plugins')()
 runSequence = require 'run-sequence'
 lazypipe = require 'lazypipe'
+
+browserify = require 'browserify'
+# browserify-shim = require 'browserify-shim'
+coffeeify = require 'coffeeify'
+jadeify   = require 'jadeify'
+source = require 'vinyl-source-stream'
+watchify = require 'watchify'
+
 browserSync = require 'browser-sync'
 karma = require 'karma'
 jsStylish = require 'jshint-stylish'<% if (use.coffee) { %>
@@ -19,6 +27,7 @@ jshintConfig = require './.jshint.json'<% if (use.coffee) { %>
 coffeelintConfig = require './.coffeelint.json'<% } %>
 
 argv = minimist process.argv.slice 2
+watchEnabled = false
 
 process.env.NODE_ENV = do ->
   env = argv.env or process.env.NODE_ENV or ''
@@ -50,6 +59,9 @@ _.defaults dirs.tgt,
   server: path.join dirs.tgt.root, 'server'
   client: path.join dirs.tgt.root, 'client'
 
+_.defaults dirs.tgt,
+  clientVendor: path.join dirs.tgt.client, 'vendor'
+
 si = 
   port: config.server.port || 8000
   server: null
@@ -65,7 +77,7 @@ si =
     server = starter {
       port: @port
       clientDir: dirs.tgt.client
-      vendorDir: dirs.bower
+      vendorDir: dirs.tgt.clientVendor
       }, (err) => 
         if not err
           @server = server
@@ -131,9 +143,7 @@ ki =
           }
         ]
         frameworks: [
-         'mocha'<% if (use.amd == 'curl') { %>
-         'curl-amd'<% } %><% if (use.amd == 'requirejs') { %>
-         'requirejs'<% } %>
+         'mocha'
         ]
         browsers: if options.ci then @browsers.ci else @browsers.work
         reporters: if options.ci then @reporters.ci else @reporters.work
@@ -212,29 +222,14 @@ G_JADE   = '**/*.jade'
 G_CSS    = '**/*.css'
 G_SASS   = '**/*.sass'
 G_SCSS   = '**/*.scss'
-G_TPL    = '**/*.tpl.*'
-
-renameTpl = (name) -> 
-  name.replace /\.tpl$/, ''
 
 mapScript = (p) -> 
   gutil.replaceExtension p, '.js'
 
 
-scriptPipe = ->
-  tplData =
-    appBaseUrl: '/app'
-    vendorBaseUrl: '/vendor'
-    testBaseUrl: '/base/' + dirs.tgt.client + '/test'<% if (use.coffee) { %>
+scriptPipe = -><% if (use.coffee) { %>
   coffeeFilter = plugins.filter [G_COFFEE]<% } %>
-  tplFilter = plugins.filter [G_TPL]
-  do lazypipe()
-  .pipe -> tplFilter
-  .pipe plugins.template, tplData
-  .pipe plugins.rename, (path) -> 
-    path.basename = renameTpl path.basename
-    return
-  .pipe tplFilter.restore<% if (use.coffee) { %>
+  do lazypipe()<% if (use.coffee) { %>
   .pipe -> coffeeFilter
   .pipe plugins.coffeelint, coffeelintConfig
   .pipe plugins.coffeelint.reporter
@@ -244,25 +239,54 @@ scriptPipe = ->
   .pipe plugins.jshint.reporter, jsStylish
 
 
-postJadeTemplate = (basePath) ->
-  return plugins.tap (file, t) ->
-    if not file.isNull()
-      name = path.relative(basePath, file.path).replace /.js$/, ''
-      from = 'function template'
-      to = 'templates[\'' + name + '\'] = function'
-      if file.isBuffer()
-        contents = file.contents.toString().replace(from, to)
-        file.contents = new Buffer(contents)
-      else  
-        callback new gutil.PluginError(
-          'postJadeTemplate'
-          'streams are not supported yet'
-        ) 
-    return  
+# postJadeTemplate = (basePath) ->
+#   return plugins.tap (file, t) ->
+#     if not file.isNull()
+#       name = path.relative(basePath, file.path).replace /.js$/, ''
+#       from = 'function template'
+#       to = 'templates[\'' + name + '\'] = function'
+#       if file.isBuffer()
+#         contents = file.contents.toString().replace(from, to)
+#         file.contents = new Buffer(contents)
+#       else  
+#         callback new gutil.PluginError(
+#           'postJadeTemplate'
+#           'streams are not supported yet'
+#         ) 
+#     return  
+# 
+# 
+# amdJadeTemplates = ->
+#   return plugins.insert.wrap 'define([\'jade\'], function(jade) {\nvar templates={};\n', '\nreturn templates;\n})\n'
 
 
-amdJadeTemplates = ->
-  return plugins.insert.wrap 'define([\'jade\'], function(jade) {\nvar templates={};\n', '\nreturn templates;\n})\n'
+handleError = (err) ->
+  gutil.log gutil.colors.red('ERROR: ' + err)
+  @emit 'end'
+
+ 
+buildBrowsified = (options) ->
+  b = browserify
+    entries: options.entries
+    extensions: ['.coffee', '.jade'] 
+    transform: [coffeeify, jadeify]  
+
+  if options.watchEnabled 
+    b = watchify b
+    b.on 'update', (file) ->
+      gutil.log 'update', file
+      buildIt()
+      .pipe streams.reloadClient() 
+
+  buildIt = ->
+    b.bundle()
+    .on 'error', handleError
+    .pipe source options.destName 
+    .pipe gulp.dest options.dest
+
+  buildIt()
+
+
 
 gulp.task 'clean', (done) ->
   del dirs.tgt.root, done
@@ -284,14 +308,23 @@ gulp.task 'build-server-templates', ->
   .pipe gulp.dest dest
   .pipe streams.reloadServer()
 
-gulp.task 'build-client-scripts', ->
+gulp.task 'hint-client-scripts', ->
   dest = dirs.tgt.client + '/scripts'
+  destName = 'main.js'
+
   gulp.src G_SCRIPT, cwd: dirs.src.client + '/scripts'
   .pipe streams.plumber()
-  .pipe plugins.newer dest: dest, map: mapScript
-  .pipe scriptPipe()
-  .pipe gulp.dest dest
-  .pipe streams.reloadClient()
+  .pipe plugins.newer dest: dest + '/' + destName
+  .pipe scriptPipe() # just hint & forget
+
+
+gulp.task 'build-client-scripts', ->
+  buildBrowsified
+    entries: './' + dirs.src.client + '/scripts/main'
+    dest: dirs.tgt.client + '/scripts'
+    destName: 'main.js'
+    watchEnabled: watchEnabled
+
 
 gulp.task 'build-client-images', ->
   gulp.src [G_ALL], cwd: dirs.src.client + '/images'
@@ -311,7 +344,7 @@ gulp.task 'build-client-styles', ->
   gulp.src [G_CSS, G_SASS, G_SCSS], cwd: dirs.src.client + '/styles'
   .pipe streams.plumber()
   .pipe plugins.template 
-    bootstrap: dirs.bower + '/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss'
+    bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'
   .pipe sassFilter
   .pipe plugins.sass indentedSyntax: true
   .pipe sassFilter.restore()
@@ -320,18 +353,36 @@ gulp.task 'build-client-styles', ->
   .pipe scssFilter.restore()
   .pipe gulp.dest dirs.tgt.client + '/styles'
   .pipe streams.reloadClient()
+
+
+gulp.task 'build-client-vendor-mondernizr', ->
+  gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
+  .pipe gulp.dest dirs.tgt.clientVendor + '/modernizr'
+
+
+gulp.task 'build-client-vendor-backbone', ->
+  gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
+  .pipe gulp.dest dirs.tgt.clientVendor + '/bootstrap/assets/fonts'
+
+
+gulp.task 'build-client-vendor', (done) ->
+  runSequence [
+    'build-client-vendor-mondernizr'
+    'build-client-vendor-backbone'
+  ], done
+
   
-gulp.task 'build-client-templates', ->
-  srcpath = dirs.src.client + '/templates'
-  gulp.src [G_JADE], cwd: srcpath
-  .pipe streams.plumber()
-  # .pipe(plugins.debug(title: 'client-jade'))
-  .pipe plugins.jade client: true
-  .pipe postJadeTemplate srcpath
-  .pipe plugins.concat 'templates.js'
-  .pipe amdJadeTemplates()
-  .pipe gulp.dest dirs.tgt.client + '/scripts'
-  .pipe streams.reloadClient()
+# gulp.task 'build-client-templates', ->
+#   srcpath = dirs.src.client + '/templates'
+#   gulp.src [G_JADE], cwd: srcpath
+#   .pipe streams.plumber()
+#   # .pipe(plugins.debug(title: 'client-jade'))
+#   .pipe plugins.jade client: true
+#   .pipe postJadeTemplate srcpath
+#   .pipe plugins.concat 'templates.js'
+#   .pipe amdJadeTemplates()
+#   .pipe gulp.dest dirs.tgt.client + '/scripts'
+#   .pipe streams.reloadClient()
 
 gulp.task 'build-test-client-scripts', ->
   dest = dirs.tgt.client + '/test/scripts'
@@ -372,11 +423,12 @@ gulp.task 'build-server', (done) ->
 
 gulp.task 'build-client', (done) ->
   runSequence [
+    'hint-client-scripts' 
     'build-client-scripts' 
     'build-client-images' 
     'build-client-styles'
     'build-client-pages'
-    'build-client-templates'
+    'build-client-vendor'
   ], done
 
 gulp.task 'build-test', (done) -> 
@@ -391,14 +443,16 @@ gulp.task 'build', (done) ->
   ], done
 
 
+gulp.task 'watch-on', -> 
+  watchEnabled = true
+
 gulp.task 'watch-src', ->
   gulp.watch [dirs.src.server + '/scripts/' + G_SCRIPT], ['build-server-scripts']
   gulp.watch [dirs.src.server + '/templates/' + G_ALL], ['build-server-templates']
-  gulp.watch [dirs.src.client + '/scripts/' + G_SCRIPT], ['build-client-scripts']
+  gulp.watch [dirs.src.client + '/scripts/' + G_SCRIPT], ['hint-client-scripts']
   gulp.watch [dirs.src.client + '/styles/' + G_ALL], ['build-client-styles']
   gulp.watch [dirs.src.client + '/images/' + G_ALL], ['build-client-images']
   gulp.watch [dirs.src.client + '/pages/' + G_ALL], ['build-client-pages']
-  gulp.watch [dirs.src.client + '/templates/' + G_ALL], ['build-client-templates']
 
 gulp.task 'watch-test', ->
   gulp.watch [dirs.test.client + '/scripts/' + G_SCRIPT], ['build-test-client-scripts']
@@ -416,10 +470,10 @@ gulp.task 'test-ci', (done) ->
   runSequence 'clean-build', 'build-test', ['serve', 'karma-ci'], done
 
 gulp.task 'run-watch', (done) ->
-  runSequence 'clean-build', ['serve', 'bs'], 'watch-src', done
+  runSequence 'watch-on', 'clean-build', ['serve', 'bs'], 'watch-src', done
 
 gulp.task 'test-watch', (done) ->
-  runSequence 'clean-build', 'build-test', ['serve', 'karma-watch'], ['watch-src', 'watch-test'], done
+  runSequence 'watch-on', 'clean-build', 'build-test', ['serve', 'karma-watch'], ['watch-src', 'watch-test'], done
 
 gulp.task 'default', ['run-watch']
 

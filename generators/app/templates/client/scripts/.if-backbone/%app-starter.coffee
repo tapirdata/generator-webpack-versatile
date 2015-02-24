@@ -1,15 +1,22 @@
 'use strict'
 
-### global define ###
+### global window ###
 
-define [ './router' ], (Router) ->
-  app =
-    initialize: ->
-      console.log 'app.initialize'
-      new Router(app: this)
-      return
-    title: '<%= _.capitalize(appname) %>'
+$ = require 'jquery'<% if (use.backbone) { %>
+Backbone = require 'backbone'
+Backbone.$ = $<% } %><% if (use.bootstrap) { %>
+window.jQuery = $ # bootstrap needs this
+require 'bootstrap-sass'<% } %>
 
-  ->
-    app.initialize()
-    app
+Router = require './router'
+
+app =
+  initialize: ->
+    console.log 'app.initialize'
+    new Router(app: this)
+    return
+  title: '<%= _.capitalize(appname) %>'
+
+module.exports = ->
+  app.initialize()
+  app

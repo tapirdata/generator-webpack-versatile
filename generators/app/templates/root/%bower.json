@@ -1,24 +1,10 @@
 {
   "name": "<%= _.slugify(appname) %>",
-  "version": "0.0.0",
-  "dependencies": {<% if (use.backbone) { %>
-    "backbone": "~1.1.2",<% } %><% if (use.bootstrap && !use.sass) { %>
-    "bootstrap": "~3.3.1",<% } %><% if (use.bootstrap && use.sass) { %>
-    "bootstrap-sass-official": "~3.3.1",<% } %><% if (use.amd === 'curl') { %>
-    "curl": "~0.8.12",<% } %>
-    "jade": "~1.9.0",
-    "jquery": "~1.11.0",
-    "modernizr": "~2.8.3",<% if (use.amd === 'requirejs') { %>
-    "requirejs": "~2.1.14",<% } %>
-    "lodash": "~2.4.1",
-    "poly": "~0.6.0",
-    "when": "~3.7.1"
+  "version": "0.1.0",
+  "dependencies": {
+    "modernizr": "~2.8.3"
   },
   "devDependencies": {
-    "mocha": "~2.1.0",
-    "chai": "~1.10.0",
-    "chai-as-promised": "~4.1.1",
-    "chai-jq": "~0.0.8"
   }
 }
 
