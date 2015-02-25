@@ -1,22 +1,26 @@
 'use strict'
 
-### global define, describe, before, it ###
+### global describe, before, it ###
 
-define ['jquery', 'when', 'chai'], ($, w, chai) ->
-  expect = chai.expect
-  describe 'The Foo Tests', ->
-    $testMain = undefined
-    before ->
-      $testMain = $('<div class="test-main" />').appendTo('body')
-      return
-    it 'should equal', ->
-      expect(3 * 2).equal 6
-      return
-    it 'jquery should have Deferred', ->
-      expect($.Deferred).is.a 'function'
-      return
-    it 'promise should resolve', ->
-      p = w(6 * 4)
-      expect(p).to.eventually.be.equal 24, 'promised multiplication'
+$ = require 'jquery'
+w = require 'when'
+chai = require 'chai'
+
+expect = chai.expect
+
+describe 'The Foo Tests', ->
+  $testMain = undefined
+  before ->
+    $testMain = $('<div class="test-main" />').appendTo('body')
     return
+  it 'should equal', ->
+    expect(3 * 2).equal 6
+    return
+  it 'jquery should have Deferred', ->
+    expect($.Deferred).is.a 'function'
+    return
+  it 'promise should resolve', ->
+    p = w(6 * 4)
+    expect(p).to.eventually.be.equal 24, 'promised multiplication'
   return
+return

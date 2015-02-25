@@ -76,6 +76,18 @@ getBundleDefs = (scope) ->
       watchable: true
       scopes: ['app']
     }  
+    {
+      name: 'test-main'
+      entries: [
+        './' + dirs.test.client + '/scripts/main'
+      ]  
+      extensions: ['.coffee', '.jade']
+      transform: [coffeeify, jadeify]
+      debug: true
+      watchable: true
+      destDir: dirs.tgt.client + '/test/scripts'
+      scopes: ['test']
+    }  
     { 
       name: 'vendor'
       exports: [
@@ -413,27 +425,8 @@ gulp.task 'build-client-vendor', (done) ->
   ], done
 
   
-# gulp.task 'build-client-templates', ->
-#   srcpath = dirs.src.client + '/templates'
-#   gulp.src [G_JADE], cwd: srcpath
-#   .pipe streams.plumber()
-#   # .pipe(plugins.debug(title: 'client-jade'))
-#   .pipe plugins.jade client: true
-#   .pipe postJadeTemplate srcpath
-#   .pipe plugins.concat 'templates.js'
-#   .pipe amdJadeTemplates()
-#   .pipe gulp.dest dirs.tgt.client + '/scripts'
-#   .pipe streams.reloadClient()
-
 gulp.task 'build-test-client-scripts', ->
-  dest = dirs.tgt.client + '/test/scripts'
-  gulp.src G_SCRIPT, cwd: dirs.test.client + '/scripts'
-  .pipe streams.plumber()
-  .pipe plugins.newer dest: dest, map: mapScript
-  .pipe scriptPipe()
-  .pipe gulp.dest dest
-  .pipe streams.reloadClient()
-
+  buildBrowsified getBundleDefs('test'), doWatch: watchEnabled
 
 gulp.task 'serve', (done) ->
   si.start done
