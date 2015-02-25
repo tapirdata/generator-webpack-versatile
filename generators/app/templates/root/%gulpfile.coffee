@@ -37,7 +37,7 @@ process.env.NODE_ENV = do ->
     'testing'
   else
     'development'
-
+    
 config = require 'config'
 
 dirs = 
@@ -61,6 +61,34 @@ _.defaults dirs.tgt,
 
 _.defaults dirs.tgt,
   clientVendor: path.join dirs.tgt.client, 'vendor'
+
+
+getBundleDefs = (scope) ->
+  bundleDefs = [
+    {
+      name: 'main'
+      entries: [
+        './' + dirs.src.client + '/scripts/main'
+      ]  
+      extensions: ['.coffee', '.jade']
+      transform: [coffeeify, jadeify]
+      debug: true
+      watchable: true
+      scopes: ['app']
+    }  
+    { 
+      name: 'vendor'
+      exports: [
+        'jquery'
+        'lodash'
+        'backbone'
+        'bootstrap-sass'
+      ]
+    }  
+  ]
+  _.filter bundleDefs, (bundleDef) ->
+    not scope or not bundleDef.scopes or _.indexOf(bundleDef.scopes, scope) >= 0
+
 
 si = 
   port: config.server.port || 8000
@@ -176,6 +204,10 @@ ki =
           done()
     1000)
 
+ 
+handleError = (err) ->
+  gutil.log gutil.colors.red('ERROR: ' + err)
+  @emit 'end'
 
 streams = 
   plumber: ->
@@ -189,27 +221,20 @@ streams =
 
   reloadServer: ->  
     plugins.tap -> 
-      # gutil.log 'reloadServer'
       if si.isActive()
-        # gutil.log 'yeah'
         si.restart -> 
           if browserSync.active
-            # gutil.log 'yeah browserSync'
             browserSync.reload()
           if ki.isActive()
-            # gutil.log 'yeah karma'
             ki.run()
 
 
   reloadClient: ->
-    # gutil.log 'reloadClient'
     if browserSync.active
-      # gutil.log 'yeah browserSync'
       browserSync.reload stream: true
     else
       plugins.tap ->
         if ki.isActive()
-          # gutil.log 'yeah karma'
           ki.run()
 
 
@@ -239,53 +264,74 @@ scriptPipe = -><% if (use.coffee) { %>
   .pipe plugins.jshint.reporter, jsStylish
 
 
-# postJadeTemplate = (basePath) ->
-#   return plugins.tap (file, t) ->
-#     if not file.isNull()
-#       name = path.relative(basePath, file.path).replace /.js$/, ''
-#       from = 'function template'
-#       to = 'templates[\'' + name + '\'] = function'
-#       if file.isBuffer()
-#         contents = file.contents.toString().replace(from, to)
-#         file.contents = new Buffer(contents)
-#       else  
-#         callback new gutil.PluginError(
-#           'postJadeTemplate'
-#           'streams are not supported yet'
-#         ) 
-#     return  
-# 
-# 
-# amdJadeTemplates = ->
-#   return plugins.insert.wrap 'define([\'jade\'], function(jade) {\nvar templates={};\n', '\nreturn templates;\n})\n'
+buildBrowsified = (bundleDefs, options) ->
+  options = options || {}
+  exportNames = {}
+  bundles = _.map bundleDefs, (bundleDef) ->
+    bundle = 
+      name: bundleDef.name
+      entries: bundleDef.entries
+      transform: bundleDef.transform
+      extensions: bundleDef.extensions
+      debug: bundleDef.debug
+      destDir: bundleDef.destDir or dirs.tgt.client + '/scripts'
+      destName: bundleDef.destName or bundleDef.name + '.js'
+      doWatch: bundleDef.watchable and options.doWatch
+      exportNames: {}
 
+    if bundleDef.exports
+      bundle.exports = _.map bundleDef.exports, (exp) ->
+        if not _.isObject(exp)
+          exp = 
+            name: exp
+        if not exp.alias
+          exp.alias = exp.name
+        bundle.exportNames[exp.alias] = true  
+        exportNames[exp.alias] = true  
+        exp
+    else    
+      bundle.exports = []
 
-handleError = (err) ->
-  gutil.log gutil.colors.red('ERROR: ' + err)
-  @emit 'end'
+    bundle
 
- 
-buildBrowsified = (options) ->
-  b = browserify
-    entries: options.entries
-    extensions: ['.coffee', '.jade'] 
-    transform: [coffeeify, jadeify]  
+  # gutil.log('exportNames=', exportNames)
 
-  if options.watchEnabled 
-    b = watchify b
-    b.on 'update', (file) ->
-      gutil.log 'update', file
-      buildIt()
-      .pipe streams.reloadClient() 
+  bundles.forEach (bundle) ->
+    # gutil.log('bundle=', bundle)
 
-  buildIt = ->
-    b.bundle()
-    .on 'error', handleError
-    .pipe source options.destName 
-    .pipe gulp.dest options.dest
+    b = browserify
+      cache: {}
+      entries: bundle.entries
+      extensions: bundle.extensions
+      transform: bundle.transform
+      debug: bundle.debug
 
-  buildIt()
+    _.forOwn exportNames, (ok, name) ->
+      if not bundle.exportNames[name]
+        # gutil.log 'external: ', name
+        b.external name
 
+    _.forEach bundle.exports, (exp) ->
+        # gutil.log 'export: ', exp
+        expOpts = {}
+        if exp.alias != exp.name
+          expOpts.expose = exp.alias
+        b.require exp.name, expOpts
+
+    if bundle.doWatch
+      b = watchify b
+      b.on 'update', (file) ->
+        gutil.log 'Changed: ' + gutil.colors.blue(path.relative __dirname, '' + file)
+        buildIt()
+        .pipe streams.reloadClient()
+
+    buildIt = ->
+      b.bundle()
+      .on 'error', handleError
+      .pipe source bundle.destName
+      .pipe gulp.dest bundle.destDir
+
+    buildIt()
 
 
 gulp.task 'clean', (done) ->
@@ -319,12 +365,7 @@ gulp.task 'hint-client-scripts', ->
 
 
 gulp.task 'build-client-scripts', ->
-  buildBrowsified
-    entries: './' + dirs.src.client + '/scripts/main'
-    dest: dirs.tgt.client + '/scripts'
-    destName: 'main.js'
-    watchEnabled: watchEnabled
-
+  buildBrowsified getBundleDefs('app'), doWatch: watchEnabled
 
 gulp.task 'build-client-images', ->
   gulp.src [G_ALL], cwd: dirs.src.client + '/images'
