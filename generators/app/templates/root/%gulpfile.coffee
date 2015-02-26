@@ -68,9 +68,7 @@ getBundleDefs = (scope) ->
   bundleDefs = [
     {
       name: 'main'
-      entries: [
-        './' + dirs.src.client + '/scripts/main'
-      ]  
+      entries: './' + dirs.src.client + '/scripts/main'
       extensions: ['.coffee', '.jade']
       transform: [coffeeify, jadeify]
       debug: true
@@ -79,9 +77,7 @@ getBundleDefs = (scope) ->
     }  
     {
       name: 'test-main'
-      entries: [
-        './' + dirs.test.client + '/scripts/foo.test'
-      ]  
+      entries: './' + dirs.test.client + '/scripts/*.test.*'  
       extensions: ['.coffee', '.jade']
       transform: [coffeeify, jadeify]
       debug: true
@@ -170,43 +166,39 @@ ki =
   isActive: () ->
     !! @server
   start: (options, done) ->
-    glob '**/*.test.js', {cwd: dirs.tgt.client + '/test/scripts'}, (err, testFiles) =>
-      if err
-        done err
-        return
-      karmaConf =
-        files: [
-          {
-            pattern: dirs.tgt.client + '/scripts/vendor.js'
-          }
-          {
-            pattern: dirs.tgt.client + '/test/scripts/main.js'
-          }
-        ]
-        frameworks: [
-         'mocha'
-        ]
-        browsers: if options.ci then @browsers.ci else @browsers.work
-        reporters: if options.ci then @reporters.ci else @reporters.work
-        junitReporter:
-          outputFile: 'test-results.xml'
-        proxies:
-          '/vendor': 'http://localhost:' + si.port + '/vendor'
-          '/app':    'http://localhost:' + si.port + '/app'
-        client:
-          testFiles: testFiles
-          captureConsole: true
-          mocha:
-            bail: true
-        singleRun: options.singleRun
+    karmaConf =
+      files: [
+        {
+          pattern: dirs.tgt.client + '/scripts/vendor.js'
+          watched: false
+        }
+        {
+          pattern: dirs.tgt.client + '/test/scripts/main.js'
+        }
+      ]
+      frameworks: [
+       'mocha'
+      ]
+      browsers: if options.ci then @browsers.ci else @browsers.work
+      reporters: if options.ci then @reporters.ci else @reporters.work
+      junitReporter:
+        outputFile: 'test-results.xml'
+      proxies:
+        '/vendor': 'http://localhost:' + si.port + '/vendor'
+        '/app':    'http://localhost:' + si.port + '/app'
+      client:
+        captureConsole: true
+        mocha:
+          bail: true
+      singleRun: options.singleRun
 
-      # gutil.log 'karma start...'
-      karma.server.start karmaConf, (exitCode) =>
-        # gutil.log 'karma start done. code=%s', exitCode
-        @server = null
-        if done
-          done()
-      @server = true
+    # gutil.log 'karma start...'
+    karma.server.start karmaConf, (exitCode) =>
+      # gutil.log 'karma start done. code=%s', exitCode
+      @server = null
+      if done
+        done()
+    @server = true
 
   run: _.debounce( 
     (done) ->
@@ -278,12 +270,26 @@ scriptPipe = -><% if (use.coffee) { %>
 
 
 buildBrowsified = (bundleDefs, options) ->
+
+  resolveNames = (names) ->
+    _names = []  
+    if names
+      if not _.isArray(names)
+        names = [names]
+      _.forEach names, (name) ->
+        if /[*]/.test(name)
+          _names = _names.concat glob.sync name
+        else
+          _names.push(name)
+    _names    
+      
+
   options = options || {}
   exportNames = {}
   bundles = _.map bundleDefs, (bundleDef) ->
     bundle = 
       name: bundleDef.name
-      entries: bundleDef.entries
+      entries: resolveNames bundleDef.entries
       transform: bundleDef.transform
       extensions: bundleDef.extensions
       debug: bundleDef.debug
@@ -333,7 +339,7 @@ buildBrowsified = (bundleDefs, options) ->
     if bundle.doWatch
       b = watchify b
       b.on 'update', (file) ->
-        gutil.log 'Changed: ' + gutil.colors.blue(path.relative __dirname, '' + file)
+        # gutil.log 'Rebuild bundle: ' + gutil.colors.blue(bundle.name)
         buildIt()
         .pipe streams.reloadClient()
 
@@ -348,7 +354,7 @@ buildBrowsified = (bundleDefs, options) ->
 
     buildIt()
     .pipe plugins.tap ->
-      # gutil.log('done')
+      # gutil.log 'Build done: ' + gutil.colors.blue(bundle.name)
       defer.resolve()
 
   w.all(promises)
@@ -377,14 +383,12 @@ gulp.task 'build-server-templates', ->
 gulp.task 'hint-client-scripts', ->
   dest = dirs.tgt.client + '/scripts'
   destName = 'main.js'
-
   gulp.src G_SCRIPT, cwd: dirs.src.client + '/scripts'
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest + '/' + destName
   .pipe scriptPipe() # just hint & forget
 
-
-gulp.task 'build-client-scripts', ->
+gulp.task 'build-client-scripts', ['hint-client-scripts'], ->
   buildBrowsified getBundleDefs('app'), doWatch: watchEnabled
 
 gulp.task 'build-client-images', ->
@@ -415,25 +419,29 @@ gulp.task 'build-client-styles', ->
   .pipe gulp.dest dirs.tgt.client + '/styles'
   .pipe streams.reloadClient()
 
-
 gulp.task 'build-client-vendor-mondernizr', ->
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
   .pipe gulp.dest dirs.tgt.clientVendor + '/modernizr'
-
 
 gulp.task 'build-client-vendor-backbone', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
   .pipe gulp.dest dirs.tgt.clientVendor + '/bootstrap/assets/fonts'
 
-
-gulp.task 'build-client-vendor', (done) ->
+gulp.task 'build-client-vendor-assets', (done) ->
   runSequence [
     'build-client-vendor-mondernizr'
     'build-client-vendor-backbone'
   ], done
 
-  
-gulp.task 'build-test-client-scripts', ->
+gulp.task 'hint-test-client-scripts', ->
+  dest = dirs.tgt.client + '/test/scripts'
+  destName = 'main.js'
+  gulp.src G_SCRIPT, cwd: dirs.test.client + '/scripts'
+  .pipe streams.plumber()
+  .pipe plugins.newer dest: dest + '/' + destName
+  .pipe scriptPipe() # just hint & forget
+
+gulp.task 'build-test-client-scripts', ['hint-test-client-scripts'], ->
   buildBrowsified getBundleDefs('test'), doWatch: watchEnabled
 
 gulp.task 'serve', (done) ->
@@ -457,24 +465,35 @@ gulp.task 'karma-watch', ->
   ki.start singleRun: false
 
 
+gulp.task 'build-server-assets', (done) ->
+  runSequence [
+    'build-server-templates' 
+  ], done
+
 gulp.task 'build-server', (done) ->
   runSequence [
     'build-server-scripts' 
-    'build-server-templates' 
+    'build-server-assets' 
+  ], done
+
+gulp.task 'build-client-assets', (done) ->
+  runSequence [
+    'build-client-images' 
+    'build-client-styles'
+    'build-client-pages'
+    'build-client-vendor-assets'
   ], done
 
 gulp.task 'build-client', (done) ->
   runSequence [
-    'hint-client-scripts' 
+    'build-client-assets' 
     'build-client-scripts' 
-    'build-client-images' 
-    'build-client-styles'
-    'build-client-pages'
-    'build-client-vendor'
   ], done
 
 gulp.task 'build-test', (done) -> 
   runSequence [
+    'build-server' 
+    'build-client-assets' 
     'build-test-client-scripts' 
   ], done
 
@@ -488,34 +507,45 @@ gulp.task 'build', (done) ->
 gulp.task 'watch-on', -> 
   watchEnabled = true
 
-gulp.task 'watch-src', ->
-  gulp.watch [dirs.src.server + '/scripts/' + G_SCRIPT], ['build-server-scripts']
+gulp.task 'watch-server-assets', ->
   gulp.watch [dirs.src.server + '/templates/' + G_ALL], ['build-server-templates']
-  gulp.watch [dirs.src.client + '/scripts/' + G_SCRIPT], ['hint-client-scripts']
+
+gulp.task 'watch-server-scripts', ->
+  gulp.watch [dirs.src.server + '/scripts/' + G_SCRIPT], ['build-server-scripts']
+
+gulp.task 'watch-server', ['watch-server-assets', 'watch-server-scripts']
+
+gulp.task 'watch-client-assets', ->
   gulp.watch [dirs.src.client + '/styles/' + G_ALL], ['build-client-styles']
   gulp.watch [dirs.src.client + '/images/' + G_ALL], ['build-client-images']
   gulp.watch [dirs.src.client + '/pages/' + G_ALL], ['build-client-pages']
 
-gulp.task 'watch-test', ->
-  gulp.watch [dirs.test.client + '/scripts/' + G_SCRIPT], ['build-test-client-scripts']
+gulp.task 'watch-client-scripts', ->
+  gulp.watch [dirs.src.client + '/scripts/' + G_SCRIPT], ['hint-client-scripts']
 
-gulp.task 'clean-build', (done) ->
-  runSequence 'clean', 'build', done
+gulp.task 'watch-test-client-scripts', ->
+  gulp.watch [dirs.test.client + '/scripts/' + G_SCRIPT], ['hint-test-client-scripts']
+
+gulp.task 'watch-client', ['watch-client-assets', 'watch-client-scripts']
+
+gulp.task 'watch', ['watch-server', 'watch-client']
+
+gulp.task 'watch-test', ['watch-test-client-scripts']
 
 gulp.task 'run', (done) ->
-  runSequence 'clean-build', 'serve', done
-
-gulp.task 'test-work', (done) ->
-  runSequence 'clean-build', 'build-test', ['serve', 'karma-work'], done
-
-gulp.task 'test-ci', (done) ->
-  runSequence 'clean-build', 'build-test', ['serve', 'karma-ci'], done
+  runSequence 'clean', 'build', 'serve', done
 
 gulp.task 'run-watch', (done) ->
-  runSequence 'watch-on', 'clean-build', ['serve', 'bs'], 'watch-src', done
+  runSequence 'watch-on', 'clean', 'build', ['serve', 'bs'], 'watch', done
+
+gulp.task 'test-work', (done) ->
+  runSequence 'clean', 'build-test', ['serve', 'karma-work'], done
+
+gulp.task 'test-ci', (done) ->
+  runSequence 'clean', 'build-test', ['serve', 'karma-ci'], done
 
 gulp.task 'test-watch', (done) ->
-  runSequence 'watch-on', 'clean-build', 'build-test', ['serve', 'karma-watch'], ['watch-src', 'watch-test'], done
+  runSequence 'watch-on', 'clean', 'build-test', ['serve', 'karma-watch'], ['watch-server', 'watch-client-assets', 'watch-test'], done
 
 gulp.task 'default', ['run-watch']
 
