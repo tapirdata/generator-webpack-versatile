@@ -80,7 +80,6 @@ getBundleDefs = (scope) ->
     {
       name: 'test-main'
       entries: [
-        './' + dirs.test.client + '/scripts/main'
         './' + dirs.test.client + '/scripts/foo.test'
       ]  
       extensions: ['.coffee', '.jade']
