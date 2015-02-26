@@ -68,7 +68,7 @@ getBundleDefs = (scope) ->
   bundleDefs = [
     {
       name: 'main'
-      entries: './' + dirs.src.client + '/scripts/main'
+      entries: "./#{dirs.src.client}/scripts/main"
       extensions: ['.coffee', '.jade']
       transform: [coffeeify, jadeify]
       debug: true
@@ -77,12 +77,12 @@ getBundleDefs = (scope) ->
     }  
     {
       name: 'test-main'
-      entries: './' + dirs.test.client + '/scripts/*.test.*'  
+      entries: "./#{dirs.test.client}/scripts/*.test.*"
       extensions: ['.coffee', '.jade']
       transform: [coffeeify, jadeify]
       debug: true
       watchable: true
-      destDir: dirs.tgt.client + '/test/scripts'
+      destDir: "#{dirs.tgt.client}/test/scripts"
       scopes: ['test']
       destName: 'main.js'
     }  
@@ -111,7 +111,7 @@ si =
       gutil.log 'server already running!'
       done()
       return
-    starter = require './' + dirs.tgt.server + '/scripts/startapp'
+    starter = require "./#{dirs.tgt.server}/scripts/startapp"
     server = starter {
       port: @port
       clientDir: dirs.tgt.client
@@ -167,13 +167,14 @@ ki =
     !! @server
   start: (options, done) ->
     karmaConf =
+      urlRoot: '/__karma__/'
       files: [
         {
-          pattern: dirs.tgt.client + '/scripts/vendor.js'
+          pattern: "#{dirs.tgt.client}/scripts/vendor.js"
           watched: false
         }
         {
-          pattern: dirs.tgt.client + '/test/scripts/main.js'
+          pattern: "#{dirs.tgt.client}/test/scripts/main.js"
         }
       ]
       frameworks: [
@@ -184,8 +185,7 @@ ki =
       junitReporter:
         outputFile: 'test-results.xml'
       proxies:
-        '/vendor': 'http://localhost:' + si.port + '/vendor'
-        '/app':    'http://localhost:' + si.port + '/app'
+        '/': "http://localhost:#{si.port}/"
       client:
         captureConsole: true
         mocha:
@@ -293,8 +293,8 @@ buildBrowsified = (bundleDefs, options) ->
       transform: bundleDef.transform
       extensions: bundleDef.extensions
       debug: bundleDef.debug
-      destDir: bundleDef.destDir or dirs.tgt.client + '/scripts'
-      destName: bundleDef.destName or bundleDef.name + '.js'
+      destDir: bundleDef.destDir or "#{dirs.tgt.client}/scripts"
+      destName: bundleDef.destName or "#{bundleDef.name}.js"
       doWatch: bundleDef.watchable and options.doWatch
       exportNames: {}
 
@@ -364,8 +364,8 @@ gulp.task 'clean', (done) ->
   del dirs.tgt.root, done
 
 gulp.task 'build-server-scripts', ->
-  dest = dirs.tgt.server + '/scripts'
-  gulp.src G_SCRIPT, cwd: dirs.src.server + '/scripts'
+  dest = "#{dirs.tgt.server}/scripts"
+  gulp.src G_SCRIPT, cwd: "#{dirs.src.server}/scripts"
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest, map: mapScript
   .pipe scriptPipe()
@@ -373,40 +373,40 @@ gulp.task 'build-server-scripts', ->
   .pipe streams.reloadServer()
 
 gulp.task 'build-server-templates', ->
-  dest = dirs.tgt.server + '/templates'
-  gulp.src [G_JADE], cwd: dirs.src.server + '/templates'
+  dest = "#{dirs.tgt.server}/templates"
+  gulp.src [G_JADE], cwd: "#{dirs.src.server}/templates"
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest
   .pipe gulp.dest dest
   .pipe streams.reloadServer()
 
 gulp.task 'hint-client-scripts', ->
-  dest = dirs.tgt.client + '/scripts'
+  dest = "#{dirs.tgt.client}/scripts"
   destName = 'main.js'
-  gulp.src G_SCRIPT, cwd: dirs.src.client + '/scripts'
+  gulp.src G_SCRIPT, cwd: "#{dirs.src.client}/scripts"
   .pipe streams.plumber()
-  .pipe plugins.newer dest: dest + '/' + destName
+  .pipe plugins.newer dest: "#{dest}/#{destName}"
   .pipe scriptPipe() # just hint & forget
 
 gulp.task 'build-client-scripts', ['hint-client-scripts'], ->
   buildBrowsified getBundleDefs('app'), doWatch: watchEnabled
 
 gulp.task 'build-client-images', ->
-  gulp.src [G_ALL], cwd: dirs.src.client + '/images'
+  gulp.src [G_ALL], cwd: "#{dirs.src.client}/images"
   .pipe streams.plumber()
-  .pipe gulp.dest dirs.tgt.client + '/images'
+  .pipe gulp.dest "#{dirs.tgt.client}/images"
   .pipe streams.reloadClient()
 
 gulp.task 'build-client-pages', ->
-  gulp.src [G_ALL], cwd: dirs.src.client + '/pages'
+  gulp.src [G_ALL], cwd: "#{dirs.src.client}/pages"
   .pipe streams.plumber()
-  .pipe gulp.dest dirs.tgt.client + '/pages'
+  .pipe gulp.dest "#{dirs.tgt.client}/pages"
   .pipe streams.reloadClient()
 
 gulp.task 'build-client-styles', ->
   sassFilter = plugins.filter [G_SASS]
   scssFilter = plugins.filter [G_SCSS]
-  gulp.src [G_CSS, G_SASS, G_SCSS], cwd: dirs.src.client + '/styles'
+  gulp.src [G_CSS, G_SASS, G_SCSS], cwd: "#{dirs.src.client}/styles"
   .pipe streams.plumber()
   .pipe plugins.template 
     bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'
@@ -416,16 +416,16 @@ gulp.task 'build-client-styles', ->
   .pipe scssFilter
   .pipe plugins.sass()
   .pipe scssFilter.restore()
-  .pipe gulp.dest dirs.tgt.client + '/styles'
+  .pipe gulp.dest "#{dirs.tgt.client}/styles"
   .pipe streams.reloadClient()
 
 gulp.task 'build-client-vendor-mondernizr', ->
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
-  .pipe gulp.dest dirs.tgt.clientVendor + '/modernizr'
+  .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"
 
 gulp.task 'build-client-vendor-backbone', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
-  .pipe gulp.dest dirs.tgt.clientVendor + '/bootstrap/assets/fonts'
+  .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"
 
 gulp.task 'build-client-vendor-assets', (done) ->
   runSequence [
@@ -434,11 +434,11 @@ gulp.task 'build-client-vendor-assets', (done) ->
   ], done
 
 gulp.task 'hint-test-client-scripts', ->
-  dest = dirs.tgt.client + '/test/scripts'
+  dest = "#{dirs.tgt.client}/test/scripts"
   destName = 'main.js'
-  gulp.src G_SCRIPT, cwd: dirs.test.client + '/scripts'
+  gulp.src G_SCRIPT, cwd: "#{dirs.test.client}/scripts"
   .pipe streams.plumber()
-  .pipe plugins.newer dest: dest + '/' + destName
+  .pipe plugins.newer dest: "#{dest}/#{destName}"
   .pipe scriptPipe() # just hint & forget
 
 gulp.task 'build-test-client-scripts', ['hint-test-client-scripts'], ->
@@ -450,7 +450,7 @@ gulp.task 'serve', (done) ->
 
 gulp.task 'bs', (done) ->
   browserSync
-    proxy: 'localhost:' + si.port
+    proxy: "localhost:#{si.port}"
     done
 
 gulp.task 'karma-work', (done) ->
@@ -508,23 +508,23 @@ gulp.task 'watch-on', ->
   watchEnabled = true
 
 gulp.task 'watch-server-assets', ->
-  gulp.watch [dirs.src.server + '/templates/' + G_ALL], ['build-server-templates']
+  gulp.watch ["#{dirs.src.server}/templates/#{G_ALL}"], ['build-server-templates']
 
 gulp.task 'watch-server-scripts', ->
-  gulp.watch [dirs.src.server + '/scripts/' + G_SCRIPT], ['build-server-scripts']
+  gulp.watch ["#{dirs.src.server}/scripts/#{G_SCRIPT}"], ['build-server-scripts']
 
 gulp.task 'watch-server', ['watch-server-assets', 'watch-server-scripts']
 
 gulp.task 'watch-client-assets', ->
-  gulp.watch [dirs.src.client + '/styles/' + G_ALL], ['build-client-styles']
-  gulp.watch [dirs.src.client + '/images/' + G_ALL], ['build-client-images']
-  gulp.watch [dirs.src.client + '/pages/' + G_ALL], ['build-client-pages']
+  gulp.watch ["#{dirs.src.client}/styles/#{G_ALL}"], ['build-client-styles']
+  gulp.watch ["#{dirs.src.client}/images/#{G_ALL}"], ['build-client-images']
+  gulp.watch ["#{dirs.src.client}/pages/#{G_ALL}"], ['build-client-pages']
 
 gulp.task 'watch-client-scripts', ->
-  gulp.watch [dirs.src.client + '/scripts/' + G_SCRIPT], ['hint-client-scripts']
+  gulp.watch ["#{dirs.src.client}/scripts/#{G_SCRIPT}"], ['hint-client-scripts']
 
 gulp.task 'watch-test-client-scripts', ->
-  gulp.watch [dirs.test.client + '/scripts/' + G_SCRIPT], ['hint-test-client-scripts']
+  gulp.watch ["#{dirs.test.client}/scripts/#{G_SCRIPT}"], ['hint-test-client-scripts']
 
 gulp.task 'watch-client', ['watch-client-assets', 'watch-client-scripts']
 

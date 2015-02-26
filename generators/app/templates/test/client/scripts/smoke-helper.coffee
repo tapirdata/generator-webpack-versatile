@@ -1,15 +1,20 @@
 'use strict'
 
 ### global window ###
-### jshint quotmark: false ###
+###jshint quotmark: false ###
 
-w = require 'when'
+_              = require 'lodash'
+$              = require 'jquery'
+w              = require 'when'
+chai           = require 'chai'
+chai.use require 'chai-as-promised'
+chai.use require 'chai-jq'
 
-activateLink = ($a) ->
+exports.activateLink = ($a) ->
   window.location = $a.attr('href')
   return
 
-retry = (grace, steps, fn) ->
+exports.retry = (grace, steps, fn) ->
   
   _retry = (dt, left, wrappedFn) ->
     result = wrappedFn()
@@ -32,10 +37,27 @@ retry = (grace, steps, fn) ->
     grace = 1000
   _retry grace / steps, steps, w.lift(fn)
 
-module.exports =
-  activateLink: activateLink
-  retry: retry
+
+exports.splitHtml = (html) ->
+  html = html
+  .replace /<(html|head|body)>/g, '<div class="_$1_">'
+  .replace /<\/(html|head|body)>/g, '</div>'
+  $html = $ html
+  $head: $html.find 'div._head_'
+  $body: $html.find 'div._body_'
 
 
+exports.gaspHtml = (html, options) ->
+  options = options or {}
+  headFilter = options.headFilter
+  bodyFilter = options.bodyFilter
 
-
+  h = exports.splitHtml(html)
+  h.$head.children().each ->
+    $child = $ this
+    if not headFilter or headFilter($child)
+      $('head').append $child
+  h.$body.children().each ->
+    $child = $ this
+    if not bodyFilter or bodyFilter($child)
+      $('body').append $child
