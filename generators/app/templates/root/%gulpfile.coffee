@@ -3,6 +3,7 @@ fs = require 'fs'
 path = require 'path'
 del = require 'del'
 glob = require 'glob'
+w = require 'when'
 minimist = require 'minimist'
 _ = require 'lodash'
 gulp = require 'gulp'
@@ -80,6 +81,7 @@ getBundleDefs = (scope) ->
       name: 'test-main'
       entries: [
         './' + dirs.test.client + '/scripts/main'
+        './' + dirs.test.client + '/scripts/foo.test'
       ]  
       extensions: ['.coffee', '.jade']
       transform: [coffeeify, jadeify]
@@ -87,6 +89,7 @@ getBundleDefs = (scope) ->
       watchable: true
       destDir: dirs.tgt.client + '/test/scripts'
       scopes: ['test']
+      destName: 'main.js'
     }  
     { 
       name: 'vendor'
@@ -175,11 +178,10 @@ ki =
       karmaConf =
         files: [
           {
-            pattern: dirs.tgt.client + '/test/scripts/main.js'
+            pattern: dirs.tgt.client + '/scripts/vendor.js'
           }
           {
-            pattern: dirs.tgt.client + '/test/scripts/' + G_JS
-            included: false
+            pattern: dirs.tgt.client + '/test/scripts/main.js'
           }
         ]
         frameworks: [
@@ -306,8 +308,7 @@ buildBrowsified = (bundleDefs, options) ->
 
     bundle
 
-  # gutil.log('exportNames=', exportNames)
-
+  promises = []
   bundles.forEach (bundle) ->
     # gutil.log('bundle=', bundle)
 
@@ -337,6 +338,9 @@ buildBrowsified = (bundleDefs, options) ->
         buildIt()
         .pipe streams.reloadClient()
 
+    defer = w.defer()  
+    promises.push defer.promise
+
     buildIt = ->
       b.bundle()
       .on 'error', handleError
@@ -344,6 +348,11 @@ buildBrowsified = (bundleDefs, options) ->
       .pipe gulp.dest bundle.destDir
 
     buildIt()
+    .pipe plugins.tap ->
+      # gutil.log('done')
+      defer.resolve()
+
+  w.all(promises)
 
 
 gulp.task 'clean', (done) ->
