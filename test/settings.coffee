@@ -7,7 +7,6 @@ class TestSetting
       do (name) =>
        this[name] = !!options[name]
        return
-    @amd = if options.requirejs then 'requirejs' else 'curl'
     @unsupported = !! options.unsupported
     @full = !! options.full
 
@@ -21,42 +20,25 @@ class TestSetting
     names    
 
   toString: -> 
-    '(features=[' + @activeFeatures().toString() + '] amd=' + @amd + ')'
+    '(features=[' + @activeFeatures().toString() + '])'
 
 
 exports.testSettings = [
-  'curl'
-  'backbone,curl'
-  'bootstrap,curl,unsupported'
-  'bootstrap,backbone,curl,unsupported'
-  'coffee,curl'
-  'coffee,backbone,curl'
-  'coffee,bootstrap,curl,unsupported'
-  'coffee,bootstrap,backbone,curl,unsupported'
-  'sass,curl'
-  'sass,backbone,curl'
-  'sass,bootstrap,curl'
-  'sass,bootstrap,backbone,curl'
-  'sass,coffee,curl'
-  'sass,coffee,backbone,curl'
-  'sass,coffee,bootstrap,curl,full'
-  'sass,coffee,bootstrap,backbone,curl,full'
-  'requirejs'
-  'backbone,requirejs'
-  'bootstrap,requirejs,unsupported'
-  'bootstrap,backbone,requirejs,unsupported'
-  'coffee,requirejs'
-  'coffee,backbone,requirejs'
-  'coffee,bootstrap,requirejs,unsupported'
-  'coffee,bootstrap,backbone,requirejs,unsupported'
-  'sass,requirejs'
-  'sass,backbone,requirejs'
-  'sass,bootstrap,requirejs'
-  'sass,bootstrap,backbone,requirejs'
-  'sass,coffee,requirejs'
-  'sass,coffee,backbone,requirejs'
-  'sass,coffee,bootstrap,requirejs,full'
-  'sass,coffee,bootstrap,backbone,requirejs,full'
+  'full'
+  'backbone,full'
+  'bootstrap,unsupported'
+  'coffee'
+  'coffee,backbone'
+  'coffee,bootstrap,unsupported'
+  'coffee,bootstrap,backbone,unsupported'
+  'sass,full'
+  'sass,backbone'
+  'sass,bootstrap'
+  'sass,bootstrap,backbone,full'
+  'sass,coffee,full'
+  'sass,coffee,backbone,full'
+  'sass,coffee,bootstrap,full'
+  'sass,coffee,bootstrap,backbone,full'
 ].map (s) -> 
   parts = s.split(/, */)
   options = _.object _.map parts, (name) -> [name, true]

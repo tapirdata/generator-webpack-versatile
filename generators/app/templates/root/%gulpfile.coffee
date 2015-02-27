@@ -90,9 +90,9 @@ getBundleDefs = (scope) ->
       name: 'vendor'
       exports: [
         'jquery'
-        'lodash'
-        'backbone'
-        'bootstrap-sass'
+        'lodash'<% if (use.backbone) { %>
+        'backbone'<% } %><% if (use.bootstrap) { %>
+        'bootstrap-sass'<% } %>
       ]
     }  
   ]
@@ -407,9 +407,9 @@ gulp.task 'build-client-styles', ->
   sassFilter = plugins.filter [G_SASS]
   scssFilter = plugins.filter [G_SCSS]
   gulp.src [G_CSS, G_SASS, G_SCSS], cwd: "#{dirs.src.client}/styles"
-  .pipe streams.plumber()
+  .pipe streams.plumber()<% if (use.bootstrap) { %>
   .pipe plugins.template 
-    bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'
+    bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'<% } %>
   .pipe sassFilter
   .pipe plugins.sass indentedSyntax: true
   .pipe sassFilter.restore()
@@ -419,18 +419,23 @@ gulp.task 'build-client-styles', ->
   .pipe gulp.dest "#{dirs.tgt.client}/styles"
   .pipe streams.reloadClient()
 
+<% if (use.mondernizr) { %>
 gulp.task 'build-client-vendor-mondernizr', ->
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
-  .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"
+  .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"<% } %>
 
-gulp.task 'build-client-vendor-backbone', ->
+<% if (use.bootstrap) { %>
+gulp.task 'build-client-vendor-bootstrap', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
-  .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"
+  .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"<% } %>
+
+gulp.task 'nop', ->
 
 gulp.task 'build-client-vendor-assets', (done) ->
-  runSequence [
-    'build-client-vendor-mondernizr'
-    'build-client-vendor-backbone'
+  runSequence [<% if (use.mondernizr) { %>
+    'build-client-vendor-mondernizr'<% } %><% if (use.bootstrap) { %>
+    'build-client-vendor-bootstrap'<% } %>
+    'nop'
   ], done
 
 gulp.task 'hint-test-client-scripts', ->

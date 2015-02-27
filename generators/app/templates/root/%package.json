@@ -5,6 +5,7 @@
   "repository": {},
   "dependencies": {
     "config": "^1.10.0",
+    "es5-shim": "^4.1.0",
     "express": "^4.4.5",
     "serve-favicon": "^2.0.1",
     "robots.txt": "^1.0.0",

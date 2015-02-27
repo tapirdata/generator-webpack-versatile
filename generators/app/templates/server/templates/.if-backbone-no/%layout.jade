@@ -6,9 +6,7 @@ html
     script(rel='javascript', src='/vendor/modernizr/modernizr.js')<% } %>
     script(rel='javascript', src='/vendor/jquery/dist/jquery.js')<% if (use.bootstrap) { %>
     script(rel='javascript', src='/vendor/bootstrap-sass-official/assets/javascripts/bootstrap.js')<% } %><% if (use.backbone) { %>
-    // script(rel='javascript', src='/vendor/underscore/underscore.js')
     script(rel='javascript', src='/vendor/lodash/dist/lodash.js')
-      script(rel='javascript', src='/vendor/backbone/backbone.js')<% } %><% if (use.amd === 'requirejs') { %>
-    script(rel='javascript', src='/vendor/requirejs/require.js', data-main='/app/scripts/main')<% } %>
+    script(rel='javascript', src='/vendor/backbone/backbone.js')<% } %>
   body
     block content

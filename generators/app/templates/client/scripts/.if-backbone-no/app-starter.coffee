@@ -1,12 +1,10 @@
 'use strict'
 
-### global define ###
+app =
+  initialize: ->
+    console.log 'app.initialize'
+    return
 
-define [], ->
-  app =
-    initialize: ->
-      console.log 'app.initialize'
-      return
-  ->
-    app.initialize()
-    app
+module.exports = ->
+  app.initialize()
+  app

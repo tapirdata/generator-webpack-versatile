@@ -94,7 +94,7 @@ checkResults = (file, cb) ->
                         classname: testcaseAttributes.classname
                         cause: failure._
 
-      console.log('fails=', fails)
+      # console.log('fails=', fails)
       if fails.length
         throw new ProjectTestError fails
       cb()
@@ -124,7 +124,6 @@ for ts in settings.testSettings
         @timeout 5 * 60 * 1000
         helpers.mockPrompt @app,
           features: ts.activeFeatures()
-          amdLib: ts.amd
         # @app.options['skip-install'] = true
         @app.run ->
           runAppTest (err) ->

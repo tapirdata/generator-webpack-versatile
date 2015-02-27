@@ -6,6 +6,8 @@ $ = require 'jquery'
 w = require 'when'
 chai = require 'chai'
 
+require './gasper'
+
 expect = chai.expect
 
 describe 'The Foo Tests', ->
