@@ -19,21 +19,26 @@
   .col-lg-6<% if (use.backbone) { %>
     h4 Backbone
     p
-      | Backbone.js gives structure to web applications by providing models with key-value binding and custom events, collections
-      | with a rich API of enumerable functions, views with declarative event handling, and connects it all to your existing API over a RESTful JSON interface.
-    <% } %><% if (use.bootstrap) { %>
+      | Backbone.js gives structure to web applications by providing models with
+      | key-value binding and custom events, collections with a rich API of
+      | enumerable functions, views with declarative event handling, and
+      | connects it all to your existing API over a RESTful JSON interface.<% } %><% if (use.bootstrap) { %>
     h4 Bootstrap
     p 
-      | Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.
-    <% } %><% if (use.modernizr) { %>
+      | Sleek, intuitive, and powerful mobile first front-end framework for faster and
+      | easier web development.<% } %>
+    h4 Browserify
+    p 
+      | Browserify lets you require('modules') in the browser by bundling up all of
+      | your dependencies.<% if (use.modernizr) { %>
     h4 Modernizr
     p 
-      | Modernizr is a JavaScript library that detects HTML5 and CSS3 features in the user’s browser.
-    <% } %><% if (use.sass) { %>
+      | Modernizr is a JavaScript library that detects HTML5 and CSS3 features in
+      | the user’s browser.<% } %><% if (use.sass) { %>
     h4 Sass
     p 
-      | Sass is the most mature, stable, and powerful professional grade CSS extension language in the world.
-    <% } %>
+      | Sass is the most mature, stable, and powerful professional grade CSS extension language
+      | in the world.<% } %>
 .footer
   p
     span.glyphicon.glyphicon-heart from the Yeoman team

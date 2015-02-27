@@ -419,13 +419,11 @@ gulp.task 'build-client-styles', ->
   .pipe gulp.dest "#{dirs.tgt.client}/styles"
   .pipe streams.reloadClient()
 
-<% if (use.mondernizr) { %>
-gulp.task 'build-client-vendor-mondernizr', ->
+<% if (use.mondernizr) { %>gulp.task 'build-client-vendor-mondernizr', ->
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
   .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"<% } %>
 
-<% if (use.bootstrap) { %>
-gulp.task 'build-client-vendor-bootstrap', ->
+<% if (use.bootstrap) { %>gulp.task 'build-client-vendor-bootstrap', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
   .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"<% } %>
 
