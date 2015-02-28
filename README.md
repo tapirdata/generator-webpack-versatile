@@ -1,33 +1,39 @@
 # generator-browserify-versatile [![Build Status](https://secure.travis-ci.org/someuser/generator-browserify-versatile.png?branch=master)](https://travis-ci.org/someuser/generator-browserify-versatile)
 
-> [Yeoman](http://yeoman.io) generator
+> [Yeoman](http://yeoman.io) generator to setup an express-project with a bunch of tool (some fixed, some selectable) pre-setup to provide an eligible workflow
 
+## Features
 
-## Getting Started
+Use [browersify](http://http://browserify.org/) to write client code in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format. (That's the same, that is used for server-code.)
 
-### What is Yeoman?
+Use [gulp](http://gulpjs.com/) for all task automation.
 
-Trick question. It's not a thing. It's this guy:
+Use [jade](http://jade-lang.com/) for server and client templating.
 
-![](http://i.imgur.com/JHaAlBJ.png)
+Use [karma](http://karma-runner.github.io/0.12/index.html) for client-tests. There is also support for smoke-testing your application - either in your installed browsers or
+headlessly using [PhantomJS](http://phantomjs.org/).
 
-Basically, he wears a top hat, lives in your computer, and waits for you to tell him what kind of application you wish to create.
+Use [mocha](http://mochajs.org/) with [chai](http://chaijs.com/) for unit-tests.
 
-Not every new computer comes with a Yeoman pre-installed. He lives in the [npm](https://npmjs.org) package repository. You only have to ask for him once, then he packs up and moves into your hard drive. *Make sure you clean up, he likes new and shiny things.*
+### Optionally
 
-```bash
-$ npm install -g yo
-```
+Use [backbone](http://backbonejs.org/) as a lightweight client-library to build agile single-page web applications.
 
-### Yeoman Generators
+Use [bootstrap](http://getbootstrap.com/) for easy client-side styling.  
 
-Yeoman travels light. He didn't pack any generators when he moved in. You can think of a generator like a plug-in. You get to choose what type of application you wish to create, such as a Backbone application or even a Chrome extension.
+Use [coffeescript](http://coffeescript.org/) or just plain Javascript for your project-code.
 
-To install generator-browserify-versatile from npm, run:
+Use [modernizr](http://modernizr.com/) for browser-feature detection.
+
+Use [sass](http://sass-lang.com/) as versatile CSS-Preprocessor (required for bootstrap).
+
+## Usage
 
 ```bash
 $ npm install -g generator-browserify-versatile
 ```
+
+The following npm-packages are assumed to be installed globally: *bower*, *gulp*, *yo*.
 
 Finally, initiate the generator:
 
@@ -38,6 +44,9 @@ $ yo browserify-versatile
 ## Generators
 
 ### App
+
+Just select your preferred options and wait till your project has been scaffolded...
+
 
 
 

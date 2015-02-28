@@ -380,6 +380,13 @@ gulp.task 'build-server-templates', ->
   .pipe gulp.dest dest
   .pipe streams.reloadServer()
 
+gulp.task 'build-server-starter', ->
+  dest = __dirname
+  gulp.src G_SCRIPT, cwd: "#{dirs.src.server}/starter"
+  .pipe streams.plumber()
+  .pipe scriptPipe()
+  .pipe gulp.dest dest
+
 gulp.task 'hint-client-scripts', ->
   dest = "#{dirs.tgt.client}/scripts"
   destName = 'main.js'
@@ -474,10 +481,13 @@ gulp.task 'build-server-assets', (done) ->
   ], done
 
 gulp.task 'build-server', (done) ->
-  runSequence [
+  tasks = [
     'build-server-scripts' 
     'build-server-assets' 
-  ], done
+  ]
+  if process.env.NODE_ENV == 'production'
+    tasks.push 'build-server-starter'
+  runSequence tasks, done
 
 gulp.task 'build-client-assets', (done) ->
   runSequence [
