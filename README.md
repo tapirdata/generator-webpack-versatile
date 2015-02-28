@@ -47,6 +47,7 @@ $ yo browserify-versatile
 
 Just select your preferred options and wait till your project has been scaffolded...
 
+Usage of tasks will be documented soon... 
 
 
 ## License
