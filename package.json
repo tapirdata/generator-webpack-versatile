@@ -4,7 +4,7 @@
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "generators/app/index.js",
-  "repository": "someuser/generator-browserify-versatile",
+  "repository": "andiriedl/generator-browserify-versatile",
   "author": {
     "name": "Andreas Riedl",
     "email": "office@tapirdata.com",

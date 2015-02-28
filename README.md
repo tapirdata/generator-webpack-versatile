@@ -49,7 +49,6 @@ Just select your preferred options and wait till your project has been scaffolde
 
 
 
-
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
