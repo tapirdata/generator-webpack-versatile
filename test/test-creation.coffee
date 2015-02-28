@@ -10,14 +10,14 @@ for ts in settings.testSettings
   do (ts) ->
     SC_EXT = if ts.coffee then '.coffee' else '.js'
     STYLE_EXT = if ts.sass then '.sass' else '.css'
-    describe 'express-develop generator ' + ts.toString(), ->
+    describe 'browserify-versatile generator ' + ts.toString(), ->
       before (done) ->
         # @timeout 1000
         helpers.testDirectory path.join(__dirname, 'temp'), (err) =>
           if err
             done(err)
             return 
-          @app = helpers.createGenerator('express-develop:app', [ '../../generators/app' ], [], 'test-framework': 'none')
+          @app = helpers.createGenerator('browserify-versatile:app', [ '../../generators/app' ], [], 'test-framework': 'none')
           helpers.mockPrompt @app, 'features': ts.activeFeatures()
           done()
           return

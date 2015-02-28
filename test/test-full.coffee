@@ -108,12 +108,12 @@ for ts in settings.testSettings
       return
     SC_EXT = if ts.coffee then '.coffee' else '.js'
     STYLE_EXT = if ts.sass then '.sass' else '.css'
-    describe 'express-develop generator ' + ts.toString(), ->
+    describe 'browserify-versatile generator ' + ts.toString(), ->
       testDir = path.join(__dirname, 'project')
       before (done) ->
         testDirectoryFaster testDir, (err) =>
           @app = helpers.createGenerator(
-            'express-develop:app',
+            'browserify-versatile:app',
             [ '../../generators/app' ],
             []
           )

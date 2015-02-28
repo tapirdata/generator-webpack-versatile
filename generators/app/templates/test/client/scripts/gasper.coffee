@@ -56,7 +56,7 @@ class Gasper
     return
       
   show: (location, fast) ->
-    console.log 'show', location, fast
+    # console.log 'show', location, fast
     if fast
       window.location = location
       w()

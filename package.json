@@ -1,14 +1,14 @@
 {
-  "name": "generator-express-develop",
+  "name": "generator-browserify-versatile",
   "version": "0.1.0",
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "generators/app/index.js",
-  "repository": "someuser/generator-express-develop",
+  "repository": "someuser/generator-browserify-versatile",
   "author": {
     "name": "Andreas Riedl",
     "email": "office@tapirdata.com",
-    "url": "https://github.com/someuser"
+    "url": "https://github.com/tapirdata"
   },
   "engines": {
     "node": ">=0.10.0"
