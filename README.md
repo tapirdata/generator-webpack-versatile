@@ -1,4 +1,4 @@
-# generator-browserify-versatile [![Build Status](https://secure.travis-ci.org/someuser/generator-browserify-versatile.png?branch=master)](https://travis-ci.org/someuser/generator-browserify-versatile)
+# generator-browserify-versatile [![Build Status](https://secure.travis-ci.org/someuser/generator-browserify-versatile.png?branch=master)](https://travis-ci.org/andiriedl/generator-browserify-versatile)
 
 > [Yeoman](http://yeoman.io) generator to setup an express-project with a bunch of tool (some fixed, some selectable) pre-setup to provide an eligible workflow
 
