@@ -246,12 +246,12 @@ streams =
 G_ALL    = '**/*'
 G_JS     = '**/*.js'<% if (use.coffee) { %>
 G_COFFEE = '**/*.coffee'
-G_SCRIPT = '**/*.@(js|coffee)'<% } else { %>
+G_SCRIPT = '**/*.{js,coffee}'<% } else { %>
 G_SCRIPT = G_JS<% } %>
 G_JADE   = '**/*.jade'
-G_CSS    = '**/*.css'
+G_CSS    = '**/*.css'<% if (use.sass) { %>
 G_SASS   = '**/*.sass'
-G_SCSS   = '**/*.scss'
+G_SCSS   = '**/*.scss'<% } %>
 
 mapScript = (p) -> 
   gutil.replaceExtension p, '.js'
@@ -410,19 +410,19 @@ gulp.task 'build-client-pages', ->
   .pipe gulp.dest "#{dirs.tgt.client}/pages"
   .pipe streams.reloadClient()
 
-gulp.task 'build-client-styles', ->
+gulp.task 'build-client-styles', -><% if (use.sass) { %>
   sassFilter = plugins.filter [G_SASS]
-  scssFilter = plugins.filter [G_SCSS]
-  gulp.src [G_CSS, G_SASS, G_SCSS], cwd: "#{dirs.src.client}/styles"
+  scssFilter = plugins.filter [G_SCSS]<% } %>
+  gulp.src [G_CSS<% if (use.sass) { %>, G_SASS, G_SCSS<% } %>], cwd: "#{dirs.src.client}/styles"
   .pipe streams.plumber()<% if (use.bootstrap) { %>
   .pipe plugins.template 
-    bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'<% } %>
+    bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'<% } %><% if (use.sass) { %>
   .pipe sassFilter
   .pipe plugins.sass indentedSyntax: true
   .pipe sassFilter.restore()
   .pipe scssFilter
   .pipe plugins.sass()
-  .pipe scssFilter.restore()
+  .pipe scssFilter.restore()<% } %>
   .pipe gulp.dest "#{dirs.tgt.client}/styles"
   .pipe streams.reloadClient()
 
