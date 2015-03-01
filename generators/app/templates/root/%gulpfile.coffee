@@ -28,6 +28,7 @@ coffeelintConfig = require './.coffeelint.json'<% } %>
 
 argv = minimist process.argv.slice 2
 watchEnabled = false
+headlessEnabled = false
 isProduction = false
 
 process.env.NODE_ENV = do ->
@@ -157,6 +158,18 @@ si =
           done err
           return
 
+mi = 
+  start: () ->
+    @isActive = true
+    reporter = if headlessEnabled then 'reporter-file' else 'progress'
+    gulp.src G_SCRIPT, cwd: "#{dirs.tgt.server}/test/scripts", read: false
+    .pipe plugins.mocha reporter: reporter
+
+  restart: () ->
+    if @isActive
+      @start()
+
+
 ki = 
   server: null
   browsers:
@@ -193,8 +206,8 @@ ki =
       frameworks: [
        'mocha'
       ]
-      browsers: if options.ci then @browsers.ci else @browsers.work
-      reporters: if options.ci then @reporters.ci else @reporters.work
+      browsers: if headlessEnabled then @browsers.ci else @browsers.work
+      reporters: if headlessEnabled then @reporters.ci else @reporters.work
       junitReporter:
         outputFile: 'test-results.xml'
       proxies:
@@ -254,6 +267,11 @@ streams =
       plugins.tap ->
         if ki.isActive()
           ki.run()
+  
+  rerunMocha: (options) ->
+    plugins.tap ->
+      if watchEnabled
+        mi.restart()
 
 
 G_ALL    = '**/*'
@@ -384,6 +402,7 @@ gulp.task 'build-server-scripts', ->
   .pipe scriptPipe()
   .pipe gulp.dest dest
   .pipe streams.reloadServer()
+  .pipe streams.rerunMocha()
 
 gulp.task 'build-server-templates', ->
   dest = "#{dirs.tgt.server}/templates"
@@ -456,6 +475,15 @@ gulp.task 'build-client-vendor-assets', (done) ->
     'nop'
   ], done
 
+gulp.task 'build-test-server-scripts', ->
+  dest = "#{dirs.tgt.server}/test/scripts"
+  gulp.src G_SCRIPT, cwd: "#{dirs.test.server}/scripts"
+  .pipe streams.plumber()
+  .pipe plugins.newer dest: dest, map: mapScript
+  .pipe scriptPipe()
+  .pipe gulp.dest dest
+  .pipe streams.rerunMocha()
+
 gulp.task 'hint-test-client-scripts', ->
   dest = "#{dirs.tgt.client}/test/scripts"
   destName = 'main.js'
@@ -475,13 +503,12 @@ gulp.task 'bs', (done) ->
   browserSync
     proxy: "localhost:#{si.port}"
     done
+   
+gulp.task 'mocha', () ->
+  mi.start()
 
-gulp.task 'karma-work', (done) ->
+gulp.task 'karma', (done) ->
   ki.start singleRun: true, ->
-    si.stop(done)
-
-gulp.task 'karma-ci', (done) ->
-  ki.start singleRun: true, ci: true, ->
     si.stop(done)
 
 gulp.task 'karma-watch', ->
@@ -520,6 +547,7 @@ gulp.task 'build-test', (done) ->
   runSequence [
     'build-server' 
     'build-client-assets' 
+    'build-test-server-scripts' 
     'build-test-client-scripts' 
   ], done
 
@@ -532,6 +560,9 @@ gulp.task 'build', (done) ->
 
 gulp.task 'watch-on', -> 
   watchEnabled = true
+
+gulp.task 'headless-on', -> 
+  headlessEnabled = true
 
 gulp.task 'watch-server-assets', ->
   gulp.watch ["#{dirs.src.server}/templates/#{G_ALL}"], ['build-server-templates']
@@ -549,6 +580,9 @@ gulp.task 'watch-client-assets', ->
 gulp.task 'watch-client-scripts', ->
   gulp.watch ["#{dirs.src.client}/scripts/#{G_SCRIPT}"], ['hint-client-scripts']
 
+gulp.task 'watch-test-server-scripts', ->
+  gulp.watch ["#{dirs.test.server}/scripts/#{G_SCRIPT}"], ['build-test-server-scripts']
+
 gulp.task 'watch-test-client-scripts', ->
   gulp.watch ["#{dirs.test.client}/scripts/#{G_SCRIPT}"], ['hint-test-client-scripts']
 
@@ -556,7 +590,7 @@ gulp.task 'watch-client', ['watch-client-assets', 'watch-client-scripts']
 
 gulp.task 'watch', ['watch-server', 'watch-client']
 
-gulp.task 'watch-test', ['watch-test-client-scripts']
+gulp.task 'watch-test', ['watch-test-server-scripts', 'watch-test-client-scripts']
 
 gulp.task 'run', (done) ->
   runSequence 'clean', 'build', 'serve', done
@@ -564,14 +598,14 @@ gulp.task 'run', (done) ->
 gulp.task 'run-watch', (done) ->
   runSequence 'watch-on', 'clean', 'build', ['serve', 'bs'], 'watch', done
 
-gulp.task 'test-work', (done) ->
-  runSequence 'clean', 'build-test', ['serve', 'karma-work'], done
+gulp.task 'test', (done) ->
+  runSequence 'clean', 'build-test', ['serve', 'mocha', 'karma'], done
 
 gulp.task 'test-ci', (done) ->
-  runSequence 'clean', 'build-test', ['serve', 'karma-ci'], done
+  runSequence 'headless-on', 'clean', 'build-test', ['serve', 'mocha', 'karma'], done
 
 gulp.task 'test-watch', (done) ->
-  runSequence 'watch-on', 'clean', 'build-test', ['serve', 'karma-watch'], ['watch-server', 'watch-client-assets', 'watch-test'], done
+  runSequence 'watch-on', 'clean', 'build-test', ['serve', 'mocha', 'karma-watch'], ['watch-server', 'watch-client-assets', 'watch-test'], done
 
 gulp.task 'default', ['run-watch']
 

@@ -2,24 +2,15 @@
 
 ### global describe, before, it ###
 
-$ = require 'jquery'
 w = require 'when'
 chai = require 'chai'
-
-require './gasper'
-
+chai.use require 'chai-as-promised'
 expect = chai.expect
 
-describe 'The Client Foo Tests', ->
-  $testMain = undefined
+describe 'The Server Foo Tests', ->
   before ->
-    $testMain = $('<div class="test-main" />').appendTo('body')
-    return
   it 'should equal', ->
     expect(3 * 2).equal 6
-    return
-  it 'jquery should have Deferred', ->
-    expect($.Deferred).is.a 'function'
     return
   it 'promise should resolve', ->
     p = w(6 * 4)
