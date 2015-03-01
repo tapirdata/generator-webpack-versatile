@@ -12,9 +12,8 @@ plugins = require('gulp-load-plugins')()
 runSequence = require 'run-sequence'
 lazypipe = require 'lazypipe'
 
-browserify = require 'browserify'
-# browserify-shim = require 'browserify-shim'
-coffeeify = require 'coffeeify'
+browserify = require 'browserify'<% if (use.coffee) { %>
+coffeeify = require 'coffeeify'<% } %>
 jadeify   = require 'jadeify'
 source = require 'vinyl-source-stream'
 watchify = require 'watchify'
@@ -62,15 +61,21 @@ _.defaults dirs.tgt,
 
 _.defaults dirs.tgt,
   clientVendor: path.join dirs.tgt.client, 'vendor'
-
+  
 
 getBundleDefs = (scope) ->
   bundleDefs = [
     {
       name: 'main'
       entries: "./#{dirs.src.client}/scripts/main"
-      extensions: ['.coffee', '.jade']
-      transform: [coffeeify, jadeify]
+      extensions: [<% if (use.coffee) { %>
+        '.coffee'<% } %>
+        '.jade'
+      ]
+      transform: [<% if (use.coffee) { %>
+        coffeeify<% } %>
+        jadeify
+      ]
       debug: true
       watchable: true
       scopes: ['app']
@@ -78,8 +83,14 @@ getBundleDefs = (scope) ->
     {
       name: 'test-main'
       entries: "./#{dirs.test.client}/scripts/*.test.*"
-      extensions: ['.coffee', '.jade']
-      transform: [coffeeify, jadeify]
+      extensions: [<% if (use.coffee) { %>
+        '.coffee'<% } %>
+        '.jade'
+      ]
+      transform: [<% if (use.coffee) { %>
+        coffeeify<% } %>
+        jadeify
+      ]  
       debug: true
       watchable: true
       destDir: "#{dirs.tgt.client}/test/scripts"
