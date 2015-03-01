@@ -1,5 +1,8 @@
 language: node_js
 node_js:
   - "0.12"
+install:
+  - sudo npm install -g bower
+  - sudo npm install -g gulp
 
 
