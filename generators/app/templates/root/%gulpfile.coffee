@@ -28,10 +28,12 @@ coffeelintConfig = require './.coffeelint.json'<% } %>
 
 argv = minimist process.argv.slice 2
 watchEnabled = false
+isProduction = false
 
 process.env.NODE_ENV = do ->
   env = argv.env or process.env.NODE_ENV or ''
   if env.match /^prod/
+    isProduction = true
     'production'
   else if env.match /^test/
     'testing'
@@ -496,7 +498,7 @@ gulp.task 'build-server', (done) ->
     'build-server-scripts' 
     'build-server-assets' 
   ]
-  if process.env.NODE_ENV == 'production'
+  if isProduction
     tasks.push 'build-server-starter'
   runSequence tasks, done
 

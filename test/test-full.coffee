@@ -51,7 +51,7 @@ testDirectoryFaster = (testDir, cb) ->
 
 
 runAppTest = (cb) -> 
-  appTest = child_process.spawn 'gulp', ['--env', 'test', 'test-ci']
+  appTest = child_process.spawn './node_modules/.bin/gulp', ['--env', 'test', 'test-ci']
 
   appTest.stdout.on 'data', (data) ->
     process.stdout.write data

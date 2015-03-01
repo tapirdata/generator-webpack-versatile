@@ -63,5 +63,7 @@
   "engines": {
     "node": ">=0.10.0"
   },
-  "readme": "ERROR: No README data found!"
+  "scripts": {
+    "test": "gulp --env testing test-ci"    
+  }
 }
