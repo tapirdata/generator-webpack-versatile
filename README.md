@@ -6,6 +6,8 @@
 
 Use [browersify](http://http://browserify.org/) to write client code in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format. (That's the same, that is used for server-code.)
 
+Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices. 
+
 Use [gulp](http://gulpjs.com/) for all task automation.
 
 Use [jade](http://jade-lang.com/) for server and client templating.
@@ -47,8 +49,43 @@ $ yo browserify-versatile
 
 Just select your preferred options and wait till your project has been scaffolded...
 
-Usage of tasks will be documented soon... 
+All gulp tasks can be used for different targets: *development*, *testing*, *production*.
+The target is mainly used for selecting build directory and server port via the relevant
+config files in `./config/`. The target can be selected via the environment variable `NODE_ENV`
+or the commandline arg `--env` (which takes precedence), default: *development*.
 
+Some usefull top-level tasks:
+
+```bash
+$ gulp run-watch
+```
+cleans the target-tree, builds the application, runs server application and runs client part
+in local browsers. Then it keeps watching for file-changes, does neccessary rebuild, and
+eventually - if needed - restarts server restart and reloads client data.
+
+```bash
+$ gulp --env test test-watch
+```
+cleans the target-tree, builds the application, runs server application and runs unit-, server-
+and client-tests in local browsers. Then it keeps watching for file-changes, does neccessary rebuild, and
+eventually - if needed - restarts server restart and re-runs tests.
+
+```bash
+$ gulp run-ci
+```
+cleans the target-tree, builds the application, runs server application and runs unit-, server-
+and client-test headlessly using PhantonJS. Test-results are written into `test-results.xml`.
+This task is also used by `browserify-versatiles` self-tests.
+
+```bash
+$ gulp --env prod build
+```
+cleans the target-tree, builds the application. *production*-builds yield a file `server.js` in your
+project's root-directory, so you can start your app without gulp, using:
+
+```bash
+$ npm start
+```
 
 ## License
 
