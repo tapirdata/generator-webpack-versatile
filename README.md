@@ -66,14 +66,14 @@ eventually - if needed - restarts server restart and reloads client data.
 ```bash
 $ gulp --env test test-watch
 ```
-cleans the target-tree, builds the application, runs server application and runs unit-, server-
+cleans the target-tree, builds the application, runs server application and runs server-
 and client-tests in local browsers. Then it keeps watching for file-changes, does neccessary rebuild, and
 eventually - if needed - restarts server restart and re-runs tests.
 
 ```bash
-$ gulp run-ci
+$ gulp --env test test-ci
 ```
-cleans the target-tree, builds the application, runs server application and runs unit-, server-
+cleans the target-tree, builds the application, runs server application and runs server-
 and client-test headlessly using PhantonJS. Test-results are written into `test-results.xml`.
 This task is also used by `browserify-versatiles` self-tests.
 

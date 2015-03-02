@@ -100,8 +100,6 @@ checkResults = (file, cb) ->
       cb()
       return
 
-
-
 for ts in settings.testSettings
   do (ts) ->
     if not ts.full
@@ -109,6 +107,8 @@ for ts in settings.testSettings
     SC_EXT = if ts.coffee then '.coffee' else '.js'
     STYLE_EXT = if ts.sass then '.sass' else '.css'
     describe 'browserify-versatile generator ' + ts.toString(), ->
+      serverResultsFile = null
+      clientResultsFile = null
       testDir = path.join(__dirname, 'project')
       before (done) ->
         testDirectoryFaster testDir, (err) =>
@@ -126,16 +126,16 @@ for ts in settings.testSettings
           features: ts.activeFeatures()
         # @app.options['skip-install'] = true
         @app.run ->
-          runAppTest (err) ->
-            if err
-              done(err)
-              return
-            testResultsFile = path.join(testDir, 'test-results.xml')
-            assert.file testResultsFile
-            checkResults testResultsFile, done
-            return
+          runAppTest done
           return
         return
       return
-
+      it 'has no server errors', (done) ->
+        serverResultsFile = path.join(testDir, 'test-results.xml')
+        assert.file serverResultsFile
+        checkResults serverResultsFile, done
+      it 'has no client errors', (done) ->
+        clientResultsFile = path.join(testDir, 'xunit.xml')
+        assert.file clientResultsFile
+        checkResults clientResultsFile, done
 

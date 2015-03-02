@@ -84,8 +84,8 @@ getBundleDefs = (scope) ->
       scopes: ['app']
     }  
     {
-      name: 'test-main'
-      entries: "./#{dirs.test.client}/scripts/*.test.*"
+      name: 'test'
+      entries: "./#{dirs.test.client}/scripts/#{G_TEST}"
       extensions: [<% if (use.coffee) { %>
         '.coffee'<% } %>
         '.jade'
@@ -161,9 +161,13 @@ si =
 mi = 
   start: () ->
     @isActive = true
-    reporter = if headlessEnabled then 'reporter-file' else 'progress'
-    gulp.src G_SCRIPT, cwd: "#{dirs.tgt.server}/test/scripts", read: false
-    .pipe plugins.mocha reporter: reporter
+    reporter = if headlessEnabled then 'reporter-file' else 'spec'
+    gulp.src G_TEST,
+      cwd: "#{dirs.tgt.server}/test/scripts"
+      read: false
+    .pipe streams.plumber()  
+    .pipe plugins.mocha
+      reporter: reporter
 
   restart: () ->
     if @isActive
@@ -183,9 +187,10 @@ ki =
     ]
   reporters:
     work: [
-      'progress'
+      'mocha'
     ]
     ci: [
+      'mocha'
       'junit'
     ]
 
@@ -277,8 +282,10 @@ streams =
 G_ALL    = '**/*'
 G_JS     = '**/*.js'<% if (use.coffee) { %>
 G_COFFEE = '**/*.coffee'
-G_SCRIPT = '**/*.{js,coffee}'<% } else { %>
-G_SCRIPT = G_JS<% } %>
+G_SCRIPT = '**/*.{js,coffee}'
+G_TEST   = '**/*.test.{js,coffee}'<% } else { %>
+G_SCRIPT = G_JS
+G_TEST   = '**/*.test.js'<% } %>
 G_JADE   = '**/*.jade'
 G_CSS    = '**/*.css'<% if (use.sass) { %>
 G_SASS   = '**/*.sass'
@@ -411,6 +418,7 @@ gulp.task 'build-server-templates', ->
   .pipe plugins.newer dest: dest
   .pipe gulp.dest dest
   .pipe streams.reloadServer()
+  .pipe streams.rerunMocha()
 
 gulp.task 'build-server-starter', ->
   dest = __dirname
@@ -458,7 +466,7 @@ gulp.task 'build-client-styles', -><% if (use.sass) { %>
   .pipe gulp.dest "#{dirs.tgt.client}/styles"
   .pipe streams.reloadClient()
 
-<% if (use.mondernizr) { %>gulp.task 'build-client-vendor-mondernizr', ->
+<% if (use.modernizr) { %>gulp.task 'build-client-vendor-modernizr', ->
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
   .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"<% } %>
 
@@ -469,8 +477,8 @@ gulp.task 'build-client-styles', -><% if (use.sass) { %>
 gulp.task 'nop', ->
 
 gulp.task 'build-client-vendor-assets', (done) ->
-  runSequence [<% if (use.mondernizr) { %>
-    'build-client-vendor-mondernizr'<% } %><% if (use.bootstrap) { %>
+  runSequence [<% if (use.modernizr) { %>
+    'build-client-vendor-modernizr'<% } %><% if (use.bootstrap) { %>
     'build-client-vendor-bootstrap'<% } %>
     'nop'
   ], done

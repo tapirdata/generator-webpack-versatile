@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/app/styles/main.css')<% if (use.modernizr) { %>
+    script(type='text/javascript', src='/vendor/modernizr/modernizr.js')<% } %>
+    script(type='text/javascript', src='/app/scripts/vendor.js')
+    script(type='text/javascript', src='/app/scripts/main.js')
+  body
+    block content
