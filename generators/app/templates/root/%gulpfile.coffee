@@ -614,7 +614,7 @@ gulp.task 'test', (done) ->
   runSequence 'clean', 'build-test', ['serve', 'mocha', 'karma'], done
 
 gulp.task 'test-ci', (done) ->
-  runSequence 'headless-on', 'clean', 'build-test', ['serve', 'mocha', 'karma'], done
+  runSequence 'headless-on', 'clean', 'build-test', 'serve', 'mocha', 'karma', done
 
 gulp.task 'test-watch', (done) ->
   runSequence 'watch-on', 'clean', 'build-test', ['serve', 'mocha', 'karma-watch'], ['watch-server', 'watch-client-assets', 'watch-test'], done
