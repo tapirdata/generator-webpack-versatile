@@ -49,5 +49,5 @@ check = (url) ->
 
 describe 'The Server', ->
   before ->
-  check 'http://localhost:9876/'
+  check 'http://localhost:8002/'
 return
