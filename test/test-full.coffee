@@ -120,7 +120,7 @@ for ts in settings.testSettings
           done()
           return
         return
-      it 'runs the project test', (done) ->
+      it 'runs the project tests', (done) ->
         @timeout 5 * 60 * 1000
         helpers.mockPrompt @app,
           features: ts.activeFeatures()
@@ -129,13 +129,12 @@ for ts in settings.testSettings
           runAppTest done
           return
         return
-      return
-      it 'has no server errors', (done) ->
-        serverResultsFile = path.join(testDir, 'test-results.xml')
+      it 'run tests without server failures', (done) ->
+        serverResultsFile = path.join(testDir, 'server-test-results.xml')
         assert.file serverResultsFile
         checkResults serverResultsFile, done
-      it 'has no client errors', (done) ->
-        clientResultsFile = path.join(testDir, 'xunit.xml')
+      it 'run tests without client failures', (done) ->
+        clientResultsFile = path.join(testDir, 'client-test-results.xml')
         assert.file clientResultsFile
         checkResults clientResultsFile, done
-
+      return

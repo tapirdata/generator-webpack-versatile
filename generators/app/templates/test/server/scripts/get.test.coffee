@@ -25,9 +25,9 @@ check = (url) ->
     expect(resP).to.be.fulfilled
   it 'should serve the root page', ->
     expect(res.status.code).to.be.equal 200
-  it 'should serve some html', ->
+  it 'should serve some sort of HTML', ->
     expect(res.entity).to.be.contain '<html>'
-  it 'should serve valid html5', ->
+  it 'should serve valid HTML5', ->
     wNode.call lint, res.entity
     .catch (err) ->
       w.reject new Error 'Failed to lint html: ' + err

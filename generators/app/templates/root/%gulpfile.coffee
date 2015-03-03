@@ -161,7 +161,11 @@ si =
 mi = 
   start: () ->
     @isActive = true
-    reporter = if headlessEnabled then 'reporter-file' else 'spec'
+    reporter = if headlessEnabled
+      process.env.JUNIT_REPORT_PATH = 'server-test-results.xml'
+      'mocha-jenkins-reporter'
+    else
+      'spec'
     gulp.src G_TEST,
       cwd: "#{dirs.tgt.server}/test/scripts"
       read: false
@@ -214,7 +218,7 @@ ki =
       browsers: if headlessEnabled then @browsers.ci else @browsers.work
       reporters: if headlessEnabled then @reporters.ci else @reporters.work
       junitReporter:
-        outputFile: 'test-results.xml'
+        outputFile: 'client-test-results.xml'
       proxies:
         '/': "http://localhost:#{si.port}/"
       client:

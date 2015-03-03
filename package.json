@@ -1,6 +1,6 @@
 {
   "name": "generator-browserify-versatile",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "generators/app/index.js",
