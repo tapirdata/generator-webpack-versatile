@@ -428,17 +428,17 @@ gulp.task 'build-server-templates', ->
   .pipe streams.reloadServer()
   .pipe streams.rerunMocha()
 
-gulp.task 'build-server-starter', ->
-  dest = __dirname
-  gulp.src G_SCRIPT, cwd: "#{dirs.src.server}/starter"
-  .pipe plugins.template configDir: dirs.tgt.config
+gulp.task 'build-config', ->
+  dest = dirs.tgt.config
+  gulp.src [G_ALL, '!**/*development*.*', '!**/*testing*.*'], cwd: 'config'
   .pipe streams.plumber()
   .pipe scriptPipe()
   .pipe gulp.dest dest
 
-gulp.task 'build-config', ->
-  dest = dirs.tgt.config
-  gulp.src [G_ALL, '!**/*development*.*', '!**/*testing*.*'], cwd: 'config'
+gulp.task 'build-starter', ->
+  dest = __dirname
+  gulp.src G_SCRIPT, cwd: "#{dirs.src.server}/starter"
+  .pipe plugins.template configDir: dirs.tgt.config
   .pipe streams.plumber()
   .pipe scriptPipe()
   .pipe gulp.dest dest
@@ -519,6 +519,12 @@ gulp.task 'hint-test-client-scripts', ->
 gulp.task 'build-test-client-scripts', ['hint-test-client-scripts'], ->
   buildBrowsified getBundleDefs('test'), doWatch: watchEnabled
 
+gulp.task 'pack', ->
+  gulp.src ["#{dirs.tgt.root}/#{G_ALL}", './server.js', 'package.json']
+  .pipe plugins.tar 'dist.tar'
+  .pipe plugins.gzip()
+  .pipe gulp.dest '.'
+
 gulp.task 'serve', (done) ->
   si.start done
   return  
@@ -545,14 +551,10 @@ gulp.task 'build-server-assets', (done) ->
   ], done
 
 gulp.task 'build-server', (done) ->
-  tasks = [
+  runSequence [
     'build-server-scripts' 
     'build-server-assets' 
-  ]
-  if isProduction
-    tasks.push 'build-server-starter'
-    tasks.push 'build-config'
-  runSequence tasks, done
+  ], done
 
 gulp.task 'build-client-assets', (done) ->
   runSequence [
@@ -577,10 +579,14 @@ gulp.task 'build-test', (done) ->
   ], done
 
 gulp.task 'build', (done) -> 
-  runSequence [
+  tasks = [
     'build-server' 
     'build-client' 
-  ], done
+  ]
+  if isProduction
+    tasks.push 'build-config'
+    tasks.push 'build-starter'
+  runSequence tasks, done
 
 
 gulp.task 'watch-on', -> 
@@ -631,6 +637,9 @@ gulp.task 'test-ci', (done) ->
 
 gulp.task 'test-watch', (done) ->
   runSequence 'watch-on', 'clean', 'build-test', ['serve', 'mocha', 'karma-watch'], ['watch-server', 'watch-client-assets', 'watch-test'], done
+
+gulp.task 'dist', (done) ->
+  runSequence 'clean', 'build', 'pack', done
 
 gulp.task 'default', ['run-watch']
 

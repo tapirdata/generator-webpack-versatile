@@ -77,10 +77,16 @@ and client-test headlessly using PhantonJS. Test-results are written into `test-
 This task is also used by `browserify-versatiles` self-tests.
 
 ```bash
-$ gulp --env prod build
+$ gulp --env prod dist
 ```
-cleans the target-tree, builds the application. *production*-builds yield a file `server.js` in your
-project's root-directory, so you can start your app without gulp, using:
+cleans the target-tree, builds the application for production, packs files into an archive `dist.tar.gz`,
+which can be unpacked in your production directory. There, after installing node packages with
+
+```bash
+$ npm install --production
+```
+
+you can start your app, using:
 
 ```bash
 $ npm start
