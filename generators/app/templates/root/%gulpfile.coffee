@@ -61,6 +61,7 @@ _.defaults dirs.tgt,
 _.defaults dirs.tgt,
   server: path.join dirs.tgt.root, 'server'
   client: path.join dirs.tgt.root, 'client'
+  config: path.join dirs.tgt.root, 'config'
 
 _.defaults dirs.tgt,
   clientVendor: path.join dirs.tgt.client, 'vendor'
@@ -301,14 +302,17 @@ mapScript = (p) ->
 
 scriptPipe = -><% if (use.coffee) { %>
   coffeeFilter = plugins.filter [G_COFFEE]<% } %>
+  jsFilter = plugins.filter [G_JS]
   do lazypipe()<% if (use.coffee) { %>
   .pipe -> coffeeFilter
   .pipe plugins.coffeelint, coffeelintConfig
   .pipe plugins.coffeelint.reporter
   .pipe plugins.coffee
   .pipe coffeeFilter.restore<% } %>
+  .pipe -> jsFilter
   .pipe plugins.jshint, jshintConfig
   .pipe plugins.jshint.reporter, jsStylish
+  .pipe jsFilter.restore
 
 
 buildBrowsified = (bundleDefs, options) ->
@@ -427,6 +431,14 @@ gulp.task 'build-server-templates', ->
 gulp.task 'build-server-starter', ->
   dest = __dirname
   gulp.src G_SCRIPT, cwd: "#{dirs.src.server}/starter"
+  .pipe plugins.template configDir: dirs.tgt.config
+  .pipe streams.plumber()
+  .pipe scriptPipe()
+  .pipe gulp.dest dest
+
+gulp.task 'build-config', ->
+  dest = dirs.tgt.config
+  gulp.src [G_ALL, '!**/*development*.*', '!**/*testing*.*'], cwd: 'config'
   .pipe streams.plumber()
   .pipe scriptPipe()
   .pipe gulp.dest dest
@@ -539,6 +551,7 @@ gulp.task 'build-server', (done) ->
   ]
   if isProduction
     tasks.push 'build-server-starter'
+    tasks.push 'build-config'
   runSequence tasks, done
 
 gulp.task 'build-client-assets', (done) ->

@@ -1,4 +1,5 @@
-_config = {}
-module.exports = _config
+'use strict'
+
+module.exports = {}
 
 

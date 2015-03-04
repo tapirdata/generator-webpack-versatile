@@ -6,6 +6,7 @@ path = require 'path'
 _ = require 'lodash'
 
 process.env.NODE_ENV = 'production'
+process.env.NODE_CONFIG_DIR = './<%%= configDir %>'
 
 config = require 'config'
 
