@@ -519,11 +519,22 @@ gulp.task 'hint-test-client-scripts', ->
 gulp.task 'build-test-client-scripts', ['hint-test-client-scripts'], ->
   buildBrowsified getBundleDefs('test'), doWatch: watchEnabled
 
-gulp.task 'pack', ->
-  gulp.src ["#{dirs.tgt.root}/#{G_ALL}", './server.js', 'package.json']
-  .pipe plugins.tar 'dist.tar'
-  .pipe plugins.gzip()
-  .pipe gulp.dest '.'
+gulp.task 'pack', (done) ->
+  child_process = require 'child_process'
+  tar = child_process.spawn 'tar', [
+    '-czf'
+    'dist.tar.gz'
+    'package.json'
+    'server.js'
+    dirs.tgt.root
+  ]
+  tar.on 'close', (code) ->
+    if code
+      done new Error "tar failed with code #{code}"
+    else
+      done()
+    return
+  return
 
 gulp.task 'serve', (done) ->
   si.start done
