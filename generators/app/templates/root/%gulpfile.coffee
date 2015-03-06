@@ -15,6 +15,8 @@ lazypipe = require 'lazypipe'
 browserify = require 'browserify'<% if (use.coffee) { %>
 coffeeify = require 'coffeeify'<% } %>
 jadeify   = require 'jadeify'
+exorcist = require 'exorcist'
+buffer = require 'vinyl-buffer'
 source = require 'vinyl-source-stream'
 watchify = require 'watchify'
 
@@ -395,6 +397,7 @@ buildBrowsified = (bundleDefs, options) ->
     buildIt = ->
       b.bundle()
       .on 'error', handleError
+      .pipe exorcist path.join bundle.destDir, bundle.destName + '.map'
       .pipe source bundle.destName
       .pipe gulp.dest bundle.destDir
 
