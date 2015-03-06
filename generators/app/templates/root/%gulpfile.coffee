@@ -3,6 +3,7 @@ fs = require 'fs'
 path = require 'path'
 del = require 'del'
 glob = require 'glob'
+mkdirp = require 'mkdirp'
 w = require 'when'
 minimist = require 'minimist'
 _ = require 'lodash'
@@ -15,8 +16,8 @@ lazypipe = require 'lazypipe'
 browserify = require 'browserify'<% if (use.coffee) { %>
 coffeeify = require 'coffeeify'<% } %>
 jadeify   = require 'jadeify'
+uglifyify   = require 'uglifyify'
 exorcist = require 'exorcist'
-buffer = require 'vinyl-buffer'
 source = require 'vinyl-source-stream'
 watchify = require 'watchify'
 
@@ -395,9 +396,21 @@ buildBrowsified = (bundleDefs, options) ->
     promises.push defer.promise
 
     buildIt = ->
-      b.bundle()
+      if isProduction
+        b = b.transform
+          sourcemap: true
+          global: true
+          uglifyify
+      stream = b.bundle()
       .on 'error', handleError
-      .pipe exorcist path.join bundle.destDir, bundle.destName + '.map'
+
+      if bundle.debug
+        stream = stream
+        .pipe plugins.tap ->
+          mkdirp.sync bundle.destDir
+        .pipe exorcist path.join bundle.destDir, bundle.destName + '.map'
+
+      stream
       .pipe source bundle.destName
       .pipe gulp.dest bundle.destDir
 
