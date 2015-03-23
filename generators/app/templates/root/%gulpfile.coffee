@@ -20,6 +20,7 @@ uglifyify   = require 'uglifyify'
 exorcist = require 'exorcist'
 source = require 'vinyl-source-stream'
 watchify = require 'watchify'
+cacheCrusher = require 'cache-crusher'
 
 browserSync = require 'browser-sync'
 karma = require 'karma'
@@ -68,7 +69,14 @@ _.defaults dirs.tgt,
 
 _.defaults dirs.tgt,
   clientVendor: path.join dirs.tgt.client, 'vendor'
-  
+
+crusher = cacheCrusher
+  extractor:
+    urlBase: '/app/'
+  mapper:
+    counterparts: [{urlRoot: '/app', fsRoot: dirs.src.client, globs: '!images/favicon.ico'}]
+  resolver:
+    timeout: 5000
 
 getBundleDefs = (scope) ->
   bundleDefs = [
@@ -412,6 +420,8 @@ buildBrowsified = (bundleDefs, options) ->
 
       stream
       .pipe source bundle.destName
+      .pipe crusher.puller()
+      .pipe crusher.pusher base: path.join dirs.src.client, 'scripts'
       .pipe gulp.dest bundle.destDir
 
     buildIt()
@@ -440,6 +450,7 @@ gulp.task 'build-server-templates', ->
   gulp.src [G_JADE], cwd: "#{dirs.src.server}/templates"
   .pipe streams.plumber()
   .pipe plugins.newer dest: dest
+  .pipe crusher.puller()
   .pipe gulp.dest dest
   .pipe streams.reloadServer()
   .pipe streams.rerunMocha()
@@ -473,6 +484,7 @@ gulp.task 'build-client-scripts', ['hint-client-scripts'], ->
 gulp.task 'build-client-images', ->
   gulp.src [G_ALL], cwd: "#{dirs.src.client}/images"
   .pipe streams.plumber()
+  .pipe crusher.pusher()
   .pipe gulp.dest "#{dirs.tgt.client}/images"
   .pipe streams.reloadClient()
 
@@ -495,6 +507,7 @@ gulp.task 'build-client-styles', -><% if (use.sass) { %>
   .pipe scssFilter
   .pipe plugins.sass()
   .pipe scssFilter.restore()<% } %>
+  .pipe crusher.pusher()
   .pipe gulp.dest "#{dirs.tgt.client}/styles"
   .pipe streams.reloadClient()
 
