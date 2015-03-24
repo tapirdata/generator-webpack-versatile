@@ -30,19 +30,23 @@ coffeeStylish = require 'jshint-stylish'<% } %>
 jshintConfig = require './.jshint.json'<% if (use.coffee) { %>
 coffeelintConfig = require './.coffeelint.json'<% } %>
 
-argv = minimist process.argv.slice 2
 watchEnabled = false
 headlessEnabled = false
 isProduction = false
+isTesting = false
+isDevelopment = false
 
+argv = minimist process.argv.slice 2
 process.env.NODE_ENV = do ->
   env = argv.env or process.env.NODE_ENV or ''
   if env.match /^prod/
     isProduction = true
     'production'
   else if env.match /^test/
+    isTesting = true
     'testing'
   else
+    isDevelopment = true
     'development'
     
 config = require 'config'
@@ -71,10 +75,11 @@ _.defaults dirs.tgt,
   clientVendor: path.join dirs.tgt.client, 'vendor'
 
 crusher = cacheCrusher
+  enabled: not isDevelopment
   extractor:
     urlBase: '/app/'
   mapper:
-    counterparts: [{urlRoot: '/app', fsRoot: dirs.src.client, globs: '!images/favicon.ico'}]
+    counterparts: [{urlRoot: '/app', tagRoot: dirs.src.client, globs: '!images/favicon.ico'}]
   resolver:
     timeout: 5000
 
@@ -217,11 +222,11 @@ ki =
       urlRoot: '/__karma__/'
       files: [
         {
-          pattern: "#{dirs.tgt.client}/scripts/vendor.js"
+          pattern: "#{dirs.tgt.client}/scripts/vendor?(-+([a-f0-9])).js"
           watched: false
         }
         {
-          pattern: "#{dirs.tgt.client}/test/scripts/main.js"
+          pattern: "#{dirs.tgt.client}/test/scripts/main?(-+([a-f0-9])).js"
         }
       ]
       frameworks: [

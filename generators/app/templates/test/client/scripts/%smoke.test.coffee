@@ -26,6 +26,13 @@ describe 'The Application', ->
   it 'should show the home page', ->
     expect($ 'div.jumbotron').to.have.length 1
     expect($ 'ul.nav li:nth-child(1)').$class 'active'
+  it 'home page should show the yeoman image', ->
+    w().then -> gasper.retry ->
+      imgs = $ 'img[alt="the yeoman"]'
+      expect(imgs).to.have.length 1
+      img = imgs[0]
+      expect(img.naturalWidth).above 10
+      expect(img.naturalHeight).above 10
   it 'should show the about page', ->
     w()
     # .delay 200 # slow motion
@@ -35,6 +42,7 @@ describe 'The Application', ->
     .then -> gasper.retry ->
       expect($ 'div.jumbotron').to.have.length 0
       expect($('p').text()).to.contain 'about'
+
   it 'should show the contact page', ->
     w()
     # .delay 200 # slow motion
