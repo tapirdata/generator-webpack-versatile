@@ -4,6 +4,7 @@ node_js:
 install:
   - npm install -g bower
   - npm install
+sudo: false
 cache:
   directories:
   - node_modules
