@@ -13,6 +13,7 @@ BaseGenerator = yeoman.generators.Base.extend(
       bootstrap: use.bootstrap
       coffee: use.coffee
       sass: use.sass
+      crusher: use.crusher
     }
   _transformerMakers:
     template: ->
@@ -119,6 +120,7 @@ BaseGenerator = yeoman.generators.Base.extend(
       modernizr: true
       coffee: true
       sass: true
+      crusher: true
     )
     return
   constructor: ->

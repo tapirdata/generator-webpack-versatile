@@ -22,6 +22,8 @@ Use [backbone](http://backbonejs.org/) as a lightweight client-library to build 
 
 Use [bootstrap](http://getbootstrap.com/) for easy client-side styling.  
 
+Use [cache-crusher](https://www.npmjs.com/package/cache-crusher) to provide cache-busting for your production-build.
+
 Use [coffeescript](http://coffeescript.org/) or just plain Javascript for your project-code.
 
 Use [modernizr](http://modernizr.com/) for browser-feature detection.
@@ -79,7 +81,7 @@ This task is also used by `browserify-versatiles` self-tests.
 ```bash
 $ gulp --env prod dist
 ```
-cleans the target-tree, builds the application for production, packs files into an archive `dist.tar.gz`,
+cleans the target-tree, builds the application for production (uglified and – if cache-crusher is included – cache-busted), packs files into an archive `dist.tar.gz`,
 which can be unpacked in your production directory. There, after installing node packages with
 
 ```bash

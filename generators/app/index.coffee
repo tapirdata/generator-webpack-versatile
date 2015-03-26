@@ -34,6 +34,16 @@ ExpressDevelopGenerator = BaseGenerator.extend(
             checked: use.bootstrap
           }
           {
+            name: 'Cache-crusher'
+            value: 'crusher'
+            checked: use.crusher
+          }
+          {
+            name: 'Coffee'
+            value: 'coffee'
+            checked: use.coffee
+          }
+          {
             name: 'Modernizr'
             value: 'modernizr'
             checked: use.modernizr
@@ -41,12 +51,7 @@ ExpressDevelopGenerator = BaseGenerator.extend(
           {
             name: 'Sass'
             value: 'sass'
-            checked: !!use.sass
-          }
-          {
-            name: 'Coffee'
-            value: 'coffee'
-            checked: use.coffee
+            checked: use.sass
           }
         ]
       }
@@ -62,6 +67,7 @@ ExpressDevelopGenerator = BaseGenerator.extend(
       use.backbone = hasFeature('backbone')
       use.sass = hasFeature('sass')
       use.coffee = hasFeature('coffee')
+      use.crusher = hasFeature('crusher')
       config.set 'use', use
       done()
       return

@@ -18,7 +18,11 @@
     "coffee",
     "coffeescript",
     "modernizr",
-    "sass"
+    "sass",
+    "chache-crusher",
+    "chache",
+    "busting",
+    "uglify"
   ],
   "license": "MIT",
   "main": "generators/app/index.js",

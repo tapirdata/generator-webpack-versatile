@@ -16,7 +16,5 @@ module.exports = (options) ->
   app.use robots(path.join(options.clientDir, 'pages', 'robots.txt'))
   app.use '/app', express.static(options.clientDir)
   app.use '/vendor', express.static(options.vendorDir)
-  if options.livereload
-    app.use require('connect-livereload')(port: options.livereload)
   app.use '/', routes
   app

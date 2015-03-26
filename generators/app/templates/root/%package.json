@@ -17,8 +17,8 @@
     "bootstrap-sass": "^3.3.3",<% } %>
     "browser-sync": "^2.0.1",
     "browserify": "^9.0.3",
-    "browserify-shim": "^3.8.3",
-    "cache-crusher": "file:/home/and/work/prj/tapirdata/npm/cache-crusher",
+    "browserify-shim": "^3.8.3",<% if (use.crusher) { %>
+    "cache-crusher": "^0.2.1",<% } %>
     "chai": "^2.1.0",
     "chai-as-promised": "^4.2.0",
     "chai-jq": "0.0.8",<% if (use.coffee) { %>

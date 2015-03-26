@@ -19,8 +19,8 @@ jadeify   = require 'jadeify'
 uglifyify   = require 'uglifyify'
 exorcist = require 'exorcist'
 source = require 'vinyl-source-stream'
-watchify = require 'watchify'
-cacheCrusher = require 'cache-crusher'
+watchify = require 'watchify'<% if (use.crusher) { %>
+cacheCrusher = require 'cache-crusher'<% } %>
 
 browserSync = require 'browser-sync'
 karma = require 'karma'
@@ -48,18 +48,18 @@ process.env.NODE_ENV = do ->
   else
     isDevelopment = true
     'development'
-    
+
 config = require 'config'
 
-dirs = 
+dirs =
   bower:  JSON.parse(fs.readFileSync './.bowerrc').directory
-  src: 
+  src:
     root:   '<%= dirs.src %>'
     server: '<%= dirs.serverSrc %>'
     client: '<%= dirs.clientSrc %>'
   test:
     root:   '<%= dirs.test %>'
-    server: '<%= dirs.test %>/server' 
+    server: '<%= dirs.test %>/server'
     client: '<%= dirs.test %>/client'
   tgt: _.clone(config.dirs.tgt) || {}
 
@@ -74,14 +74,15 @@ _.defaults dirs.tgt,
 _.defaults dirs.tgt,
   clientVendor: path.join dirs.tgt.client, 'vendor'
 
+<% if (use.crusher) { %>
 crusher = cacheCrusher
-  enabled: not isDevelopment
+  enabled: false
   extractor:
     urlBase: '/app/'
   mapper:
     counterparts: [{urlRoot: '/app', tagRoot: dirs.src.client, globs: '!images/favicon.ico'}]
   resolver:
-    timeout: 5000
+    timeout: 20000<% } %>
 
 getBundleDefs = (scope) ->
   bundleDefs = [
@@ -99,7 +100,7 @@ getBundleDefs = (scope) ->
       debug: true
       watchable: true
       scopes: ['app']
-    }  
+    }
     {
       name: 'test'
       entries: "./#{dirs.test.client}/scripts/#{G_TEST}"
@@ -110,14 +111,14 @@ getBundleDefs = (scope) ->
       transform: [<% if (use.coffee) { %>
         coffeeify<% } %>
         jadeify
-      ]  
+      ]
       debug: true
       watchable: true
       destDir: "#{dirs.tgt.client}/test/scripts"
       scopes: ['test']
       destName: 'main.js'
-    }  
-    { 
+    }
+    {
       name: 'vendor'
       exports: [
         'jquery'
@@ -125,13 +126,13 @@ getBundleDefs = (scope) ->
         'backbone'<% } %><% if (use.bootstrap) { %>
         'bootstrap-sass'<% } %>
       ]
-    }  
+    }
   ]
   _.filter bundleDefs, (bundleDef) ->
     not scope or not bundleDef.scopes or _.indexOf(bundleDef.scopes, scope) >= 0
 
 
-si = 
+si =
   port: config.server.port || 8000
   server: null
   isActive: () ->
@@ -147,7 +148,7 @@ si =
       port: @port
       clientDir: dirs.tgt.client
       vendorDir: dirs.tgt.clientVendor
-      }, (err) => 
+      }, (err) =>
         if not err
           @server = server
         done err
@@ -160,7 +161,7 @@ si =
         @server = null
         done err
         return
-    else  
+    else
       gutil.log 'no server running!'
       done()
       return
@@ -170,12 +171,12 @@ si =
     @stop (err) =>
       if err
         done err
-      else  
+      else
         @start (err) ->
           done err
           return
 
-mi = 
+mi =
   start: () ->
     @isActive = true
     reporter = if headlessEnabled
@@ -186,7 +187,7 @@ mi =
     gulp.src G_TEST,
       cwd: "#{dirs.tgt.server}/test/scripts"
       read: false
-    .pipe streams.plumber()  
+    .pipe streams.plumber()
     .pipe plugins.mocha
       reporter: reporter
 
@@ -195,7 +196,7 @@ mi =
       @start()
 
 
-ki = 
+ki =
   server: null
   browsers:
     work: [
@@ -252,34 +253,34 @@ ki =
         done()
     @server = true
 
-  run: _.debounce( 
+  run: _.debounce(
     (done) ->
       # gutil.log 'karma run...'
-      karma.runner.run {}, (exitCode) ->  
+      karma.runner.run {}, (exitCode) ->
         # gutil.log 'karma run done. code=%s', exitCode
         if done
           done()
     1000)
 
- 
+
 handleError = (err) ->
   gutil.log gutil.colors.red('ERROR: ' + err)
   @emit 'end'
 
-streams = 
+streams =
   plumber: ->
     plugins.plumber
       errorHandler: (err) ->
         gutil.log(
           gutil.colors.red('Error:\n')
           err.toString()
-        )  
+        )
         @emit 'end'
 
-  reloadServer: ->  
-    plugins.tap -> 
+  reloadServer: ->
+    plugins.tap ->
       if si.isActive()
-        si.restart -> 
+        si.restart ->
           if browserSync.active
             browserSync.reload()
           if ki.isActive()
@@ -293,7 +294,7 @@ streams =
       plugins.tap ->
         if ki.isActive()
           ki.run()
-  
+
   rerunMocha: (options) ->
     plugins.tap ->
       if watchEnabled
@@ -312,7 +313,7 @@ G_CSS    = '**/*.css'<% if (use.sass) { %>
 G_SASS   = '**/*.sass'
 G_SCSS   = '**/*.scss'<% } %>
 
-mapScript = (p) -> 
+mapScript = (p) ->
   gutil.replaceExtension p, '.js'
 
 
@@ -334,7 +335,7 @@ scriptPipe = -><% if (use.coffee) { %>
 buildBrowsified = (bundleDefs, options) ->
 
   resolveNames = (names) ->
-    _names = []  
+    _names = []
     if names
       if not _.isArray(names)
         names = [names]
@@ -343,13 +344,13 @@ buildBrowsified = (bundleDefs, options) ->
           _names = _names.concat glob.sync name
         else
           _names.push(name)
-    _names    
-      
+    _names
+
 
   options = options || {}
   exportNames = {}
   bundles = _.map bundleDefs, (bundleDef) ->
-    bundle = 
+    bundle =
       name: bundleDef.name
       entries: resolveNames bundleDef.entries
       transform: bundleDef.transform
@@ -363,14 +364,14 @@ buildBrowsified = (bundleDefs, options) ->
     if bundleDef.exports
       bundle.exports = _.map bundleDef.exports, (exp) ->
         if not _.isObject(exp)
-          exp = 
+          exp =
             name: exp
         if not exp.alias
           exp.alias = exp.name
-        bundle.exportNames[exp.alias] = true  
-        exportNames[exp.alias] = true  
+        bundle.exportNames[exp.alias] = true
+        exportNames[exp.alias] = true
         exp
-    else    
+    else
       bundle.exports = []
 
     bundle
@@ -405,7 +406,7 @@ buildBrowsified = (bundleDefs, options) ->
         buildIt()
         .pipe streams.reloadClient()
 
-    defer = w.defer()  
+    defer = w.defer()
     promises.push defer.promise
 
     buildIt = ->
@@ -424,9 +425,9 @@ buildBrowsified = (bundleDefs, options) ->
         .pipe exorcist path.join bundle.destDir, bundle.destName + '.map'
 
       stream
-      .pipe source bundle.destName
+      .pipe source bundle.destName<% if (use.crusher) { %>
       .pipe crusher.puller()
-      .pipe crusher.pusher base: path.join dirs.src.client, 'scripts'
+      .pipe crusher.pusher base: path.join dirs.src.client, 'scripts'<% } %>
       .pipe gulp.dest bundle.destDir
 
     buildIt()
@@ -454,8 +455,8 @@ gulp.task 'build-server-templates', ->
   dest = "#{dirs.tgt.server}/templates"
   gulp.src [G_JADE], cwd: "#{dirs.src.server}/templates"
   .pipe streams.plumber()
-  .pipe plugins.newer dest: dest
-  .pipe crusher.puller()
+  .pipe plugins.newer dest: dest<% if (use.crusher) { %>
+  .pipe crusher.puller()<% } %>
   .pipe gulp.dest dest
   .pipe streams.reloadServer()
   .pipe streams.rerunMocha()
@@ -488,8 +489,8 @@ gulp.task 'build-client-scripts', ['hint-client-scripts'], ->
 
 gulp.task 'build-client-images', ->
   gulp.src [G_ALL], cwd: "#{dirs.src.client}/images"
-  .pipe streams.plumber()
-  .pipe crusher.pusher()
+  .pipe streams.plumber()<% if (use.crusher) { %>
+  .pipe crusher.pusher()<% } %>
   .pipe gulp.dest "#{dirs.tgt.client}/images"
   .pipe streams.reloadClient()
 
@@ -504,15 +505,15 @@ gulp.task 'build-client-styles', -><% if (use.sass) { %>
   scssFilter = plugins.filter [G_SCSS]<% } %>
   gulp.src [G_CSS<% if (use.sass) { %>, G_SASS, G_SCSS<% } %>], cwd: "#{dirs.src.client}/styles"
   .pipe streams.plumber()<% if (use.bootstrap) { %>
-  .pipe plugins.template 
+  .pipe plugins.template
     bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'<% } %><% if (use.sass) { %>
   .pipe sassFilter
   .pipe plugins.sass indentedSyntax: true
   .pipe sassFilter.restore()
   .pipe scssFilter
   .pipe plugins.sass()
-  .pipe scssFilter.restore()<% } %>
-  .pipe crusher.pusher()
+  .pipe scssFilter.restore()<% } %><% if (use.crusher) { %>
+  .pipe crusher.pusher()<% } %>
   .pipe gulp.dest "#{dirs.tgt.client}/styles"
   .pipe streams.reloadClient()
 
@@ -572,13 +573,13 @@ gulp.task 'pack', (done) ->
 
 gulp.task 'serve', (done) ->
   si.start done
-  return  
+  return
 
 gulp.task 'bs', (done) ->
   browserSync
     proxy: "localhost:#{si.port}"
     done
-   
+
 gulp.task 'mocha', () ->
   mi.start()
 
@@ -592,18 +593,18 @@ gulp.task 'karma-watch', ->
 
 gulp.task 'build-server-assets', (done) ->
   runSequence [
-    'build-server-templates' 
+    'build-server-templates'
   ], done
 
 gulp.task 'build-server', (done) ->
   runSequence [
-    'build-server-scripts' 
-    'build-server-assets' 
+    'build-server-scripts'
+    'build-server-assets'
   ], done
 
 gulp.task 'build-client-assets', (done) ->
   runSequence [
-    'build-client-images' 
+    'build-client-images'
     'build-client-styles'
     'build-client-pages'
     'build-client-vendor-assets'
@@ -611,22 +612,22 @@ gulp.task 'build-client-assets', (done) ->
 
 gulp.task 'build-client', (done) ->
   runSequence [
-    'build-client-assets' 
-    'build-client-scripts' 
+    'build-client-assets'
+    'build-client-scripts'
   ], done
 
-gulp.task 'build-test', (done) -> 
+gulp.task 'build-test', (done) ->
   runSequence [
-    'build-server' 
-    'build-client-assets' 
-    'build-test-server-scripts' 
-    'build-test-client-scripts' 
+    'build-server'
+    'build-client-assets'
+    'build-test-server-scripts'
+    'build-test-client-scripts'
   ], done
 
-gulp.task 'build', (done) -> 
+gulp.task 'build', (done) ->
   tasks = [
-    'build-server' 
-    'build-client' 
+    'build-server'
+    'build-client'
   ]
   if isProduction
     tasks.push 'build-config'
@@ -634,11 +635,15 @@ gulp.task 'build', (done) ->
   runSequence tasks, done
 
 
-gulp.task 'watch-on', -> 
+gulp.task 'watch-on', ->
   watchEnabled = true
 
-gulp.task 'headless-on', -> 
+gulp.task 'headless-on', ->
   headlessEnabled = true
+
+<% if (use.crusher) { %>
+gulp.task 'crush-on', ->
+  crusher.enabled = true<% } %>
 
 gulp.task 'watch-server-assets', ->
   gulp.watch ["#{dirs.src.server}/templates/#{G_ALL}"], ['build-server-templates']
@@ -675,16 +680,16 @@ gulp.task 'run-watch', (done) ->
   runSequence 'watch-on', 'clean', 'build', ['serve', 'bs'], 'watch', done
 
 gulp.task 'test', (done) ->
-  runSequence 'clean', 'build-test', ['serve', 'mocha', 'karma'], done
+  runSequence <% if (use.crusher) { %>'crush-on', <% } %>'clean', 'build-test', ['serve', 'mocha', 'karma'], done
 
 gulp.task 'test-ci', (done) ->
-  runSequence 'headless-on', 'clean', 'build-test', 'serve', 'mocha', 'karma', done
+  runSequence <% if (use.crusher) { %>'crush-on', <% } %>'headless-on', 'clean', 'build-test', 'serve', 'mocha', 'karma', done
 
 gulp.task 'test-watch', (done) ->
   runSequence 'watch-on', 'clean', 'build-test', ['serve', 'mocha', 'karma-watch'], ['watch-server', 'watch-client-assets', 'watch-test'], done
 
 gulp.task 'dist', (done) ->
-  runSequence 'clean', 'build', 'pack', done
+  runSequence <% if (use.crusher) { %>'crush-on', <% } %>'clean', 'build', 'pack', done
 
 gulp.task 'default', ['run-watch']
 

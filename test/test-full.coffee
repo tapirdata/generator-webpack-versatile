@@ -1,15 +1,15 @@
 ###global describe, beforeEach, it ###
 
 'use strict'
-path = require('path')
-fs = require('fs')
-child_process = require('child_process')
-_ = require('lodash')
-rimraf = require('rimraf')
-xml2js = require('xml2js')
+path = require 'path'
+fs = require 'fs'
+child_process = require 'child_process'
+_ = require 'lodash'
+rimraf = require 'rimraf'
+xml2js = require 'xml2js'
 helpers = require('yeoman-generator').test
 assert = require('yeoman-generator').assert
-settings = require('./settings')
+settings = require './settings'
 
 class ProjectTestError extends Error
   name: 'ProjectTestError'

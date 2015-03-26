@@ -1,7 +1,7 @@
 _ = require('lodash')
 
 class TestSetting
-  featureNames: ['backbone', 'bootstrap', 'coffee', 'sass']
+  featureNames: ['backbone', 'bootstrap', 'coffee', 'sass', 'crusher']
   constructor: (options) -> 
     for name in @featureNames
       do (name) =>
@@ -39,6 +39,8 @@ exports.testSettings = [
   'sass,coffee,backbone,full'
   'sass,coffee,bootstrap,full'
   'sass,coffee,bootstrap,backbone,full'
+  'sass,coffee,bootstrap,crusher,full'
+  'sass,coffee,bootstrap,backbone,crusher,full'
 ].map (s) -> 
   parts = s.split(/, */)
   options = _.object _.map parts, (name) -> [name, true]
