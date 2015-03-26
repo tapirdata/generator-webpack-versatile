@@ -19,8 +19,9 @@
     "coffeescript",
     "modernizr",
     "sass",
-    "chache-crusher",
-    "chache",
+    "gulp",
+    "cache-crusher",
+    "cache",
     "busting",
     "uglify"
   ],
