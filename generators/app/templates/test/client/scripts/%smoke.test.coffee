@@ -28,11 +28,15 @@ describe 'The Application', ->
     expect($ 'ul.nav li:nth-child(1)').$class 'active'
   it 'home page should show the yeoman image', ->
     w().then -> gasper.retry ->
-      imgs = $ 'img[alt="the yeoman"]'
-      expect(imgs).to.have.length 1
-      img = imgs[0]
+      $imgs = $ 'img[alt="the yeoman"]'
+      expect($imgs).to.have.length 1
+      img = $imgs[0]
       expect(img.naturalWidth).above 10
-      expect(img.naturalHeight).above 10
+      expect(img.naturalHeight).above 10<% if (use.bootstrap) { %>
+  it 'home page should have the stylesheet applied', ->
+    w().then -> gasper.retry ->
+      $btn = $ '.btn-success'
+      expect($btn).to.have.$css 'background-color', 'rgb(92, 184, 92)'<% } %>
   it 'should show the about page', ->
     w()
     # .delay 200 # slow motion

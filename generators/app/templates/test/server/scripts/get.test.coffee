@@ -47,7 +47,9 @@ check = (url) ->
         w.reject new Error lines.join '\n'
   return
 
+config = require 'config'
+
 describe 'The Server', ->
   before ->
-  check 'http://localhost:8002/'
+  check "http://localhost:#{config.server.port}/"
 return
