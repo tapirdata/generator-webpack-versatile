@@ -1,6 +1,6 @@
 'use strict'
 
-### global window ###
+<% if (use.bootstrap) { %>### global window ###<% } %>
 
 $ = require 'jquery'<% if (use.backbone) { %>
 Backbone = require 'backbone'

@@ -18,7 +18,7 @@
     "browser-sync": "^2.0.1",
     "browserify": "^9.0.3",
     "browserify-shim": "^3.8.3",<% if (use.crusher) { %>
-    "cache-crusher": "^0.2.1",<% } %>
+    "cache-crusher": "^0.3.0",<% } %>
     "chai": "^2.1.0",
     "chai-as-promised": "^4.2.0",
     "chai-jq": "0.0.8",<% if (use.coffee) { %>

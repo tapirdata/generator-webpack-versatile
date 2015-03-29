@@ -427,7 +427,7 @@ buildBrowsified = (bundleDefs, options) ->
       stream
       .pipe source bundle.destName<% if (use.crusher) { %>
       .pipe crusher.puller()
-      .pipe crusher.pusher base: path.join dirs.src.client, 'scripts'<% } %>
+      .pipe crusher.pusher tagger: base: path.join dirs.src.client, 'scripts'<% } %>
       .pipe gulp.dest bundle.destDir
 
     buildIt()
