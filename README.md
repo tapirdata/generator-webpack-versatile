@@ -1,5 +1,5 @@
 # generator-browserify-versatile [![Build Status](https://secure.travis-ci.org/tapirdata/generator-browserify-versatile.png?branch=master)](https://travis-ci.org/tapirdata/generator-browserify-versatile) [![Dependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile) [![devDependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile/dev-status.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile#info=devDependencies)
-> [Yeoman](http://yeoman.io) generator to setup an express-project with a bunch of tools (some fixed, some selectable) pre-setup to provide an eligible workflow
+> [Yeoman](http://yeoman.io) generator to setup an express-project with a bunch of tools (some fixed, some selectable) pre-setup to provide an eligible work flow
 
 ## Features
 
@@ -53,29 +53,29 @@ Just select your preferred options and wait till your project has been scaffolde
 All gulp tasks can be used for different targets: *development*, *testing*, *production*.
 The target is mainly used for selecting build directory and server port via the relevant
 config files in `./config/`. The target can be selected via the environment variable `NODE_ENV`
-or the commandline arg `--env` (which takes precedence), default: *development*.
+or the command line arg `--env` (which takes precedence), default: *development*.
 
-Some usefull top-level tasks:
+Some useful top-level tasks:
 
 ```bash
 $ gulp run-watch
 ```
 cleans the target-tree, builds the application, runs server application and runs client part
-in local browsers. Then it keeps watching for file-changes, does neccessary rebuild, and
+in local browsers. Then it keeps watching for file-changes, does necessary rebuild, and
 eventually - if needed - restarts server restart and reloads client data.
 
 ```bash
 $ gulp --env test test-watch
 ```
 cleans the target-tree, builds the application, runs server application and runs server-
-and client-tests in local browsers. Then it keeps watching for file-changes, does neccessary rebuild, and
+and client-tests in local browsers. Then it keeps watching for file-changes, does necessary rebuild, and
 eventually - if needed - restarts server restart and re-runs tests.
 
 ```bash
 $ gulp --env test test-ci
 ```
 cleans the target-tree, builds the application, runs server application and runs server-
-and client-test headlessly using PhantonJS. Test-results are written into `test-results.xml`.
+and client-test headlessly using PhantomJS. Test-results are written into `test-results.xml`.
 This task is also used by `browserify-versatiles` self-tests.
 
 ```bash
