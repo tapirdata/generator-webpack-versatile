@@ -483,6 +483,7 @@ gulp.task 'hint-client-scripts', ->
   .pipe streams.plumber()
   .pipe plugins.newer dest: "#{dest}/#{destName}"
   .pipe scriptPipe() # just hint & forget
+  .resume()
 
 gulp.task 'build-client-scripts', ['hint-client-scripts'], ->
   buildBrowsified getBundleDefs('app'), doWatch: watchEnabled
@@ -550,6 +551,7 @@ gulp.task 'hint-test-client-scripts', ->
   .pipe streams.plumber()
   .pipe plugins.newer dest: "#{dest}/#{destName}"
   .pipe scriptPipe() # just hint & forget
+  .resume()
 
 gulp.task 'build-test-client-scripts', ['hint-test-client-scripts'], ->
   buildBrowsified getBundleDefs('test'), doWatch: watchEnabled
