@@ -28,8 +28,8 @@
   "license": "MIT",
   "main": "generators/app/index.js",
   "repository": {
-    "type": "github",
-    "url": "https://github.com/tapirdata/generator-browserify-versatile"
+    "type": "git",
+    "url": "tapirdata/generator-browserify-versatile"
   },
   "author": {
     "name": "Andreas Riedl",
