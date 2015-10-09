@@ -54,6 +54,7 @@
     "yosay": "^1.0.5"
   },
   "devDependencies": {
+    "glob": "^5.0.15",
     "mocha": "^2.3.3",
     "rimraf": "^2.4.3",
     "xml2js": "^0.4.12"

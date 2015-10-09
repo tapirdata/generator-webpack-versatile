@@ -7,6 +7,7 @@ child_process = require 'child_process'
 _ = require 'lodash'
 rimraf = require 'rimraf'
 xml2js = require 'xml2js'
+glob = require 'glob'
 helpers = require('yeoman-generator').test
 assert = require('yeoman-generator').assert
 settings = require './settings'
@@ -74,7 +75,10 @@ checkResults = (file, cb) ->
         cb(err)
         return
       # console.log('result=', result)
-      suites = result.testsuites.testsuite
+      if result.testsuites
+        suites = result.testsuites.testsuite
+      else
+        suites = [result.testsuite]
       # console.log('suites=', suites)
       assert.ok suites and suites.length > 0, 'no testsuite found' 
       fails = []
@@ -110,6 +114,7 @@ for ts in settings.testSettings
       serverResultsFile = null
       clientResultsFile = null
       testDir = path.join(__dirname, 'project')
+      resultsDir = path.join(testDir, 'results')
       before (done) ->
         testDirectoryFaster testDir, (err) =>
           @app = helpers.createGenerator(
@@ -130,11 +135,15 @@ for ts in settings.testSettings
           return
         return
       it 'run tests without server failures', (done) ->
-        serverResultsFile = path.join(testDir, 'server-test-results.xml')
+        serverResultsFile = path.join(resultsDir, 'server.xml')
         assert.file serverResultsFile
         checkResults serverResultsFile, done
-      it 'run tests without client failures', (done) ->
-        clientResultsFile = path.join(testDir, 'client-test-results.xml')
-        assert.file clientResultsFile
-        checkResults clientResultsFile, done
+      for browserName in ['PhantomJS']  
+        it "run tests without client failures for '#{browserName}'" , (done) ->
+          glob path.join(resultsDir, browserName + '*', 'client.xml'), (err, clientResultsFiles) ->
+            assert err == null, 'cannot read "client.xml"'
+            assert clientResultsFiles.length == 1, 'missing or multiple "client.xml"'
+            clientResultsFile = clientResultsFiles[0]
+            assert.file clientResultsFile
+            checkResults clientResultsFile, done
       return

@@ -180,7 +180,7 @@ mi =
   start: () ->
     @isActive = true
     reporter = if headlessEnabled
-      process.env.JUNIT_REPORT_PATH = 'server-test-results.xml'
+      process.env.JUNIT_REPORT_PATH = 'results/server.xml'
       'mocha-jenkins-reporter'
     else
       'spec'
@@ -238,7 +238,8 @@ ki =
       browsers: if headlessEnabled then @browsers.ci else @browsers.work
       reporters: if headlessEnabled then @reporters.ci else @reporters.work
       junitReporter:
-        outputFile: 'client-test-results.xml'
+        outputDir: 'results'
+        outputFile: 'client.xml'
       proxies:
         '/': "http://localhost:#{si.port}/"
       client:
@@ -248,11 +249,12 @@ ki =
       singleRun: options.singleRun
 
     # gutil.log 'karma start...'
-    karma.server.start karmaConf, (exitCode) =>
+    karmaServer = new karma.Server karmaConf, (exitCode) =>
       # gutil.log 'karma start done. code=%s', exitCode
       @server = null
       if done
         done()
+    karmaServer.start()    
     @server = true
 
   run: _.debounce(
