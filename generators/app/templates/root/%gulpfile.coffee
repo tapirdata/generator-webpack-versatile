@@ -184,12 +184,14 @@ mi =
       'mocha-jenkins-reporter'
     else
       'spec'
-    gulp.src G_TEST,
-      cwd: "#{dirs.tgt.server}/test/scripts"
-      read: false
-    .pipe streams.plumber()
-    .pipe plugins.mocha
-      reporter: reporter
+    (
+      gulp.src G_TEST,
+        cwd: "#{dirs.tgt.server}/test/scripts"
+        read: false
+    )
+      .pipe streams.plumber()
+      .pipe plugins.mocha
+        reporter: reporter
 
   restart: () ->
     if @isActive
@@ -317,19 +319,20 @@ mapScript = (p) ->
   gutil.replaceExtension p, '.js'
 
 
-scriptPipe = -><% if (use.coffee) { %>
-  coffeeFilter = plugins.filter [G_COFFEE]<% } %>
-  jsFilter = plugins.filter [G_JS]
-  do lazypipe()<% if (use.coffee) { %>
-  .pipe -> coffeeFilter
-  .pipe plugins.coffeelint, coffeelintConfig
-  .pipe plugins.coffeelint.reporter
-  .pipe plugins.coffee
-  .pipe coffeeFilter.restore<% } %>
-  .pipe -> jsFilter
-  .pipe plugins.jshint, jshintConfig
-  .pipe plugins.jshint.reporter, jsStylish
-  .pipe jsFilter.restore
+makeScriptPipe = -><% if (use.coffee) { %>
+  coffeeFilter = plugins.filter [G_COFFEE], restore: true<% } %>
+  jsFilter = plugins.filter [G_JS], restore: true
+  lp = lazypipe()<% if (use.coffee) { %>
+    .pipe -> coffeeFilter
+    .pipe plugins.coffeelint, coffeelintConfig
+    .pipe plugins.coffeelint.reporter
+    .pipe plugins.coffee
+    .pipe -> coffeeFilter.restore<% } %>
+    .pipe -> jsFilter
+    .pipe plugins.jshint, jshintConfig
+    .pipe plugins.jshint.reporter, jsStylish
+    .pipe -> jsFilter.restore
+  lp()  
 
 
 buildBrowsified = (bundleDefs, options) ->
@@ -404,7 +407,7 @@ buildBrowsified = (bundleDefs, options) ->
       b.on 'update', (file) ->
         # gutil.log 'Rebuild bundle: ' + gutil.colors.blue(bundle.name)
         buildIt()
-        .pipe streams.reloadClient()
+          .pipe streams.reloadClient()
 
     defer = w.defer()
     promises.push defer.promise
@@ -420,20 +423,20 @@ buildBrowsified = (bundleDefs, options) ->
 
       if bundle.debug
         stream = stream
-        .pipe plugins.tap ->
-          mkdirp.sync bundle.destDir
-        .pipe exorcist path.join bundle.destDir, bundle.destName + '.map'
+          .pipe plugins.tap ->
+            mkdirp.sync bundle.destDir
+          .pipe exorcist path.join bundle.destDir, bundle.destName + '.map'
 
       stream
-      .pipe source bundle.destName<% if (use.crusher) { %>
-      .pipe crusher.puller()
-      .pipe crusher.pusher tagger: relativeBase: path.join dirs.src.client, 'scripts'<% } %>
-      .pipe gulp.dest bundle.destDir
+        .pipe source bundle.destName<% if (use.crusher) { %>
+        .pipe crusher.puller()
+        .pipe crusher.pusher tagger: relativeBase: path.join dirs.src.client, 'scripts'<% } %>
+        .pipe gulp.dest bundle.destDir
 
     buildIt()
-    .pipe plugins.tap ->
-      # gutil.log 'Build done: ' + gutil.colors.blue(bundle.name)
-      defer.resolve()
+      .pipe plugins.tap ->
+        # gutil.log 'Build done: ' + gutil.colors.blue(bundle.name)
+        defer.resolve()
 
   w.all(promises)
 
@@ -444,87 +447,87 @@ gulp.task 'clean', (done) ->
 gulp.task 'build-server-scripts', ->
   dest = "#{dirs.tgt.server}/scripts"
   gulp.src G_SCRIPT, cwd: "#{dirs.src.server}/scripts"
-  .pipe streams.plumber()
-  .pipe plugins.newer dest: dest, map: mapScript
-  .pipe scriptPipe()
-  .pipe gulp.dest dest
-  .pipe streams.reloadServer()
-  .pipe streams.rerunMocha()
+    .pipe streams.plumber()
+    .pipe plugins.newer dest: dest, map: mapScript
+    .pipe makeScriptPipe()
+    .pipe gulp.dest dest
+    .pipe streams.reloadServer()
+    .pipe streams.rerunMocha()
 
 gulp.task 'build-server-templates', ->
   dest = "#{dirs.tgt.server}/templates"
   gulp.src [G_JADE], cwd: "#{dirs.src.server}/templates"
-  .pipe streams.plumber()
-  .pipe plugins.newer dest: dest<% if (use.crusher) { %>
-  .pipe crusher.puller()<% } %>
-  .pipe gulp.dest dest
-  .pipe streams.reloadServer()
-  .pipe streams.rerunMocha()
+    .pipe streams.plumber()
+    .pipe plugins.newer dest: dest<% if (use.crusher) { %>
+    .pipe crusher.puller()<% } %>
+    .pipe gulp.dest dest
+    .pipe streams.reloadServer()
+    .pipe streams.rerunMocha()
 
 gulp.task 'build-config', ->
   dest = dirs.tgt.config
   gulp.src [G_ALL, '!**/*development*.*', '!**/*testing*.*'], cwd: 'config'
-  .pipe streams.plumber()
-  .pipe scriptPipe()
-  .pipe gulp.dest dest
+    .pipe streams.plumber()
+    .pipe makeScriptPipe()
+    .pipe gulp.dest dest
 
 gulp.task 'build-starter', ->
   dest = __dirname
   gulp.src G_SCRIPT, cwd: "#{dirs.src.server}/starter"
-  .pipe plugins.template configDir: dirs.tgt.config
-  .pipe streams.plumber()
-  .pipe scriptPipe()
-  .pipe gulp.dest dest
+    .pipe plugins.template configDir: dirs.tgt.config
+    .pipe streams.plumber()
+    .pipe makeScriptPipe()
+    .pipe gulp.dest dest
 
 gulp.task 'hint-client-scripts', ->
   dest = "#{dirs.tgt.client}/scripts"
   destName = 'main.js'
   gulp.src G_SCRIPT, cwd: "#{dirs.src.client}/scripts"
-  .pipe streams.plumber()
-  .pipe plugins.newer dest: "#{dest}/#{destName}"
-  .pipe scriptPipe() # just hint & forget
-  .resume()
+    .pipe streams.plumber()
+    .pipe plugins.newer dest: "#{dest}/#{destName}"
+    .pipe makeScriptPipe() # just hint & forget
+    .resume()
 
 gulp.task 'build-client-scripts', ['hint-client-scripts'], ->
   buildBrowsified getBundleDefs('app'), doWatch: watchEnabled
 
 gulp.task 'build-client-images', ->
   gulp.src [G_ALL], cwd: "#{dirs.src.client}/images"
-  .pipe streams.plumber()<% if (use.crusher) { %>
-  .pipe crusher.pusher()<% } %>
-  .pipe gulp.dest "#{dirs.tgt.client}/images"
-  .pipe streams.reloadClient()
+    .pipe streams.plumber()<% if (use.crusher) { %>
+    .pipe crusher.pusher()<% } %>
+    .pipe gulp.dest "#{dirs.tgt.client}/images"
+    .pipe streams.reloadClient()
 
 gulp.task 'build-client-pages', ->
   gulp.src [G_ALL], cwd: "#{dirs.src.client}/pages"
-  .pipe streams.plumber()
-  .pipe gulp.dest "#{dirs.tgt.client}/pages"
-  .pipe streams.reloadClient()
+    .pipe streams.plumber()
+    .pipe gulp.dest "#{dirs.tgt.client}/pages"
+    .pipe streams.reloadClient()
 
 gulp.task 'build-client-styles', -><% if (use.sass) { %>
-  sassFilter = plugins.filter [G_SASS]
-  scssFilter = plugins.filter [G_SCSS]<% } %>
+  sassFilter = plugins.filter [G_SASS], restore: true
+  scssFilter = plugins.filter [G_SCSS], restore: true<% } %>
   gulp.src [G_CSS<% if (use.sass) { %>, G_SASS, G_SCSS<% } %>], cwd: "#{dirs.src.client}/styles"
-  .pipe streams.plumber()<% if (use.bootstrap) { %>
-  .pipe plugins.template
-    bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'<% } %><% if (use.sass) { %>
-  .pipe sassFilter
-  .pipe plugins.sass indentedSyntax: true
-  .pipe sassFilter.restore()
-  .pipe scssFilter
-  .pipe plugins.sass()
-  .pipe scssFilter.restore()<% } %><% if (use.crusher) { %>
-  .pipe crusher.pusher()<% } %>
-  .pipe gulp.dest "#{dirs.tgt.client}/styles"
-  .pipe streams.reloadClient()
+    .pipe streams.plumber()<% if (use.bootstrap) { %>
+    .pipe plugins.template
+      bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'<% } %><% if (use.sass) { %>
+    .pipe sassFilter
+    .pipe plugins.sass indentedSyntax: true
+    .pipe sassFilter.restore
+    .pipe scssFilter
+    .pipe plugins.sass()
+    .pipe scssFilter.restore<% } %><% if (use.crusher) { %>
+    .pipe crusher.pusher()<% } %>
+    .pipe gulp.dest "#{dirs.tgt.client}/styles"
+    .pipe streams.reloadClient()
 
 <% if (use.modernizr) { %>gulp.task 'build-client-vendor-modernizr', ->
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
-  .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"<% } %>
+    .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"<% } %>
 
 <% if (use.bootstrap) { %>gulp.task 'build-client-vendor-bootstrap', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
-  .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"<% } %>
+    .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"<% } %>
 
 gulp.task 'nop', ->
 
@@ -538,20 +541,20 @@ gulp.task 'build-client-vendor-assets', (done) ->
 gulp.task 'build-test-server-scripts', ->
   dest = "#{dirs.tgt.server}/test/scripts"
   gulp.src G_SCRIPT, cwd: "#{dirs.test.server}/scripts"
-  .pipe streams.plumber()
-  .pipe plugins.newer dest: dest, map: mapScript
-  .pipe scriptPipe()
-  .pipe gulp.dest dest
-  .pipe streams.rerunMocha()
+    .pipe streams.plumber()
+    .pipe plugins.newer dest: dest, map: mapScript
+    .pipe makeScriptPipe()
+    .pipe gulp.dest dest
+    .pipe streams.rerunMocha()
 
 gulp.task 'hint-test-client-scripts', ->
   dest = "#{dirs.tgt.client}/test/scripts"
   destName = 'main.js'
   gulp.src G_SCRIPT, cwd: "#{dirs.test.client}/scripts"
-  .pipe streams.plumber()
-  .pipe plugins.newer dest: "#{dest}/#{destName}"
-  .pipe scriptPipe() # just hint & forget
-  .resume()
+    .pipe streams.plumber()
+    .pipe plugins.newer dest: "#{dest}/#{destName}"
+    .pipe makeScriptPipe() # just hint & forget
+    .resume()
 
 gulp.task 'build-test-client-scripts', ['hint-test-client-scripts'], ->
   buildBrowsified getBundleDefs('test'), doWatch: watchEnabled

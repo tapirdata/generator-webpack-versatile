@@ -16,56 +16,56 @@
     "backbone": "^1.1.2",<% } %><% if (use.bootstrap) { %>
     "bootstrap-sass": "^3.3.3",<% } %>
     "browser-sync": "^2.0.1",
-    "browserify": "^9.0.3",
+    "browserify": "^11.2.0",
     "browserify-shim": "^3.8.3",<% if (use.crusher) { %>
     "cache-crusher": "^0.4.0",<% } %>
-    "chai": "^2.1.0",
-    "chai-as-promised": "^4.2.0",
+    "chai": "^3.3.0",
+    "chai-as-promised": "^5.1.0",
     "chai-jq": "0.0.8",<% if (use.coffee) { %>
     "coffee-script": "^1.9.0",
     "coffeeify": "^1.0.0",<% } %>
-    "del": "^1.1.1",
-    "exorcist": "^0.1.6",
-    "glob": "^4.3.5",
-    "gulp": "^3.8.10",<% if (use.coffee) { %>
+    "del": "^2.0.2",
+    "exorcist": "^0.4.0",
+    "glob": "^5.0.15",
+    "gulp": "^3.9.0",<% if (use.coffee) { %>
     "gulp-coffee": "^2.3.1",
     "gulp-coffeelint": "^0.4.0",<% } %>
     "gulp-concat": "^2.5.0",
     "gulp-debug": "^2.0.0",
-    "gulp-filter": "^2.0.1",
-    "gulp-insert": "^0.4.0",
-    "gulp-jade": "^0.11.0",
+    "gulp-filter": "^3.0.1",
+    "gulp-insert": "^0.5.0",
+    "gulp-jade": "^1.1.0",
     "gulp-jshint": "^1.9.2",
-    "gulp-load-plugins": "^0.8.0",
+    "gulp-load-plugins": "^1.0.0-rc.1",
     "gulp-mocha": "^2.0.0",
     "gulp-newer": "^0.5.0",
-    "gulp-plumber": "^0.6.6",<% if (use.sass) { %>
-    "gulp-sass": "^1.3.2",<% } %>
+    "gulp-plumber": "^1.0.1",<% if (use.sass) { %>
+    "gulp-sass": "^2.0.4",<% } %>
     "gulp-tap": "^0.1.3",
     "gulp-template": "^3.0.0",
     "gulp-util": "^3.0.3",
     "html5-lint": "^0.2.3",
     "jadeify": "^4.1.0",
     "jquery": "^2.1.3",
-    "jshint-stylish": "^1.0.0",
-    "karma": "^0.12.31",
-    "karma-chrome-launcher": "^0.1.7",
+    "jshint-stylish": "^2.0.1",
+    "karma": "^0.13.10",
+    "karma-chrome-launcher": "^0.2.1",
     "karma-firefox-launcher": "^0.1.4",
-    "karma-junit-reporter": "^0.2.2",
-    "karma-mocha": "^0.1.10",
+    "karma-junit-reporter": "^0.3.7",
+    "karma-mocha": "^0.2.0",
     "karma-mocha-reporter": "^1.0.0",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "lazypipe": "^0.2.2",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "lazypipe": "^1.0.1",
     "minimist": "^1.1.0",
     "mkdirp": "^0.5.0",
     "mocha": "^2.1.0",
     "mocha-jenkins-reporter": "^0.1.4",
     "rest": "^1.3.0",
     "run-sequence": "^1.0.2",
-    "through2": "^0.6.3",
+    "through2": "^2.0.0",
     "uglifyify": "^3.0.1",
     "vinyl-source-stream": "^1.0.0",
-    "watchify": "^2.4.0",
+    "watchify": "^3.4.0",
     "when": "^3.7.2"
   },
   "engines": {
