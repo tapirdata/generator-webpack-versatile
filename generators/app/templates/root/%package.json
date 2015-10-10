@@ -1,5 +1,5 @@
 {
-  "name": "<%= _.slugify(appname) %>",
+  "name": "<%= appnameSlug %>",
   "version": "0.0.0",
   "description": "Express Application",
   "repository": {},

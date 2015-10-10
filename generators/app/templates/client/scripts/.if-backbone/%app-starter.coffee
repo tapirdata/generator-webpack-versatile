@@ -15,7 +15,7 @@ app =
     console.log 'app.initialize'
     new Router(app: this)
     return
-  title: '<%= _.capitalize(appname) %>'
+  title: '<%= appnameCap %>'
 
 module.exports = ->
   app.initialize()

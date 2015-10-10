@@ -36,6 +36,7 @@ for ts in settings.testSettings
             'gulpfile' + SC_EXT
             '.jshint.json'
             'package.json'
+            'README.md'
             'config/default' + SC_EXT 
             'config/development' + SC_EXT 
             'config/production' + SC_EXT 

@@ -1,5 +1,5 @@
 {
-  "name": "<%= _.slugify(appname) %>",
+  "name": "<%= appnameSlug %>",
   "version": "0.1.0",
   "dependencies": {
     "modernizr": "~2.8.3"

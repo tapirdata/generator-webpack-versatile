@@ -1,90 +1,89 @@
 'use strict'
-path = require('path')
-_ = require('lodash')
-yeoman = require('yeoman-generator')
-coffeeScript = require('coffee-script')
-BranchFinder = require('./branch-finder')
+path = require 'path'
+_ = require 'lodash'
+slug = require 'slug'
+yeoman = require 'yeoman-generator'
+coffeeScript = require 'coffee-script'
+ejs = require 'ejs'
 
-BaseGenerator = yeoman.generators.Base.extend(
+BranchFinder = require './branch-finder'
+
+
+BaseGenerator = yeoman.generators.Base.extend
+
   _getBranches: ->
     use = @config.get('use')
-    {
-      backbone: use.backbone
-      bootstrap: use.bootstrap
-      coffee: use.coffee
-      sass: use.sass
-      crusher: use.crusher
-    }
+    backbone: use.backbone
+    bootstrap: use.bootstrap
+    coffee: use.coffee
+    sass: use.sass
+    crusher: use.crusher
+
   _transformerMakers:
     template: ->
-      self = this
-      {
-        name: 'template'
-        src: /^%(.*)/
-        tgt: '$1'
-        fn: (s) ->
-          self.engine s, self.config.getAll()
-
-      }
+      name: 'template'
+      src: /^%(.*)/
+      tgt: '$1'
+      fn: (s) =>
+        ejs.render s, @config.getAll()
     decoffee: ->
-      self = this
-      {
-        name: 'decoffee'
-        src: /(.*).coffee$/
-        tgt: '$1.js'
-        fn: (s) ->
-          coffeeScript.compile s, bare: true
+      name: 'decoffee'
+      src: /(.*).coffee$/
+      tgt: '$1.js'
+      fn: (s) ->
+        coffeeScript.compile s, bare: true
 
-      }
   _getTransformers: (names) ->
     transformers = []
-    _.forEach names, ((name) ->
-      transformers.push @_transformerMakers[name].apply(this)
-      return
-    ), this
+    for name in names
+      transformers.push @_transformerMakers[name].apply @
     transformers
+
   _copyOp: (srcPath, tgtPath, transFns) ->
-    # console.log('op srcPath=', srcPath, 'opOptions=', opOptions);
+    # console.log 'op srcPath=', srcPath, 'transFns=', transFns
     copyOptions = {}
     if transFns and transFns.length
-
       copyOptions.process = (contents) ->
         s = contents.toString()
-        _.forEach transFns, (transFn) ->
-          s = transFn(s)
-          return
+        for transFn in transFns
+          s = transFn s
         s
 
     @fs.copy srcPath, tgtPath, copyOptions
     return
+
   _branchCopy: (source, target, pattern) ->
-    transNames = [ 'template' ]
+    transNames = ['template']
     if !@config.get('use').coffee
       transNames.push 'decoffee'
     srcBase = @sourceRoot()
     tgtBase = target or ''
     pattern = pattern or '**/*'
     _options = 
-      pattern: path.join(source, pattern)
+      pattern: path.join source, pattern
       tgtRelalative: source
       branches: @_getBranches()
-      transformers: @_getTransformers(transNames)
-      op: @_copyOp.bind(this)
-    bf = new BranchFinder(srcBase, tgtBase, _options)
+      transformers: @_getTransformers transNames
+      op: @_copyOp.bind @
+    bf = new BranchFinder srcBase, tgtBase, _options
     bf.run()
     return
+
   _initConfig: ->
     config = @config
     config.defaults
       appname: @appname
+      appnameSlug: slug @appname
+      appnameCap: _.capitalize @appname
       dirs: {}
       use: {}
     return
+
   _optionConfig: ->
     config = @config
     options = @options
-    dirs = config.get('dirs')
-    config.set 'dirs', _.defaults(dirs,
+    dirs = config.get 'dirs'
+    config.set 'dirs', _.defaults dirs,
       bower: options['bower-dir']
       src: options['src-dir']
       serverSrc: options['server-src-dir']
@@ -93,43 +92,45 @@ BaseGenerator = yeoman.generators.Base.extend(
       tmp: options['tmp-dir']
       tmpDev: options['tmp-dev-dir']
       tmpTest: options['tmp-test-dir']
-      dist: options['dist-dir'])
+      dist: options['dist-dir']
     #TODO: set 'use'
     return
+
   _defaultConfig: ->
     config = @config
     dirs = undefined
     use = undefined
-    dirs = config.get('dirs')
-    config.set 'dirs', _.defaults(dirs,
+    dirs = config.get 'dirs'
+    config.set 'dirs', _.defaults dirs,
       bower: 'bower_components'
       src: 'src'
       test: 'test'
       tmp: '.tmp'
-      dist: 'dist')
-    dirs = config.get('dirs')
-    config.set 'dirs', _.defaults(dirs,
-      serverSrc: path.join(dirs.src, 'server')
-      clientSrc: path.join(dirs.src, 'client')
-      tmpDev: path.join(dirs.tmp, 'dev')
-      tmpTest: path.join(dirs.tmp, 'test'))
-    use = config.get('use')
-    config.set 'use', _.defaults(use,
+      dist: 'dist'
+    dirs = config.get 'dirs'
+    config.set 'dirs', _.defaults dirs,
+      serverSrc: path.join dirs.src, 'server'
+      clientSrc: path.join dirs.src, 'client'
+      tmpDev: path.join dirs.tmp, 'dev'
+      tmpTest: path.join dirs.tmp, 'test'
+    use = config.get 'use'
+    config.set 'use', _.defaults use,
       backbone: true
       bootstrap: true
       modernizr: true
       coffee: true
       sass: true
       crusher: true
-    )
     return
+
   constructor: ->
-    yeoman.generators.Base.apply this, arguments
-    @pkg = require('../../package.json')
+    yeoman.generators.Base.apply @, arguments
+    @pkg = require '../../package.json'
     @_initConfig()
     @_optionConfig()
     @_defaultConfig()
     # console.log '..config=', @config.getAll()
     return
-)
+
+
 module.exports = BaseGenerator

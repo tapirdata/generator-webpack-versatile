@@ -2,7 +2,7 @@
 
 express = require('express')
 router = express.Router()
-title = '<%= _.capitalize(appname) %>'
+title = '<%= appnameCap %>'
 
 ### GET home page. ###
 
