@@ -32,6 +32,11 @@ ExpressDevelopGenerator = BaseGenerator.extend
             checked: use.backbone
           }
           {
+            name: 'Foundation'
+            value: 'foundation'
+            checked: use.foundation
+          }
+          {
             name: 'Bootstrap'
             value: 'bootstrap'
             checked: use.bootstrap
@@ -64,6 +69,7 @@ ExpressDevelopGenerator = BaseGenerator.extend
         answers.features.indexOf(feat) != -1
 
       # console.log 'answers=', answers
+      use.foundation = hasFeature 'foundation'
       use.bootstrap = hasFeature 'bootstrap'
       use.modernizr = hasFeature 'modernizr'
       use.backbone = hasFeature 'backbone'

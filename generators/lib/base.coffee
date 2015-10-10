@@ -14,6 +14,7 @@ BaseGenerator = yeoman.generators.Base.extend
   _getBranches: ->
     use = @config.get('use')
     backbone: use.backbone
+    foundation: use.foundation
     bootstrap: use.bootstrap
     coffee: use.coffee
     sass: use.sass
@@ -116,7 +117,8 @@ BaseGenerator = yeoman.generators.Base.extend
     use = config.get 'use'
     config.set 'use', _.defaults use,
       backbone: true
-      bootstrap: true
+      foundation: true
+      bootstrap: false
       modernizr: true
       coffee: true
       sass: true
