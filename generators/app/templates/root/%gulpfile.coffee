@@ -506,19 +506,25 @@ gulp.task 'build-client-pages', ->
     .pipe gulp.dest "#{dirs.tgt.client}/pages"
     .pipe streams.reloadClient()
 
-gulp.task 'build-client-styles', -><% if (use.sass) { %>
+gulp.task 'build-client-styles', ->
+  templateConfig = {}<% if (use.sass) { %>
+  includePaths = []<% if (use.bootstrap) { %>
+  templateConfig.bootstrapSassPath = 'node_modules/bootstrap-sass/assets/stylesheets'
+  templateConfig.bootstrapSassMain = templateConfig.bootstrapSassPath + '/' + '_bootstrap.scss'<% } if (use.foundation) { %>
+  templateConfig.foundationSassPath = 'node_modules/foundation-sites/scss'
+  templateConfig.foundationSassMain = templateConfig.foundationSassPath + '/' + 'foundation.scss'
+  includePaths.push(templateConfig.foundationSassPath)<% } %>
   sassFilter = plugins.filter [G_SASS], restore: true
   scssFilter = plugins.filter [G_SCSS], restore: true<% } %>
   gulp.src [G_CSS<% if (use.sass) { %>, G_SASS, G_SCSS<% } %>], cwd: "#{dirs.src.client}/styles"
-    .pipe streams.plumber()<% if (use.bootstrap) { %>
-    .pipe plugins.template
-      bootstrap: 'node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss'<% } %><% if (use.sass) { %>
+    .pipe streams.plumber()
+    .pipe plugins.template templateConfig<% if (use.sass) { %>
     .pipe sassFilter
-    .pipe plugins.sass indentedSyntax: true
+    .pipe plugins.sass includePaths: includePaths, indentedSyntax: true
     .pipe sassFilter.restore
     .pipe scssFilter
-    .pipe plugins.sass()
-    .pipe scssFilter.restore<% } %><% if (use.crusher) { %>
+    .pipe plugins.sass includePaths: includePaths
+    .pipe scssFilter.restore<% } if (use.crusher) { %>
     .pipe crusher.pusher()<% } %>
     .pipe gulp.dest "#{dirs.tgt.client}/styles"
     .pipe streams.reloadClient()
@@ -527,15 +533,21 @@ gulp.task 'build-client-styles', -><% if (use.sass) { %>
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
     .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"<% } %>
 
+<% if (use.foundation) { %>gulp.task 'build-client-vendor-foundation', ->
+  gulp.src ['**/*.{eot,svg,ttf,woff}'], cwd: 'bower_components/foundation-icon-fonts'
+    .pipe gulp.dest "#{dirs.tgt.clientVendor}/foundation/assets/fonts"<% } %>
+
 <% if (use.bootstrap) { %>gulp.task 'build-client-vendor-bootstrap', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
     .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"<% } %>
+
 
 gulp.task 'nop', ->
 
 gulp.task 'build-client-vendor-assets', (done) ->
   runSequence [<% if (use.modernizr) { %>
-    'build-client-vendor-modernizr'<% } %><% if (use.bootstrap) { %>
+    'build-client-vendor-modernizr'<% } %><% if (use.foundation) { %>
+    'build-client-vendor-foundation'<% } %><% if (use.bootstrap) { %>
     'build-client-vendor-bootstrap'<% } %>
     'nop'
   ], done

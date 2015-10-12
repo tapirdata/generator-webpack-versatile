@@ -17,6 +17,7 @@
     "bootstrap",
     "coffee",
     "coffeescript",
+    "foundation",
     "modernizr",
     "sass",
     "gulp",

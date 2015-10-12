@@ -3,7 +3,7 @@
 
 ## Features
 
-Use [browersify](http://http://browserify.org/) to write client code in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format. (That's the same, that is used for server-code.)
+Use [browersify](http://browserify.org/) to write client code in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format. (That's the same, that is used for server-code.)
 
 Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices. 
 
@@ -19,6 +19,8 @@ Use [mocha](http://mochajs.org/) with [chai](http://chaijs.com/) for unit-tests.
 ### Optionally
 
 Use [backbone](http://backbonejs.org/) as a lightweight client-library to build agile single-page web applications.
+
+Use [foundation](http://foundation.zurb.com/) for responsive client-side styling.  
 
 Use [bootstrap](http://getbootstrap.com/) for easy client-side styling.  
 

@@ -16,7 +16,11 @@
       span.glyphicon.glyphicon-ok
 
 .row.marketing
-  .col-lg-6<% if (use.backbone) { %>
+  .col-lg-6<% if (use.foundation) { %>
+    h4 Foundation
+    p 
+      | The most advanced responsive 
+      | front-end framework in the world.<% } %><% if (use.backbone) { %>
     h4 Backbone
     p
       | Backbone.js gives structure to web applications by providing models with

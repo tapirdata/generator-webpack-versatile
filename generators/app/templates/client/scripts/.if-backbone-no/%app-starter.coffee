@@ -1,23 +1,20 @@
 'use strict'
 
 <% if (use.bootstrap || use.foundation) { %>### global window ###<% } %>
+<% if (use.foundation) { %>### global document ###<% } %>
 
 $ = require 'jquery'
-Backbone = require 'backbone'
-Backbone.$ = $<% if (use.bootstrap) { %>
+<% if (use.bootstrap) { %>
 window.jQuery = $ # bootstrap needs this
 require 'bootstrap-sass'<% } %><% if (use.foundation) { %>
 window.jQuery = $ # foundation needs this
 require 'foundation'<% } %>
 
-Router = require './router'
-
 app =
   initialize: ->
-    console.log 'app.initialize'
-    new Router app: @
+    console.log 'app.initialize'<% if (use.foundation) { %>
+    $(document).foundation()<% } %>
     return
-  title: '<%= appnameCap %>'
 
 module.exports = ->
   app.initialize()

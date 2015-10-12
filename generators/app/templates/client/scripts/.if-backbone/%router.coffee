@@ -1,5 +1,6 @@
 'use strict'
 
+<% if (use.foundation) { %>### global document ###<% } %>
 $ = require 'jquery'
 Backbone = require 'backbone'
 SimpleView = require './views/simple'
@@ -14,28 +15,31 @@ module.exports = Backbone.Router.extend
   initialize: (options) ->
     console.log 'AppRouter.initialize'
     @app = options.app
-    @homeView = new SimpleView(
+    @homeView = new SimpleView
       el: @targetEl
       template: require '../templates/home.jade'
-      app: @app)
-    @aboutView = new SimpleView(
+      app: @app
+    @aboutView = new SimpleView
       el: @targetEl
       template: require '../templates/about.jade'
-      app: @app)
-    @contactView = new SimpleView(
+      app: @app
+    @contactView = new SimpleView
       el: @targetEl
       template: require '../templates/contact.jade'
-      app: @app)
+      app: @app
     Backbone.history.start()
     return
   showHome: ->
-    @homeView.render()
+    @homeView.render()<% if (use.foundation) { %>
+    $(document).foundation()<% } %>
     return
   showAbout: ->
-    @aboutView.render()
+    @aboutView.render()<% if (use.foundation) { %>
+    $(document).foundation()<% } %>
     return
   showContact: ->
-    @contactView.render()
+    @contactView.render()<% if (use.foundation) { %>
+    $(document).foundation()<% } %>
     return
   defaultAction: ->
     console.log 'defaultAction'
