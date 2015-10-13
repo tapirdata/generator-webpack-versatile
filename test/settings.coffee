@@ -1,7 +1,7 @@
 _ = require 'lodash'
 
 class TestSetting
-  featureNames: ['backbone', 'bootstrap', 'coffee', 'sass', 'crusher']
+  featureNames: ['backbone', 'foundation', 'bootstrap', 'coffee', 'sass', 'crusher']
   constructor: (options) -> 
     for name in @featureNames
       do (name) =>
@@ -11,7 +11,7 @@ class TestSetting
     @full = !! options.full
 
   activeFeatures: -> 
-    names = []
+    names = ['modernizr']
     for name in @featureNames
       do (name) => 
         if @[name]
@@ -26,28 +26,36 @@ class TestSetting
 exports.testSettings = [
   'full'
   'backbone,full'
-  'foundation,unsupported'
-  'bootstrap,unsupported'
   'coffee'
   'coffee,backbone'
+  'sass,full'
+  'sass,backbone'
+  'sass,coffee,full'
+  'sass,coffee,backbone,full'
+
+  'foundation,unsupported'
+  'coffee,foundation,unsupported'
+  'coffee,foundation,backbone,unsupported'
+  'sass,foundation'
+  'sass,foundation,backbone,full'
+  'sass,coffee,foundation,full'
+  'sass,coffee,foundation,backbone,full'
+  'sass,coffee,foundation,crusher,full'
+  'sass,coffee,foundation,backbone,crusher,full'
+
+  'bootstrap,unsupported'
   'coffee,bootstrap,unsupported'
   'coffee,bootstrap,backbone,unsupported'
-  'sass,full'
-  'sass,foundation'
-  'sass,backbone'
-  'sass,foundation,backbone,unsupported'
   'sass,bootstrap'
-  'sass,bootstrap,foundation,full'
   'sass,bootstrap,backbone,full'
-  'sass,coffee,full'
-  'sass,coffee,foundation,full'
-  'sass,coffee,backbone,full'
   'sass,coffee,bootstrap,full'
-  'sass,coffee,bootstrap,foundation,full'
   'sass,coffee,bootstrap,backbone,full'
   'sass,coffee,bootstrap,crusher,full'
-  'sass,coffee,bootstrap,foundation,crusher,full'
   'sass,coffee,bootstrap,backbone,crusher,full'
+
+  'coffee,foundation,backbone,unsupported'
+  'sass,foundation,bootstrap,unsupported'
+
 ].map (s) -> 
   parts = s.split(/, */)
   options = _.object _.map parts, (name) -> [name, true]

@@ -33,26 +33,23 @@ class Gasper
 
     hs = @splitHtml(html)
 
-    if @headFilter
-      filter = @headFilter
-      $('head').html ''
-      hs.$head.children().each ->
-        $this = $ this
-        if filter $this
-          $('head').append $this
-    else
-      $('head').html hs.$head
+    # $('head').html hs.$head.contents()
+    filter = @headFilter
+    # $('head').html ''
+    $('head').children(':not([class])')
+      .remove() # leave <meta class=...> for foundation
+    hs.$head.children().each ->
+      $this = $ @
+      if not filter or filter $this
+        $('head').append $this
 
-    if @bodyFilter
-      filter = @bodyFilter
-      $('body').html ''
-      hs.$body.children().each ->
-        $this = $ this
-        if filter $this
-          $('body').append $this
-    else
-      $('body').html hs.$body
-
+    # $('body').html hs.$body.contents()
+    filter = @bodyFilter
+    $('body').html ''
+    hs.$body.children().each ->
+      $this = $ @
+      if not filter or filter $this
+        $('body').append $this
     return
       
   show: (location, fast) ->

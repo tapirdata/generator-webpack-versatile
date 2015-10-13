@@ -123,7 +123,8 @@ getBundleDefs = (scope) ->
       exports: [
         'jquery'
         'lodash'<% if (use.backbone) { %>
-        'backbone'<% } %><% if (use.bootstrap) { %>
+        'backbone'<% } %><% if (use.foundation) { %>
+        'foundation'<% } %><% if (use.bootstrap) { %>
         'bootstrap-sass'<% } %>
       ]
     }
@@ -247,6 +248,7 @@ ki =
         mocha:
           bail: true
       singleRun: options.singleRun
+      browserNoActivityTimeout: 10000
 
     # gutil.log 'karma start...'
     karmaServer = new karma.Server karmaConf, (exitCode) =>
