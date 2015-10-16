@@ -111,6 +111,7 @@ for ts in settings.testSettings
     SC_EXT = if ts.coffee then '.coffee' else '.js'
     STYLE_EXT = if ts.sass then '.sass' else '.css'
     describe 'browserify-versatile generator ' + ts.toString(), ->
+      @timeout 5 * 60 * 1000
       serverResultsFile = null
       clientResultsFile = null
       testDir = path.join(__dirname, 'project')
@@ -126,7 +127,6 @@ for ts in settings.testSettings
           return
         return
       it 'runs the project tests', (done) ->
-        @timeout 5 * 60 * 1000
         helpers.mockPrompt @app,
           features: ts.activeFeatures()
         # @app.options['skip-install'] = true
