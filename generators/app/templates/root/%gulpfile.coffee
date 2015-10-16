@@ -546,7 +546,8 @@ gulp.task 'build-client-vendor-foundation-fonts', ->
     .pipe gulp.dest "#{dirs.tgt.clientVendor}/foundation/assets/fonts"
 <% } -%>
 
-<% if (use.bootstrap) { %>gulp.task 'build-client-vendor-bootstrap-assets', ->
+<% if (use.bootstrap) { -%>
+gulp.task 'build-client-vendor-bootstrap-fonts', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
     .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"
 <% } -%>
