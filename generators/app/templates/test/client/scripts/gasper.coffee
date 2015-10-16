@@ -17,6 +17,7 @@ class Gasper
     @switchFast = options.switchFast
     @headFilter = options.headFilter
     @bodyFilter = options.bodyFilter
+    @app = null
 
   splitHtml: (html) ->
     html = html
@@ -35,9 +36,9 @@ class Gasper
 
     # $('head').html hs.$head.contents()
     filter = @headFilter
-    # $('head').html ''
-    $('head').children(':not([class])')
-      .remove() # leave <meta class=...> for foundation
+    $('head').html ''
+    # $('head').children(':not([class])')
+    #   .remove() # leave <meta class=...> for foundation
     hs.$head.children().each ->
       $this = $ @
       if not filter or filter $this
@@ -62,6 +63,11 @@ class Gasper
       .then (html) =>
         # console.log 'show html=', html
         @gaspHtml html
+        app = @app
+        if app
+          app.amendPage()
+            .then ->
+              app.instrumentPage()
 
   switch: (location) ->
     @show location, @switchFast

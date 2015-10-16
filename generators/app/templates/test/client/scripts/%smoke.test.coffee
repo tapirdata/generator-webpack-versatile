@@ -23,6 +23,9 @@ describe 'The Application', ->
   before ->
     gasper.show '/'
     .then -> appStarter()
+    .then (app) ->
+      gasper.app = app
+      return
   it 'should show the home page', ->
     expect($ 'div.jumbotron').to.have.length 1
     expect($ '#main-nav li:nth-child(1)').$class 'active'
@@ -39,7 +42,7 @@ describe 'The Application', ->
       expect($btn).to.have.$css 'background-color', 'rgb(92, 184, 92)'<% } %>
   it 'should show the about page', ->
     w()
-    # .delay 200 # slow motion
+    .delay 200
     .then ->
       # console.log 'click about'
       gasper.activate $ '#main-nav li:nth-child(2) a'
@@ -49,7 +52,7 @@ describe 'The Application', ->
 
   it 'should show the contact page', ->
     w()
-    # .delay 200 # slow motion
+    .delay 200
     .then ->
       # console.log 'click contact'
       gasper.activate $ '#main-nav li:nth-child(3) a'
@@ -57,9 +60,8 @@ describe 'The Application', ->
       expect($ 'div.jumbotron').to.have.length 0
       expect($('p').text()).to.contain 'contact'
   it 'should show the home page again', ->
-    # w().delay 800 # slow motion
     w()
-    # .delay 200 # slow motion
+    .delay 200
     .then ->
       # console.log 'click home'
       gasper.activate $ '#main-nav li:nth-child(1) a'

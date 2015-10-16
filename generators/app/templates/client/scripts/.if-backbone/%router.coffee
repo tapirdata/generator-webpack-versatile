@@ -1,6 +1,5 @@
 'use strict'
 
-<% if (use.foundation) { %>### global document ###<% } %>
 $ = require 'jquery'
 Backbone = require 'backbone'
 SimpleView = require './views/simple'
@@ -29,17 +28,19 @@ module.exports = Backbone.Router.extend
       app: @app
     Backbone.history.start()
     return
+  instrumentPage: ->
+    @app.instrumentPage()
   showHome: ->
-    @homeView.render()<% if (use.foundation) { %>
-    $(document).foundation()<% } %>
+    @homeView.render()
+    @instrumentPage()
     return
   showAbout: ->
-    @aboutView.render()<% if (use.foundation) { %>
-    $(document).foundation()<% } %>
+    @aboutView.render()
+    @instrumentPage()
     return
   showContact: ->
-    @contactView.render()<% if (use.foundation) { %>
-    $(document).foundation()<% } %>
+    @contactView.render()
+    @instrumentPage()
     return
   defaultAction: ->
     console.log 'defaultAction'

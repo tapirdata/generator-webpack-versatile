@@ -32,19 +32,15 @@ check = (url) ->
     .catch (err) ->
       w.reject new Error 'Failed to lint html: ' + err
     .then (results) ->
-      messages = results.messages
-      if messages.length
-        lines = [
-         "Bad html at '#{url}'"
-        ]
-        messages.forEach (m) ->
-          lines = lines.concat [
-            "[#{m.type}] line #{m.lastLine}:"
-            "#{m.extract}"
-            "#cause: #{m.message}"
-          ]
-          return
-        w.reject new Error lines.join '\n'
+      lines = []
+      for m in results.messages
+        if m.type == 'info'
+          continue
+        lines.push "[#{m.type}] line #{m.lastLine}:"
+        lines.push "#{m.extract}"
+        lines.push "#cause: #{m.message}"
+      if lines.length > 0
+        w.reject new Error "Bad html at '#{url}'\n" + lines.join '\n'
   return
 
 config = require 'config'

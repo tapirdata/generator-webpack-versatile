@@ -123,8 +123,7 @@ getBundleDefs = (scope) ->
       exports: [
         'jquery'
         'lodash'<% if (use.backbone) { %>
-        'backbone'<% } %><% if (use.foundation) { %>
-        'foundation'<% } %><% if (use.bootstrap) { %>
+        'backbone'<% } %><% if (use.bootstrap) { %>
         'bootstrap-sass'<% } %>
       ]
     }
@@ -531,17 +530,26 @@ gulp.task 'build-client-styles', ->
     .pipe gulp.dest "#{dirs.tgt.client}/styles"
     .pipe streams.reloadClient()
 
-<% if (use.modernizr) { %>gulp.task 'build-client-vendor-modernizr', ->
+<% if (use.modernizr) { -%>
+gulp.task 'build-client-vendor-modernizr', ->
   gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
-    .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"<% } %>
+    .pipe gulp.dest "#{dirs.tgt.clientVendor}/modernizr"
+<% } -%>
 
-<% if (use.foundation) { %>gulp.task 'build-client-vendor-foundation', ->
+<% if (use.foundation) { -%>
+gulp.task 'build-client-vendor-foundation-scripts', ->
+  gulp.src ['foundation.js'], cwd: 'node_modules/foundation-sites/js'
+    .pipe gulp.dest "#{dirs.tgt.clientVendor}/foundation"
+
+gulp.task 'build-client-vendor-foundation-fonts', ->
   gulp.src ['**/*.{eot,svg,ttf,woff}'], cwd: 'bower_components/foundation-icon-fonts'
-    .pipe gulp.dest "#{dirs.tgt.clientVendor}/foundation/assets/fonts"<% } %>
+    .pipe gulp.dest "#{dirs.tgt.clientVendor}/foundation/assets/fonts"
+<% } -%>
 
-<% if (use.bootstrap) { %>gulp.task 'build-client-vendor-bootstrap', ->
+<% if (use.bootstrap) { %>gulp.task 'build-client-vendor-bootstrap-assets', ->
   gulp.src ['**/*'], cwd: 'node_modules/bootstrap-sass/assets/fonts'
-    .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"<% } %>
+    .pipe gulp.dest "#{dirs.tgt.clientVendor}/bootstrap/assets/fonts"
+<% } -%>
 
 
 gulp.task 'nop', ->
@@ -549,8 +557,9 @@ gulp.task 'nop', ->
 gulp.task 'build-client-vendor-assets', (done) ->
   runSequence [<% if (use.modernizr) { %>
     'build-client-vendor-modernizr'<% } %><% if (use.foundation) { %>
-    'build-client-vendor-foundation'<% } %><% if (use.bootstrap) { %>
-    'build-client-vendor-bootstrap'<% } %>
+    'build-client-vendor-foundation-scripts'
+    'build-client-vendor-foundation-fonts'<% } %><% if (use.bootstrap) { %>
+    'build-client-vendor-bootstrap-fonts'<% } %>
     'nop'
   ], done
 

@@ -68,10 +68,7 @@
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^3.4.0",
     "when": "^3.7.2"
-  },<%if (use.foundation) { %>
-  "browser": {
-    "foundation": "./node_modules/foundation-sites/js/foundation.js"
-  },<% } %>
+  },
   "engines": {
     "node": ">=0.10.0"
   },
