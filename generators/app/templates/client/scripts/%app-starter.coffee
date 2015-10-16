@@ -19,11 +19,6 @@ window.jQuery = $ # bootstrap needs this
 require 'bootstrap-sass'
 <% } -%>
 
-<% if (use.foundation) { -%>
-foundationScriptTag = '<script type="text/javascript"' +
-  ' src="/vendor/foundation/foundation.js"></script>'
-<% } -%>
-
 app =
   initialize: ->
     console.log 'app.initialize'
@@ -40,7 +35,7 @@ app =
   amendPage: ->
 <% if (use.foundation) { -%>
     window.jQuery = $ # foundation needs this
-    $('head').append foundationScriptTag
+    $.getScript '/vendor/foundation/foundation.js'
 <% } -%>
     w()
 
