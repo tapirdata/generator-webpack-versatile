@@ -22,7 +22,6 @@
     "chai": "^3.3.0",
     "chai-as-promised": "^5.1.0",
     "chai-jq": "0.0.8",<% if (use.coffee) { %>
-    "coffee-script": "^1.9.0",
     "coffeeify": "^1.0.0",<% } %>
     "del": "^2.0.2",
     "exorcist": "^0.4.0",<% if (use.foundation) { %>
