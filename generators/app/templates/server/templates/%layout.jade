@@ -2,9 +2,17 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/app/styles/main.css')<% if (use.modernizr) { %>
-    script(type='text/javascript', src='/vendor/modernizr/modernizr.js')<% } %>
+    link(rel='stylesheet', href='/app/styles/main.css')
+<% if (use.modernizr) { -%>
+    script(type='text/javascript', src='/vendor/modernizr/modernizr.js')
+<% } -%>
     script(type='text/javascript', src='/app/scripts/vendor.js')
     script(type='text/javascript', src='/app/scripts/main.js')
   body
+    <!--[if lt IE 9]>
+    p.browsehappy
+      | You are using an <strong>outdated</strong> browser. Please 
+      a(href='http://browsehappy.com/') upgrade your browser 
+      |  to improve your experience.
+    <![endif]-->
     block content
