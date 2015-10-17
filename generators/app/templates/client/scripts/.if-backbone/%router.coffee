@@ -11,8 +11,9 @@ module.exports = Backbone.Router.extend
     'contact': 'showContact'
     '*actions': 'defaultAction'
   targetEl: '#body-container'
+
   initialize: (options) ->
-    console.log 'AppRouter.initialize'
+    # console.log 'AppRouter.initialize'
     @app = options.app
     @homeView = new SimpleView
       el: @targetEl
@@ -28,22 +29,27 @@ module.exports = Backbone.Router.extend
       app: @app
     Backbone.history.start()
     return
+
   instrumentPage: ->
     @app.instrumentPage()
+
   showHome: ->
     @homeView.render()
     @instrumentPage()
     return
+
   showAbout: ->
     @aboutView.render()
     @instrumentPage()
     return
+
   showContact: ->
     @contactView.render()
     @instrumentPage()
     return
+
   defaultAction: ->
-    console.log 'defaultAction'
+    # console.log 'defaultAction'
     @showHome()
     return
 

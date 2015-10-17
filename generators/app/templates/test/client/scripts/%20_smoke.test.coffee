@@ -35,11 +35,19 @@ describe 'The Application', ->
       expect($imgs).to.have.length 1
       img = $imgs[0]
       expect(img.naturalWidth).above 10
-      expect(img.naturalHeight).above 10<% if (use.bootstrap) { %>
+      expect(img.naturalHeight).above 10
+<% if (use.foundation) { -%>
+  it 'home page should have the stylesheet applied', ->
+    w().then -> gasper.retry ->
+      $btn = $ '.button.success'
+      expect($btn).to.have.$css 'background-color', 'rgb(67, 172, 106)'
+<% } -%>
+<% if (use.bootstrap) { -%>
   it 'home page should have the stylesheet applied', ->
     w().then -> gasper.retry ->
       $btn = $ '.btn-success'
-      expect($btn).to.have.$css 'background-color', 'rgb(92, 184, 92)'<% } %>
+      expect($btn).to.have.$css 'background-color', 'rgb(92, 184, 92)'
+<% } -%>
   it 'should show the about page', ->
     w()
     .delay 200

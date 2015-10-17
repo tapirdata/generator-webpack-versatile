@@ -21,7 +21,7 @@ require 'bootstrap-sass'
 
 app =
   initialize: ->
-    console.log 'app.initialize'
+    # console.log 'app.initialize'
     @amendPage()
       .then =>
 <% if (use.backbone) { -%>
