@@ -14,7 +14,6 @@ chai.use require 'chai-jq'
 
 class Gasper
   constructor: (options) ->
-    @switchFast = options.switchFast
     @headFilter = options.headFilter
     @bodyFilter = options.bodyFilter
     @app = null
@@ -51,9 +50,8 @@ class Gasper
         $('body').append $this
     return
       
-  show: (location, fast) ->
-    # console.log 'show', location, fast
-    if fast
+  show: (location) ->
+    if location[0] == '#'
       window.location = location
       w()
     else
@@ -68,7 +66,7 @@ class Gasper
               app.instrumentPage()
 
   switch: (location) ->
-    @show location, @switchFast
+    @show location
 
   activate: ($a) ->
     @switch $a.attr('href')

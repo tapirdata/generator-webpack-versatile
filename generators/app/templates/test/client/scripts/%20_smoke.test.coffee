@@ -11,8 +11,7 @@ expect = chai.expect
 
 gasper = do ->
   Gasper = require './gasper'
-  options =<% if (use.backbone) { %>
-    switchFast: true<% } %>
+  options =
     headFilter: ($child) ->
       if not $child.is 'script'
         return true
