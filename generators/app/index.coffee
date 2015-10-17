@@ -27,9 +27,9 @@ ExpressDevelopGenerator = BaseGenerator.extend
         message: 'What more would you like?'
         choices: [
           {
-            name: 'Backbone'
-            value: 'backbone'
-            checked: use.backbone
+            name: 'Modernizr'
+            value: 'modernizr'
+            checked: use.modernizr
           }
           {
             name: 'Foundation'
@@ -42,9 +42,9 @@ ExpressDevelopGenerator = BaseGenerator.extend
             checked: use.bootstrap
           }
           {
-            name: 'Cache-crusher'
-            value: 'crusher'
-            checked: use.crusher
+            name: 'Backbone'
+            value: 'backbone'
+            checked: use.backbone
           }
           {
             name: 'Coffee'
@@ -52,14 +52,14 @@ ExpressDevelopGenerator = BaseGenerator.extend
             checked: use.coffee
           }
           {
-            name: 'Modernizr'
-            value: 'modernizr'
-            checked: use.modernizr
-          }
-          {
             name: 'Sass'
             value: 'sass'
             checked: use.sass
+          }
+          {
+            name: 'Cache-crusher'
+            value: 'crusher'
+            checked: use.crusher
           }
         ]
       }
@@ -69,9 +69,9 @@ ExpressDevelopGenerator = BaseGenerator.extend
         answers.features.indexOf(feat) != -1
 
       # console.log 'answers=', answers
+      use.modernizr = hasFeature 'modernizr'
       use.foundation = hasFeature 'foundation'
       use.bootstrap = hasFeature 'bootstrap'
-      use.modernizr = hasFeature 'modernizr'
       use.backbone = hasFeature 'backbone'
       use.sass = hasFeature 'sass'
       use.coffee = hasFeature 'coffee'

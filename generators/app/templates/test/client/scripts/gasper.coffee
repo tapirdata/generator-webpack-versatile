@@ -34,11 +34,10 @@ class Gasper
 
     hs = @splitHtml(html)
 
-    # $('head').html hs.$head.contents()
-    filter = @headFilter
     $('head').html ''
-    # $('head').children(':not([class])')
-    #   .remove() # leave <meta class=...> for foundation
+    $('body').html ''
+
+    filter = @headFilter
     hs.$head.children().each ->
       $this = $ @
       if not filter or filter $this
@@ -46,7 +45,6 @@ class Gasper
 
     # $('body').html hs.$body.contents()
     filter = @bodyFilter
-    $('body').html ''
     hs.$body.children().each ->
       $this = $ @
       if not filter or filter $this

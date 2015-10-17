@@ -18,19 +18,18 @@ Use [mocha](http://mochajs.org/) with [chai](http://chaijs.com/) for unit-tests.
 
 ### Optionally
 
+Use [modernizr](http://modernizr.com/) for browser-feature detection.
+
+Use [foundation](http://foundation.zurb.com/) or [bootstrap](http://getbootstrap.com/) for responsive client-side styling.   
+
 Use [backbone](http://backbonejs.org/) as a lightweight client-library to build agile single-page web applications.
-
-Use [foundation](http://foundation.zurb.com/) for responsive client-side styling.  
-
-Use [bootstrap](http://getbootstrap.com/) for easy client-side styling.  
-
-Use [cache-crusher](https://www.npmjs.com/package/cache-crusher) to provide cache-busting for your production-build.
 
 Use [coffeescript](http://coffeescript.org/) or just plain Javascript for your project-code.
 
-Use [modernizr](http://modernizr.com/) for browser-feature detection.
-
 Use [sass](http://sass-lang.com/) as versatile CSS-Preprocessor (required for bootstrap).
+
+Use [cache-crusher](https://www.npmjs.com/package/cache-crusher) to provide cache-busting for your production-build.
+
 
 ## Usage
 

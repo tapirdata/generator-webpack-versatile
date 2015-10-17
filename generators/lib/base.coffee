@@ -12,10 +12,11 @@ BranchFinder = require './branch-finder'
 BaseGenerator = yeoman.generators.Base.extend
 
   _getBranches: ->
-    use = @config.get('use')
-    backbone: use.backbone
+    use = @config.get 'use'
+    modernizr: use.modernizr
     foundation: use.foundation
     bootstrap: use.bootstrap
+    backbone: use.backbone
     coffee: use.coffee
     sass: use.sass
     crusher: use.crusher

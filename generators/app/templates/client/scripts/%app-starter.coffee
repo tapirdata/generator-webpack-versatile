@@ -22,28 +22,34 @@ require 'bootstrap-sass'
 app =
   initialize: ->
     console.log 'app.initialize'
-<% if (use.backbone) { -%>
-    Router = require './router'
-    new Router app: @
-    @amendPage()
-<% } else { -%>
     @amendPage()
       .then =>
+<% if (use.backbone) { -%>
+        Router = require './router'
+        new Router app: @
+<% } else { -%>
         @instrumentPage()
 <% } -%>
 
   amendPage: ->
 <% if (use.foundation) { -%>
     window.jQuery = $ # foundation needs this
-    $.getScript '/vendor/foundation/foundation.js'
-<% } -%>
+    (
+      w $.ajax # load script async
+        url: '/vendor/foundation/foundation.js'
+        dataType: 'script'
+    )
+      .then ->
+        # console.log 'foundation loaded'
+<% } else { -%>
     w()
+<% } -%>
 
   instrumentPage: ->
     w()
 <% if (use.foundation) { -%>
-      .delay 40  # ensure css is recognized
       .then ->
+        # console.log 'run foundation()'
         $(document).foundation()
         return
 <% } -%>

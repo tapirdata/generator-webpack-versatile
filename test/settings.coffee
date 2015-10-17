@@ -1,7 +1,7 @@
 _ = require 'lodash'
 
 class TestSetting
-  featureNames: ['backbone', 'foundation', 'bootstrap', 'coffee', 'sass', 'crusher']
+  featureNames: ['modernizr', 'foundation', 'bootstrap', 'backbone', 'coffee', 'sass', 'crusher']
   constructor: (options) -> 
     for name in @featureNames
       do (name) =>
@@ -11,7 +11,7 @@ class TestSetting
     @full = !! options.full
 
   activeFeatures: -> 
-    names = ['modernizr']
+    names = []
     for name in @featureNames
       do (name) => 
         if @[name]
@@ -32,29 +32,27 @@ exports.testSettings = [
   'sass,backbone'
   'sass,coffee,full'
   'sass,coffee,backbone,full'
+  'modernizr,sass,coffee,backbone,full'
 
   'foundation,unsupported'
-  'coffee,foundation,unsupported'
-  'coffee,foundation,backbone,unsupported'
-  'sass,foundation'
-  'sass,foundation,backbone,full'
-  'sass,coffee,foundation,full'
-  'sass,coffee,foundation,backbone,full'
-  'sass,coffee,foundation,crusher,full'
-  'sass,coffee,foundation,backbone,crusher,full'
+  'foundation,modernizr,unsupported'
+  'foundation,sass,unsupported'
+  'foundation,modernizr,sass,full'
+  'foundation,modernizr,sass,backbone,full'
+  'foundation,modernizr,sass,coffee,full'
+  'foundation,modernizr,sass,coffee,backbone,full'
+  'foundation,modernizr,sass,coffee,crusher,full'
+  'foundation,modernizr,sass,coffee,backbone,crusher,full'
 
   'bootstrap,unsupported'
-  'coffee,bootstrap,unsupported'
-  'coffee,bootstrap,backbone,unsupported'
-  'sass,bootstrap'
-  'sass,bootstrap,backbone,full'
-  'sass,coffee,bootstrap,full'
-  'sass,coffee,bootstrap,backbone,full'
-  'sass,coffee,bootstrap,crusher,full'
-  'sass,coffee,bootstrap,backbone,crusher,full'
+  'bootstrap,sass'
+  'bootstrap,sass,backbone,full'
+  'bootstrap,sass,coffee,full'
+  'bootstrap,sass,coffee,backbone,full'
+  'bootstrap,sass,coffee,crusher,full'
+  'bootstrap,sass,coffee,backbone,crusher,full'
 
-  'coffee,foundation,backbone,unsupported'
-  'sass,foundation,bootstrap,unsupported'
+  'foundation,bootstrap,modernizr,sass,unsupported'
 
 ].map (s) -> 
   parts = s.split(/, */)
