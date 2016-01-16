@@ -56,7 +56,7 @@ exports.testSettings = [
 
 ].map (s) -> 
   parts = s.split(/, */)
-  options = _.object _.map parts, (name) -> [name, true]
+  options = _.fromPairs _.map parts, (name) -> [name, true]
   new TestSetting(options)
 
 
