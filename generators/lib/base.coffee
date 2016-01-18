@@ -9,7 +9,7 @@ ejs = require 'ejs'
 BranchFinder = require './branch-finder'
 
 
-BaseGenerator = yeoman.generators.Base.extend
+BaseGenerator = yeoman.Base.extend
 
   _getBranches: ->
     use = @config.get 'use'
@@ -127,7 +127,7 @@ BaseGenerator = yeoman.generators.Base.extend
     return
 
   constructor: ->
-    yeoman.generators.Base.apply @, arguments
+    yeoman.Base.apply @, arguments
     @pkg = require '../../package.json'
     @_initConfig()
     @_optionConfig()
