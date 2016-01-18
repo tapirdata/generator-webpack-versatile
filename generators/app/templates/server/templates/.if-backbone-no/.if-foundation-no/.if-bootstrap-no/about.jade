@@ -2,15 +2,8 @@ extends layout
 
 block content
   .container
-    .header
-      ul#main-nav
-        li
-          a(href='/') Home
-        li.active
-          a(href='#') About
-        li
-          a(href='/contact') Contact
-      h3.text-muted= title
+    - var main_sel = 'about'
+    include _top-menu.jade
     div
       p
         | about ...

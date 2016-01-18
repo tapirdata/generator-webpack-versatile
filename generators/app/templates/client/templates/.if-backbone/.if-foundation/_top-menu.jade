@@ -1,0 +1,16 @@
+.title-bar(data-responsive-toggle="main-nav" data-hide-for="medium")
+  button.menu-icon(type="button", data-toggle)
+  .title-bar-title Menu
+
+.top-bar#main-nav
+  .top-bar-left
+    ul.dropdown.menu(data-dropdown-menu)
+      li.menu-text= title
+      li.item(class=main_sel === 'home' ? 'active' : '')
+        a(href='#') Home
+      li.item(class=main_sel === 'about' ? 'active' : '')
+        a(href='#/about') About
+      li.item(class=main_sel === 'contact' ? 'active' : '')
+        a(href='#/contact') Contact
+
+

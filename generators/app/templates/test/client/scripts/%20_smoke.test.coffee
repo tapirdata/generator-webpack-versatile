@@ -27,7 +27,7 @@ describe 'The Application', ->
       return
   it 'should show the home page', ->
     expect($ 'div.jumbotron').to.have.length 1
-    expect($ '#main-nav li:nth-child(1)').$class 'active'
+    expect($('#main-nav li.item').eq(0)).$class 'active'
   it 'home page should show the yeoman image', ->
     w().then -> gasper.retry ->
       $imgs = $ 'img[alt="the yeoman"]'
@@ -39,7 +39,7 @@ describe 'The Application', ->
   it 'home page should have the stylesheet applied', ->
     w().then -> gasper.retry ->
       $btn = $ '.button.success'
-      expect($btn).to.have.$css 'background-color', 'rgb(67, 172, 106)'
+      expect($btn).to.have.$css 'background-color', 'rgb(58, 219, 118)'
 <% } -%>
 <% if (use.bootstrap) { -%>
   it 'home page should have the stylesheet applied', ->
@@ -52,7 +52,7 @@ describe 'The Application', ->
     .delay 200
     .then ->
       # console.log 'click about'
-      gasper.activate $ '#main-nav li:nth-child(2) a'
+      gasper.activate $('#main-nav li.item a').eq(1)
     .then -> gasper.retry ->
       expect($ 'div.jumbotron').to.have.length 0
       expect($('p').text()).to.contain 'about'
@@ -62,7 +62,7 @@ describe 'The Application', ->
     .delay 200
     .then ->
       # console.log 'click contact'
-      gasper.activate $ '#main-nav li:nth-child(3) a'
+      gasper.activate $('#main-nav li.item a').eq(2)
     .then -> gasper.retry ->
       expect($ 'div.jumbotron').to.have.length 0
       expect($('p').text()).to.contain 'contact'
@@ -71,7 +71,7 @@ describe 'The Application', ->
     .delay 200
     .then ->
       # console.log 'click home'
-      gasper.activate $ '#main-nav li:nth-child(1) a'
+      gasper.activate $('#main-nav li.item a').eq(0)
     .then -> gasper.retry ->
       expect($ 'div.jumbotron').to.have.length 1
 
