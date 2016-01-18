@@ -2,8 +2,8 @@
 
 'use strict'
 path = require('path')
-helpers = require('yeoman-generator').test
-assert = require('yeoman-generator').assert
+helpers = require('yeoman-test')
+assert = require('yeoman-assert')
 settings = require('./settings')
 
 for ts in settings.testSettings

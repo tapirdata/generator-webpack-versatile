@@ -8,8 +8,8 @@ _ = require 'lodash'
 rimraf = require 'rimraf'
 xml2js = require 'xml2js'
 glob = require 'glob'
-helpers = require('yeoman-generator').test
-assert = require('yeoman-generator').assert
+helpers = require('yeoman-test')
+assert = require('yeoman-assert')
 settings = require './settings'
 
 class ProjectTestError extends Error
