@@ -42,7 +42,7 @@ BaseGenerator = yeoman.Base.extend
     transformers
 
   _copyOp: (srcPath, tgtPath, transFns) ->
-    # console.log 'op srcPath=', srcPath, 'transFns=', transFns
+    # console.log "op srcPath=#{srcPath} transFns=#{transFns}"
     copyOptions = {}
     if transFns and transFns.length
       copyOptions.process = (contents) ->
@@ -55,6 +55,7 @@ BaseGenerator = yeoman.Base.extend
     return
 
   _branchCopy: (source, target, pattern) ->
+    # console.log "_branchCopy source=#{source} target=#{target} pattern=#{pattern}"
     transNames = ['template']
     if !@config.get('use').coffee
       transNames.push 'decoffee'
@@ -132,7 +133,7 @@ BaseGenerator = yeoman.Base.extend
     @_initConfig()
     @_optionConfig()
     @_defaultConfig()
-    # console.log '..config=', @config.getAll()
+    # console.log "..config=#{JSON.stringify(@config.getAll())}"
     return
 
 

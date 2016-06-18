@@ -13,73 +13,72 @@ ExpressDevelopGenerator = BaseGenerator.extend
     BaseGenerator.apply @, arguments
     return
 
-  prompting: askFor: ->
-    done = @async()
-    config = @config
-    use = config.get('use')
-    if !@options['skip-welcome-message']
-      # Have Yeoman greet the user.
-      @log yosay 'Welcome to the marvelous ExpressDevelop generator!'
-    prompts = [
-      {
-        type: 'checkbox'
-        name: 'features'
-        message: 'What more would you like?'
-        choices: [
-          {
-            name: 'Modernizr'
-            value: 'modernizr'
-            checked: use.modernizr
-          }
-          {
-            name: 'Foundation'
-            value: 'foundation'
-            checked: use.foundation
-          }
-          {
-            name: 'Bootstrap'
-            value: 'bootstrap'
-            checked: use.bootstrap
-          }
-          {
-            name: 'Backbone'
-            value: 'backbone'
-            checked: use.backbone
-          }
-          {
-            name: 'Coffee'
-            value: 'coffee'
-            checked: use.coffee
-          }
-          {
-            name: 'Sass'
-            value: 'sass'
-            checked: use.sass
-          }
-          {
-            name: 'Cache-crusher'
-            value: 'crusher'
-            checked: use.crusher
-          }
-        ]
-      }
-    ]
-    @prompt prompts, (answers) =>
-      hasFeature = (feat) ->
-        answers.features.indexOf(feat) != -1
+  prompting:
+    askFor: ->
+      config = @config
+      use = config.get('use')
+      if !@options['skip-welcome-message']
+        # Have Yeoman greet the user.
+        @log yosay 'Welcome to the marvelous ExpressDevelop generator!'
+      prompts = [
+        {
+          type: 'checkbox'
+          name: 'features'
+          message: 'What more would you like?'
+          choices: [
+            {
+              name: 'Modernizr'
+              value: 'modernizr'
+              checked: use.modernizr
+            }
+            {
+              name: 'Foundation'
+              value: 'foundation'
+              checked: use.foundation
+            }
+            {
+              name: 'Bootstrap'
+              value: 'bootstrap'
+              checked: use.bootstrap
+            }
+            {
+              name: 'Backbone'
+              value: 'backbone'
+              checked: use.backbone
+            }
+            {
+              name: 'Coffee'
+              value: 'coffee'
+              checked: use.coffee
+            }
+            {
+              name: 'Sass'
+              value: 'sass'
+              checked: use.sass
+            }
+            {
+              name: 'Cache-crusher'
+              value: 'crusher'
+              checked: use.crusher
+            }
+          ]
+        }
+      ]
+      # console.log "prompts=#{JSON.stringify(prompts)}"
+      @prompt prompts
+        .then (answers) =>
+          hasFeature = (feat) ->
+            answers.features.indexOf(feat) != -1
 
-      # console.log 'answers=', answers
-      use.modernizr = hasFeature 'modernizr'
-      use.foundation = hasFeature 'foundation'
-      use.bootstrap = hasFeature 'bootstrap'
-      use.backbone = hasFeature 'backbone'
-      use.sass = hasFeature 'sass'
-      use.coffee = hasFeature 'coffee'
-      use.crusher = hasFeature 'crusher'
-      config.set 'use', use
-      done()
-      return
-    return
+          # console.log "answers=#{JSON.stringify(answers)}"
+          use.modernizr = hasFeature 'modernizr'
+          use.foundation = hasFeature 'foundation'
+          use.bootstrap = hasFeature 'bootstrap'
+          use.backbone = hasFeature 'backbone'
+          use.sass = hasFeature 'sass'
+          use.coffee = hasFeature 'coffee'
+          use.crusher = hasFeature 'crusher'
+          config.set 'use', use
 
   configuring: saveConfig: ->
     @config.set @settings

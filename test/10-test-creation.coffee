@@ -1,10 +1,10 @@
 ###global describe, beforeEach, it ###
 
 'use strict'
-path = require('path')
-helpers = require('yeoman-test')
-assert = require('yeoman-assert')
-settings = require('./settings')
+path = require 'path'
+helpers = require 'yeoman-test'
+assert = require 'yeoman-assert'
+settings = require './settings'
 
 for ts in settings.testSettings
   do (ts) ->
@@ -18,6 +18,7 @@ for ts in settings.testSettings
             done(err)
             return 
           @app = helpers.createGenerator('browserify-versatile:app', [ '../../generators/app' ], [], 'test-framework': 'none')
+          # console.log "app=#{@app} features=#{ts.activeFeatures()}"
           helpers.mockPrompt @app, 'features': ts.activeFeatures()
           done()
           return
