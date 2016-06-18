@@ -3,14 +3,8 @@ extends layout
 block content
   .container
     .header
-      ul#main-nav
-        li.active
-          a(href='#') Home
-        li
-          a(href='/about') About
-        li
-          a(href='/contact') Contact
-      h3= title
+    - var main_sel = 'home'
+    include _top-menu.jade
     .jumbotron
       h1 'Allo, 'Allo!
       img(src='/app/images/yeoman.png' alt='the yeoman')

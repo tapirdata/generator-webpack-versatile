@@ -1,12 +1,5 @@
-.header
-  ul#main-nav.nav.nav-pills.pull-right
-    li.active
-      a(href='#') Home
-    li
-      a(href='#/about') About
-    li
-      a(href='#/contact') Contact
-  h3.text-muted= title
+- var main_sel = 'home'
+include _top-menu.jade
 .jumbotron
   h1 'Allo, 'Allo!
   img(src='/app/images/yeoman.png' alt='the yeoman')

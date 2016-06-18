@@ -538,7 +538,7 @@ gulp.task 'build-client-vendor-modernizr', ->
 
 <% if (use.foundation) { -%>
 gulp.task 'build-client-vendor-foundation-scripts', ->
-  gulp.src ['foundation.js'], cwd: 'node_modules/foundation-sites/js'
+  gulp.src ['foundation.js'], cwd: 'node_modules/foundation-sites/dist'
     .pipe gulp.dest "#{dirs.tgt.clientVendor}/foundation"
 
 gulp.task 'build-client-vendor-foundation-fonts', ->
