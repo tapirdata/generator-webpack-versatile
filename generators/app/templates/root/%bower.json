@@ -2,7 +2,7 @@
   "name": "<%= appnameSlug %>",
   "version": "0.1.0",
   "dependencies": {
-    "modernizr": "~2.8.3"<% if (use.foundation) { %>,
+    "modernizr": "~3.3.1"<% if (use.foundation) { %>,
     "foundation-icon-fonts": "*"<% } %>
   },
   "devDependencies": {
