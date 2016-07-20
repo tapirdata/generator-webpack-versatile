@@ -127,7 +127,7 @@ gulp.task 'build-client-styles', ->
 
 <% if (use.modernizr) { -%>
 gulp.task 'build-client-vendor-modernizr', ->
-  gulp.src ['modernizr.js'], cwd: 'bower_components/modernizr'
+  build.modernizr build.config.modernizr
     .pipe gulp.dest "#{build.dirs.tgt.clientVendor}/modernizr"
 <% } -%>
 

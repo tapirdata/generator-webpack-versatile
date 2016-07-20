@@ -52,7 +52,10 @@ build.mochaState = require('./mochaState')(build)
 build.karmaState = require('./karmaState')(build)
 build.streams = require('./streams')(build)
 build.buildBrowsified = require('./buildBrowsified')(build)
-    
+
+<% if (use.modernizr) { %>
+build.modernizr = require('./modernizr')(build)<% } %>
+
 
 module.exports = build
 
