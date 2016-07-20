@@ -141,6 +141,7 @@ for ts in settings.testSettings
       for browserName in ['PhantomJS']  
         it "run tests without client failures for '#{browserName}'" , (done) ->
           glob path.join(resultsDir, browserName + '*', 'client.xml'), (err, clientResultsFiles) ->
+            console.log 'clientResultsFiles=', clientResultsFiles
             assert err == null, 'cannot read "client.xml"'
             assert clientResultsFiles.length == 1, 'missing or multiple "client.xml"'
             clientResultsFile = clientResultsFiles[0]
