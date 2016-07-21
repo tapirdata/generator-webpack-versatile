@@ -8,8 +8,9 @@ _ = require 'lodash'
 rimraf = require 'rimraf'
 xml2js = require 'xml2js'
 glob = require 'glob'
-helpers = require('yeoman-test')
-assert = require('yeoman-assert')
+gutil = require 'gulp-util'
+helpers = require 'yeoman-test'
+assert = require 'yeoman-assert'
 settings = require './settings'
 
 class ProjectTestError extends Error
@@ -141,7 +142,7 @@ for ts in settings.testSettings
       for browserName in ['PhantomJS']  
         it "run tests without client failures for '#{browserName}'" , (done) ->
           glob path.join(resultsDir, browserName + '*', 'client.xml'), (err, clientResultsFiles) ->
-            console.log 'clientResultsFiles=', clientResultsFiles
+            gutil.log "clientResultsFiles=#{clientResultsFiles}"
             assert err == null, 'cannot read "client.xml"'
             assert clientResultsFiles.length == 1, 'missing or multiple "client.xml"'
             clientResultsFile = clientResultsFiles[0]

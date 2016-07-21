@@ -28,7 +28,7 @@ check = (url) ->
   it 'should serve some sort of HTML', ->
     expect(res.entity).to.be.contain '<html>'
   it 'should serve valid HTML5', ->
-    @timeout 10000
+    @timeout 16000
     wNode.call lint, res.entity
     .catch (err) ->
       w.reject new Error 'Failed to lint html: ' + err
