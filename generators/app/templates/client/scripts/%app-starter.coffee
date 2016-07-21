@@ -11,7 +11,9 @@ $ = require 'jquery'
 w = require 'when'
 <% if (use.backbone) { -%>
 Backbone = require 'backbone'
-Backbone.$ = $
+<% } -%>
+<% if (use.marionette) { -%>
+Marionette = require 'backbone.marionette'
 <% } -%>
 
 <% if (use.bootstrap) { -%>
@@ -19,19 +21,47 @@ window.jQuery = $ # bootstrap needs this
 require 'bootstrap-sass'
 <% } -%>
 
-app =
+<% if (use.marionette) { -%>
+App = Marionette.Application.extend
+<% } else { -%>
+class App
+<% } -%>
+
+  title: '<%= appnameCap %>'
+
   initialize: ->
-    # console.log 'app.initialize'
+<% if (use.marionette) { -%>
+    @on 'start', ->
+      Controller = require './controller'
+      Router = require './router'
+      new Router
+        controller: new Controller
+          app: @
+      Backbone.history.start()
+      return
+<% } -%>
+
+  launch: ->
+    # console.log 'app.launch'
     @amendPage()
       .then =>
+        @start()
+
+<% if (!use.marionette) { -%>
+  start: ->
 <% if (use.backbone) { -%>
-        Router = require './router'
-        new Router app: @
+    Router = require './router'
+    new Router
+      app: @
+    Backbone.history.start()
+    return
 <% } else { -%>
-        @instrumentPage()
+    @instrumentPage()
+<% } -%>
 <% } -%>
 
   amendPage: ->
+    # things to be done on first page load
 <% if (use.foundation) { -%>
     window.jQuery = $ # foundation needs this
     (
@@ -46,6 +76,7 @@ app =
 <% } -%>
 
   instrumentPage: ->
+    # things to be done after page contents has been modified
     w()
 <% if (use.foundation) { -%>
       .then ->
@@ -54,9 +85,9 @@ app =
         return
 <% } -%>
 
-  title: '<%= appnameCap %>'
 
 module.exports = ->
-  app.initialize()
+  app = new App()
+  app.launch()
     .then ->
       app

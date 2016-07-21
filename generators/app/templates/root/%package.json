@@ -13,12 +13,13 @@
     "lodash": "^4.13.1"
   },
   "devDependencies": {<% if (use.backbone) { %>
-    "backbone": "^1.1.2",<% } %><% if (use.bootstrap) { %>
+    "backbone": "^1.1.2",<% } %><% if (use.marionette) { %>
+    "backbone.marionette": "^2.4.7",<% } %><% if (use.bootstrap) { %>
     "bootstrap-sass": "^3.3.3",<% } %>
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.1",
     "browserify-shim": "^3.8.3",<% if (use.crusher) { %>
-    "cache-crusher": "^0.5.2",<% } %>
+    "cache-crusher": "^0.5.3",<% } %>
     "chai": "^3.3.0",
     "chai-as-promised": "^5.1.0",
     "chai-jq": "0.0.9",<% if (use.coffee) { %>

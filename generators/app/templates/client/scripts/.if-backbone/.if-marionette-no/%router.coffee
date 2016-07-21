@@ -5,12 +5,14 @@ Backbone = require 'backbone'
 SimpleView = require './views/simple'
 
 module.exports = Backbone.Router.extend
+
+  targetEl: '#body-container'
+
   routes:
     '': 'showHome'
     'about': 'showAbout'
     'contact': 'showContact'
     '*actions': 'defaultAction'
-  targetEl: '#body-container'
 
   initialize: (options) ->
     # console.log 'AppRouter.initialize'
@@ -27,7 +29,6 @@ module.exports = Backbone.Router.extend
       el: @targetEl
       template: require '../templates/contact.jade'
       app: @app
-    Backbone.history.start()
     return
 
   instrumentPage: ->

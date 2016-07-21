@@ -17,6 +17,7 @@ BaseGenerator = yeoman.Base.extend
     foundation: use.foundation
     bootstrap: use.bootstrap
     backbone: use.backbone
+    marionette: use.marionette
     coffee: use.coffee
     sass: use.sass
     crusher: use.crusher
@@ -119,6 +120,7 @@ BaseGenerator = yeoman.Base.extend
     use = config.get 'use'
     config.set 'use', _.defaults use,
       backbone: true
+      marionette: true
       foundation: true
       bootstrap: false
       modernizr: true

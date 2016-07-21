@@ -43,6 +43,7 @@ exports.testSettings = [
   'foundation,modernizr,sass,coffee,backbone,full'
   'foundation,modernizr,sass,coffee,crusher,full'
   'foundation,modernizr,sass,coffee,backbone,crusher,full'
+  'foundation,modernizr,sass,coffee,backbone,marionette,crusher,full'
 
   'bootstrap,unsupported'
   'bootstrap,sass'
@@ -51,6 +52,7 @@ exports.testSettings = [
   'bootstrap,sass,coffee,backbone,full'
   'bootstrap,sass,coffee,crusher,full'
   'bootstrap,sass,coffee,backbone,crusher,full'
+  'bootstrap,sass,coffee,backbone,marionette,crusher,full'
 
   'foundation,bootstrap,modernizr,sass,unsupported'
 

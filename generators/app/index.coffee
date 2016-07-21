@@ -47,6 +47,11 @@ ExpressDevelopGenerator = BaseGenerator.extend
               checked: use.backbone
             }
             {
+              name: 'Marionette'
+              value: 'marionette'
+              checked: use.marionette
+            }
+            {
               name: 'Coffee'
               value: 'coffee'
               checked: use.coffee
@@ -75,6 +80,7 @@ ExpressDevelopGenerator = BaseGenerator.extend
           use.foundation = hasFeature 'foundation'
           use.bootstrap = hasFeature 'bootstrap'
           use.backbone = hasFeature 'backbone'
+          use.marionette = hasFeature 'marionette'
           use.sass = hasFeature 'sass'
           use.coffee = hasFeature 'coffee'
           use.crusher = hasFeature 'crusher'
