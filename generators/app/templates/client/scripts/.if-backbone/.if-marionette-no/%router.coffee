@@ -15,42 +15,24 @@ module.exports = Backbone.Router.extend
     '*actions': 'defaultAction'
 
   initialize: (options) ->
-    # console.log 'AppRouter.initialize'
-    @app = options.app
-    @homeView = new SimpleView
-      el: @targetEl
-      template: require '../templates/home.jade'
-      app: @app
-    @aboutView = new SimpleView
-      el: @targetEl
-      template: require '../templates/about.jade'
-      app: @app
-    @contactView = new SimpleView
-      el: @targetEl
-      template: require '../templates/contact.jade'
-      app: @app
+    @controller = options.controller
     return
 
-  instrumentPage: ->
-    @app.instrumentPage()
-
   showHome: ->
-    @homeView.render()
-    @instrumentPage()
+    @controller.showHome()
     return
 
   showAbout: ->
-    @aboutView.render()
-    @instrumentPage()
+    @controller.showAbout()
     return
 
   showContact: ->
-    @contactView.render()
-    @instrumentPage()
+    @controller.showContact()
     return
 
   defaultAction: ->
-    # console.log 'defaultAction'
-    @showHome()
+    @controller.defaultAction()
     return
+
+
 

@@ -32,14 +32,18 @@ class App
   initialize: ->
 <% if (use.marionette) { -%>
     @on 'start', ->
-      Controller = require './controller'
-      Router = require './router'
-      new Router
-        controller: new Controller
-          app: @
+      @_createRouter()
       Backbone.history.start()
       return
 <% } -%>
+
+  _createRouter: ->
+    Controller = require './controller'
+    Router = require './router'
+    new Router
+      controller: new Controller
+        app: @
+    return
 
   launch: ->
     # console.log 'app.launch'
@@ -50,9 +54,7 @@ class App
 <% if (!use.marionette) { -%>
   start: ->
 <% if (use.backbone) { -%>
-    Router = require './router'
-    new Router
-      app: @
+    @_createRouter()
     Backbone.history.start()
     return
 <% } else { -%>
