@@ -24,22 +24,22 @@ Use [foundation](http://foundation.zurb.com/) or [bootstrap](http://getbootstrap
 
 Use [backbone](http://backbonejs.org/) as a lightweight client-library to build agile single-page web applications.
 
+Use [marionette](http://marionettejs.com/) to organize your backbone views.
+
 Use [coffeescript](http://coffeescript.org/) or just plain Javascript for your project-code.
 
-Use [sass](http://sass-lang.com/) as versatile CSS-Preprocessor (required for bootstrap).
+Use [sass](http://sass-lang.com/) as versatile CSS-Preprocessor (required for bootstrap and foundation).
 
 Use [cache-crusher](https://www.npmjs.com/package/cache-crusher) to provide cache-busting for your production-build.
 
 
 ## Usage
 
-```bash
-$ npm install -g bower
-$ npm install -g coffee-script
-$ npm install -g generator-browserify-versatile
-```
+The following additional npm-packages are assumed to be installed globally: *bower*, *gulp*, *yo*, *coffee-script*.
 
-The following npm-packages are assumed to be installed globally: *bower*, *gulp*, *yo*.
+```bash
+$ npm install -g bower gulp yo coffee-script generator-browserify-versatile
+```
 
 Finally, initiate the generator:
 
@@ -53,49 +53,7 @@ $ yo browserify-versatile
 
 Just select your preferred options and wait till your project has been scaffolded...
 
-All gulp tasks can be used for different targets: *development*, *testing*, *production*.
-The target is mainly used for selecting build directory and server port via the relevant
-config files in `./config/`. The target can be selected via the environment variable `NODE_ENV`
-or the command line arg `--env` (which takes precedence), default: *development*.
-
-Some useful top-level tasks:
-
-```bash
-$ gulp run-watch
-```
-cleans the target-tree, builds the application, runs server application and runs client part
-in local browsers. Then it keeps watching for file-changes, does necessary rebuild, and
-eventually - if needed - restarts server restart and reloads client data.
-
-```bash
-$ gulp --env test test-watch
-```
-cleans the target-tree, builds the application, runs server application and runs server-
-and client-tests in local browsers. Then it keeps watching for file-changes, does necessary rebuild, and
-eventually - if needed - restarts server restart and re-runs tests.
-
-```bash
-$ gulp --env test test-ci
-```
-cleans the target-tree, builds the application, runs server application and runs server-
-and client-test headlessly using PhantomJS. Test-results are written into `test-results.xml`.
-This task is also used by `browserify-versatiles` self-tests.
-
-```bash
-$ gulp --env prod dist
-```
-cleans the target-tree, builds the application for production (uglified and – if cache-crusher is included – cache-busted), packs files into an archive `dist.tar.gz`,
-which can be unpacked in your production directory. There, after installing node packages with
-
-```bash
-$ npm install --production
-```
-
-You can start your app, using:
-
-```bash
-$ npm start
-```
+Look in the generated file `README.md` for details of project layout and usage of gulp tasks. 
 
 ## License
 

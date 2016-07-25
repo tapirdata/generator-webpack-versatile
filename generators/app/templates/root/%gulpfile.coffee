@@ -204,6 +204,7 @@ gulp.task 'serve', (done) ->
 gulp.task 'bs', (done) ->
   browserSync
     proxy: "localhost:#{build.serverState.port}"
+    browser: build.config.browserSync.browser
     done
 
 gulp.task 'mocha', () ->

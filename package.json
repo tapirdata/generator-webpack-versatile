@@ -14,6 +14,7 @@
     "mocha",
     "chai",
     "backbone",
+    "marionette",
     "bootstrap",
     "coffee",
     "coffeescript",

@@ -5,15 +5,7 @@ karma = require 'karma'
 module.exports = (build) ->
 
   server: null
-  browsers:
-    work: [
-      # 'PhantomJS'
-      'Chrome'
-      'Firefox'
-    ]
-    ci: [
-      'PhantomJS'
-    ]
+  browsers: build.config.karma.browsers
   reporters:
     work: [
       'mocha'
