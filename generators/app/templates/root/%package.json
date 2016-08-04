@@ -5,7 +5,6 @@
   "repository": {},
   "dependencies": {
     "config": "^1.10.0",
-    "es5-shim": "^4.1.0",
     "express": "^4.4.5",
     "serve-favicon": "^2.0.1",
     "robots.txt": "^1.0.0",
@@ -25,6 +24,8 @@
     "chai-jq": "0.0.9",<% if (use.coffee) { %>
     "coffeeify": "^2.0.1",<% } %>
     "del": "^2.0.2",
+    "es5-shim": "^4.1.0",
+    "es6-promise": "^3.2.1",
     "exorcist": "^0.4.0",<% if (use.foundation) { %>
     "foundation-sites": "^6.2.3",<% } %>
     "glob": "^7.0.4",
@@ -63,15 +64,14 @@
     "mocha": "^2.1.0",
     "mocha-jenkins-reporter": "^0.2.2",<% if (use.modernizr) { %>
     "modernizr": "^3.3.1",<% } %>
+    "node-fetch": "^1.6.0",
     "phantomjs-prebuilt": "^2.1.7",
-    "rest": "^2.0.0",
     "run-sequence": "^1.0.2",
     "through2": "^2.0.0",
     "uglifyify": "^3.0.1",
     "vinyl": "^1.1.1",
     "vinyl-source-stream": "^1.0.0",
-    "watchify": "^3.4.0",
-    "when": "^3.7.2"
+    "watchify": "^3.4.0"
   },
   "engines": {
     "node": ">=0.10.0"

@@ -2,7 +2,6 @@ path = require 'path'
 mkdirp = require 'mkdirp'
 glob = require 'glob'
 _ = require 'lodash'
-w = require 'when'
 gulp = require 'gulp'
 plugins = require('gulp-load-plugins')()
 browserify = require 'browserify'
@@ -87,9 +86,6 @@ module.exports = (build) ->
           buildIt()
             .pipe build.streams.reloadClient()
 
-      defer = w.defer()
-      promises.push defer.promise
-
       buildIt = ->
         if build.mode.isProduction
           b = b.transform
@@ -111,11 +107,13 @@ module.exports = (build) ->
           .pipe build.crusher.pusher tagger: relativeBase: path.join build.dirs.src.client, 'scripts'<% } %>
           .pipe gulp.dest bundle.destDir
 
-      buildIt()
-        .pipe plugins.tap ->
-          # gutil.log 'Build done: ' + gutil.colors.blue(bundle.name)
-          defer.resolve()
 
-    w.all(promises)
+      promises.push new Promise (resolve, recect) ->
+        buildIt()
+          .pipe plugins.tap ->
+            # gutil.log 'Build done: ' + gutil.colors.blue(bundle.name)
+            resolve()
+
+    Promise.all promises
 
 

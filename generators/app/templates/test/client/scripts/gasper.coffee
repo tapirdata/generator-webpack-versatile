@@ -3,13 +3,27 @@
 ### global window ###
 ###jshint quotmark: false ###
 
-require 'es5-shim'
 _              = require 'lodash'
 $              = require 'jquery'
-w              = require 'when'
 chai           = require 'chai'
 chai.use require 'chai-as-promised'
 chai.use require 'chai-jq'
+
+lift = (fn) ->
+  ->
+    self = @
+    args = arguments
+    Promise.resolve()
+      .then ->
+        fn.apply self, args
+
+
+delay = (duration) ->
+  ->
+    new Promise((resolve) ->
+      window.setTimeout resolve, duration
+      return
+    )
 
 
 class Gasper
@@ -53,9 +67,9 @@ class Gasper
   show: (location) ->
     if location[0] == '#'
       window.location = location
-      w()
+      Promise.resolve()
     else
-      w($.get location)
+      Promise.resolve($.get location)
       .then (html) =>
         # console.log 'show html=', html
         @gaspHtml html
@@ -81,8 +95,8 @@ class Gasper
       else
         result
         .catch ->
-          w()
-          .delay dt
+          Promise.resolve()
+          .then delay dt
           .then ->
             _retry dt, left - 1, wrappedFn
 
@@ -93,7 +107,10 @@ class Gasper
       fn =  grace
       steps = 10
       grace = 1000
-    _retry grace / steps, steps, w.lift(fn)
+    _retry grace / steps, steps, lift fn
+
+
+  delay: delay
 
 
 

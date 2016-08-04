@@ -7,8 +7,9 @@
 ### global document ###
 <% } -%>
 
+# require 'es5-shim'
+require('es6-promise').polyfill()
 $ = require 'jquery'
-w = require 'when'
 <% if (use.backbone) { -%>
 Backbone = require 'backbone'
 <% } -%>
@@ -67,19 +68,19 @@ class App
 <% if (use.foundation) { -%>
     window.jQuery = $ # foundation needs this
     (
-      w $.ajax # load script async
+      Promise.resolve $.ajax # load script async
         url: '/vendor/foundation/foundation.js'
         dataType: 'script'
     )
       .then ->
         # console.log 'foundation loaded'
 <% } else { -%>
-    w()
+    Promise.resolve()
 <% } -%>
 
   instrumentPage: ->
     # things to be done after page contents has been modified
-    w()
+    Promise.resolve()
 <% if (use.foundation) { -%>
       .then ->
         # console.log 'run foundation()'

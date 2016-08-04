@@ -2,6 +2,7 @@ node_modules
 <%= dirs.bower %>
 /.tmp
 /dist
+/results
 /.sass-cache
 /dist.tar.gz
 .*.swp
