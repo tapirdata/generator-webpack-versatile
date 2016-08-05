@@ -69,7 +69,7 @@ class Gasper
       window.location = location
       Promise.resolve()
     else
-      Promise.resolve($.get location)
+      $.get location
       .then (html) =>
         # console.log 'show html=', html
         @gaspHtml html

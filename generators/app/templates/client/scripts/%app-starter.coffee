@@ -37,6 +37,7 @@ class App
       Backbone.history.start()
       return
 <% } -%>
+<% if (use.backbone) { -%>
 
   _createRouter: ->
     Controller = require './controller'
@@ -45,6 +46,7 @@ class App
       controller: new Controller
         app: @
     return
+<% } -%>
 
   launch: ->
     # console.log 'app.launch'
@@ -65,15 +67,17 @@ class App
 
   amendPage: ->
     # things to be done on first page load
+
 <% if (use.foundation) { -%>
-    window.jQuery = $ # foundation needs this
-    (
-      Promise.resolve $.ajax # load script async
-        url: '/vendor/foundation/foundation.js'
-        dataType: 'script'
-    )
-      .then ->
-        # console.log 'foundation loaded'
+    window.jQuery = $    # foundation 6.2.3 needs this
+    $.fn.load = (fn) ->  # foundation 6.2.3 still uses deprecated '$.fn.load'
+      @on 'load', fn
+
+    $.ajax # load script async
+      url: '/vendor/foundation/foundation.js'
+      dataType: 'script'
+    # .then ->
+    #   console.log 'foundation loaded'
 <% } else { -%>
     Promise.resolve()
 <% } -%>

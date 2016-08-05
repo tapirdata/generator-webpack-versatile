@@ -1,4 +1,10 @@
-# generator-browserify-versatile [![Build Status](https://secure.travis-ci.org/tapirdata/generator-browserify-versatile.png?branch=master)](https://travis-ci.org/tapirdata/generator-browserify-versatile) [![Dependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile) [![devDependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile/dev-status.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile#info=devDependencies)
+# generator-browserify-versatile
+
+[![npm version](https://img.shields.io/npm/v/generator-browserify-versatile.svg?style=flat-square)](https://www.npmjs.com/package/generator-browserify-versatile)
+[![Build Status](https://secure.travis-ci.org/tapirdata/generator-browserify-versatile.png?branch=master)](https://travis-ci.org/tapirdata/generator-browserify-versatile)
+[![Dependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile)
+[![devDependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile/dev-status.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile#info=devDependencies)
+
 > [Yeoman](http://yeoman.io) generator will setup an express-project with a bunch of tools (some fixed, some selectable) pre-setup to provide an eligible work flow.
 
 ## Features
