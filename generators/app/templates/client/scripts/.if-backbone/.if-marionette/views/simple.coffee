@@ -10,5 +10,5 @@ module.exports = Marionette.LayoutView.extend
     return
   render: ->
     @$el.html @template(title: @app.title)
-    this
+    Promise.resolve()
 

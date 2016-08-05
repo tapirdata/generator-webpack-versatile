@@ -21,32 +21,29 @@ class Controller
 
   _showView: (view) ->
     view.render()
-    @app.instrumentPage()
-    @currentView = view
-    return
+      .then =>
+        @app.instrumentPage()
+          .then =>
+            @currentView = view
+            return
 
   _showTemplate: (template) ->
     @_showView new SimpleView
       el: @targetEl
       template: template
       app: @app
-    return
 
   showHome: ->
     @_showTemplate require '../templates/home.jade'
-    return
 
   showAbout: ->
     @_showTemplate require '../templates/about.jade'
-    return
 
   showContact: ->
     @_showTemplate require '../templates/contact.jade'
-    return
 
   defaultAction: ->
     @showHome()
-    return
 
 
 module.exports = Controller
