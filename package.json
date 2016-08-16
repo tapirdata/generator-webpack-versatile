@@ -28,7 +28,6 @@
     "uglify"
   ],
   "license": "MIT",
-  "main": "generators/app/index.js",
   "repository": {
     "type": "git",
     "url": "tapirdata/generator-browserify-versatile"
@@ -45,7 +44,7 @@
     "test": "mocha --reporter spec"
   },
   "files": [
-    "generators"
+    "generators-x/app"
   ],
   "dependencies": {
     "chalk": "^1.1.3",

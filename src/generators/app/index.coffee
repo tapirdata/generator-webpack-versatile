@@ -5,12 +5,13 @@ yosay = require 'yosay'
 chalk = require 'chalk' 
 _ = require 'lodash' 
 
-BaseGenerator = require '../lib/base'
+BaseGenerator = require '../../lib/base'
 
-ExpressDevelopGenerator = BaseGenerator.extend
+Generator = BaseGenerator.extend
 
   constructor: ->
     BaseGenerator.apply @, arguments
+    @sourceRoot path.join(__dirname, '../../../templates/app')
     return
 
   prompting:
@@ -116,4 +117,4 @@ ExpressDevelopGenerator = BaseGenerator.extend
       @installDependencies()
     return
  
-module.exports = ExpressDevelopGenerator
+module.exports = Generator
