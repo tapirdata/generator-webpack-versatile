@@ -1,3 +1,3 @@
-require('coffee-script').register()
-module.exports = require('../../src/generators/app/index.coffee');
+var Generator = require('../../dist/generators/app').default;
+module.exports = Generator;
 
