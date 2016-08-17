@@ -16,7 +16,7 @@ for (let i = 0; i < settings.length; i++) {
         helpers.testDirectory(path.join(__dirname, 'temp'), err => {
           if (err) {
             done(err);
-            return; 
+            return;
           }
           this.app = helpers.createGenerator('browserify-versatile:app', [ '../../generators/app' ], [], {'test-framework': 'none'});
           // console.log "app=#{@app} features=#{ts.activeFeatures()}"
@@ -27,25 +27,25 @@ for (let i = 0; i < settings.length; i++) {
       });
       if (ts.unsupported) {
         it('expected to be unsupported', done =>
-          //TODO: assert error 
+          //TODO: assert error
           done()
-        
+
         );
-      } else {  
+      } else {
         it('creates expected files', function(done) {
           let expected = [
             '.bowerrc',
             'bower.json',
             '.editorconfig',
             '.gitignore',
-            `gulpfile${SC_EXT}`,
+            'gulpfile.babel.js',
             '.jshint.json',
             'package.json',
             'README.md',
-            `config/default${SC_EXT}`, 
-            `config/development${SC_EXT}`, 
-            `config/production${SC_EXT}`, 
-            `config/testing${SC_EXT}`, 
+            'config/default.js',
+            'config/development.js',
+            'config/production.js',
+            'config/testing.js',
             `src/server/scripts/routes/main${SC_EXT}`,
             `src/server/scripts/app-factory${SC_EXT}`,
             `src/server/scripts/startapp${SC_EXT}`,
@@ -54,7 +54,7 @@ for (let i = 0; i < settings.length; i++) {
             'src/client/images/favicon.ico',
             'src/client/pages/robots.txt',
             'src/client/pages/404.html',
-             `src/client/scripts/main${SC_EXT}`,
+            `src/client/scripts/main${SC_EXT}`,
             `src/client/scripts/app-starter${SC_EXT}`,
             `src/client/styles/main${STYLE_EXT}`
           ];
@@ -67,7 +67,7 @@ for (let i = 0; i < settings.length; i++) {
              'src/client/templates/contact.jade',
              'src/client/templates/dummy.jade'
             ]);
-          } else {  
+          } else {
             expected = expected.concat([
               'src/server/templates/about.jade',
               'src/server/templates/contact.jade'
