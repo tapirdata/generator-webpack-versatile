@@ -19,7 +19,6 @@ let BaseGenerator = yeoman.Base.extend({
       marionette: use.marionette,
       sass: use.sass,
       crusher: use.crusher,
-      coffee: use.coffee
     };
   },
 
@@ -137,7 +136,6 @@ let BaseGenerator = yeoman.Base.extend({
       foundation: true,
       bootstrap: false,
       modernizr: true,
-      coffee: true,
       sass: true,
       crusher: true
     }

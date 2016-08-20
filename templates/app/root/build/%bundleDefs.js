@@ -1,5 +1,4 @@
-<% if (use.coffee) { %>
-import coffeeify from 'coffeeify';<% } %>
+import babelify from 'babelify';
 import jadeify from 'jadeify';
 
 export default function(build) {  
@@ -7,13 +6,12 @@ export default function(build) {
     {
       name: 'main',
       entries: `./${build.dirs.src.client}/scripts/main`,
-      extensions: [<% if (use.coffee) { %>
-        '.coffee',<% } %>
-        '.jade'
+      extensions: [
+        '.jade',
       ],
-      transform: [<% if (use.coffee) { %>
-        coffeeify,<% } %>
-        jadeify
+      transform: [
+        babelify,
+        jadeify,
       ],
       debug: true,
       watchable: true,
@@ -22,13 +20,12 @@ export default function(build) {
     {
       name: 'test',
       entries: `./${build.dirs.test.client}/scripts/${build.globPatterns.TEST}`,
-      extensions: [<% if (use.coffee) { %>
-        '.coffee',<% } %>
-        '.jade'
+      extensions: [
+        '.jade',
       ],
-      transform: [<% if (use.coffee) { %>
-        coffeeify,<% } %>
-        jadeify
+      transform: [
+        babelify,
+        jadeify,
       ],
       debug: true,
       watchable: true,

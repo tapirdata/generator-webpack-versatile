@@ -52,11 +52,6 @@ let Generator = BaseGenerator.extend({
               value: 'marionette',
               checked: use.marionette
             },
-            // {
-            //   name: 'Coffee',
-            //   value: 'coffee',
-            //   checked: use.coffee
-            // },
             {
               name: 'Sass',
               value: 'sass',
@@ -82,7 +77,6 @@ let Generator = BaseGenerator.extend({
           use.backbone = hasFeature('backbone');
           use.marionette = hasFeature('marionette');
           use.sass = hasFeature('sass');
-          use.coffee = true
           use.crusher = hasFeature('crusher');
           return config.set('use', use);
         }

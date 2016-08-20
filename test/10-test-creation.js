@@ -8,7 +8,6 @@ import settings from './settings';
 for (let i = 0; i < settings.length; i++) {
   let ts = settings[i];
   (function(ts) {
-    let SC_EXT = '.coffee';   //TODO: '.js';
     let STYLE_EXT = ts.sass ? '.sass' : '.css';
     return describe(`browserify-versatile generator ${ts.toString()}`, function() {
       before(function(done) {
@@ -46,23 +45,23 @@ for (let i = 0; i < settings.length; i++) {
             'config/development.json',
             'config/production.json',
             'config/testing.json',
-            `src/server/scripts/routes/main.js`,
-            `src/server/scripts/app.js`,
-            `src/server/scripts/setup.js`,
-            `src/server/scripts/start.js`,
+            'src/server/scripts/routes/main.js',
+            'src/server/scripts/app.js',
+            'src/server/scripts/setup.js',
+            'src/server/scripts/start.js',
             'src/server/templates/layout.jade',
             'src/server/templates/index.jade',
             'src/client/images/favicon.ico',
             'src/client/pages/robots.txt',
             'src/client/pages/404.html',
-            `src/client/scripts/main${SC_EXT}`,
-            `src/client/scripts/app-starter${SC_EXT}`,
+            'src/client/scripts/main.js',
+            'src/client/scripts/app-starter.js',
             `src/client/styles/main${STYLE_EXT}`
           ];
           if (ts.backbone) {
             expected = expected.concat([
-             `src/client/scripts/router${SC_EXT}`,
-             `src/client/scripts/views/simple${SC_EXT}`,
+             'src/client/scripts/router.js',
+             'src/client/scripts/views/simple.js',
              'src/client/templates/home.jade',
              'src/client/templates/about.jade',
              'src/client/templates/contact.jade',

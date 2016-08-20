@@ -2,13 +2,11 @@ This project was created by [generator-browserify-versatile](https://www.npmjs.c
 
 ## Layout of this Project
 
-<% scriptExt = (use.coffee) ? '.coffee' : '.js'; -%>
-
 ### `<%= dirs.clientSrc %>/`:
 - `images/`: static image-files
 - `pages/`: static html-pages
 - `scripts/`: client-side script files
-  - `app-starter<%= scriptExt %>`: the client-side entry-point
+  - `app-starter.js`: the client-side entry-point
 <% if (use.backbone) { -%>
   - `scripts/views/`: Backbone/Marionette views
 <% } -%>
@@ -17,7 +15,7 @@ This project was created by [generator-browserify-versatile](https://www.npmjs.c
 
 ### `<%= dirs.serverSrc %>/`:
 - `scripts/`: 
-  - `starter/server<%= scriptExt %>`: the server-sided entry-point for target *production*
+  - `starter/server.js`: the server-sided entry-point for target *production*
 - `templates/`: jade-templates to be rendered server sided
 
 ### `config/`

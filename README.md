@@ -32,8 +32,6 @@ Use [backbone](http://backbonejs.org/) as a lightweight client-library to build 
 
 Use [marionette](http://marionettejs.com/) to organize your backbone views.
 
-Use [coffeescript](http://coffeescript.org/) or just plain Javascript for your project-code.
-
 Use [sass](http://sass-lang.com/) as versatile CSS-Preprocessor (required for bootstrap and foundation).
 
 Use [cache-crusher](https://www.npmjs.com/package/cache-crusher) to provide cache-busting for your production-build.
@@ -41,10 +39,10 @@ Use [cache-crusher](https://www.npmjs.com/package/cache-crusher) to provide cach
 
 ## Usage
 
-The following additional npm-packages are assumed to be installed globally: *bower*, *gulp*, *yo*, *coffee-script*.
+The following additional npm-packages are assumed to be installed globally: *bower*, *gulp*, *yo*.
 
 ```bash
-$ npm install -g bower gulp yo coffee-script generator-browserify-versatile
+$ npm install -g bower gulp yo generator-browserify-versatile
 ```
 
 Finally, initiate the generator:

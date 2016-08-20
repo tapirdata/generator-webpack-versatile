@@ -85,7 +85,11 @@ gulp.task('hint-client-scripts', function() {
 }
 );
 
-gulp.task('build-client-scripts', ['hint-client-scripts'], () => build.buildBrowsified(build.getBundleDefs('app'), {doWatch: build.watchEnabled})
+gulp.task('build-client-scripts', ['hint-client-scripts'], () =>
+  build.buildBrowsified(
+    build.getBundleDefs('app'),
+    {doWatch: build.watchEnabled}
+  )
 );
 
 gulp.task('build-client-images', () =>

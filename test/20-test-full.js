@@ -154,7 +154,6 @@ for (let i = 0; i < settings.length; i++) {
     if (!ts.full) {
       return;
     }
-    let SC_EXT = '.coffee' // TODO: '.js';
     let STYLE_EXT = ts.sass ? '.sass' : '.css';
     return describe(`browserify-versatile generator ${ts.toString()}`, function() {
       this.timeout(5 * 60 * 1000);
