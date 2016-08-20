@@ -18,7 +18,7 @@ import Marionette from 'backbone.marionette';
 
 <% if (use.bootstrap) { -%>
 window.jQuery = $; // bootstrap needs this
-import 'bootstrap-sass';
+require('bootstrap-sass');
 <% } -%>
 
 <% if (use.marionette) { -%>
