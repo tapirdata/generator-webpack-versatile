@@ -3,12 +3,14 @@ import mkdirp from 'mkdirp';
 import glob from 'glob';
 import _ from 'lodash';
 import gulp from 'gulp';
-let plugins = require('gulp-load-plugins')();
+import pluginsFactory from 'gulp-load-plugins';
 import browserify from 'browserify';
 import watchify from 'watchify';
 import uglifyify from 'uglifyify';
 import exorcist from 'exorcist';
 import source from 'vinyl-source-stream';
+
+const plugins = pluginsFactory();
 
 export default function(build) {
 
@@ -111,7 +113,7 @@ export default function(build) {
       }
 
       var buildIt = function() {
-        if (build.mode.isProduction) {
+        if (build.config.mode.isProduction) {
           b = b.transform({
             sourcemap: true,
             global: true

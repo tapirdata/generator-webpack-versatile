@@ -9,6 +9,8 @@ chai.use require 'chai-as-promised'
 lint = require 'html5-lint'
 expect = chai.expect
 
+setupFactory = require('<%= build.getRelPath(filename, {to: 'scripts/setup'}) %>').default
+defaultOptions = setupFactory()
 
 check = (url) ->
   res = null
@@ -47,9 +49,7 @@ check = (url) ->
         return
 
 
-config = require 'config'
-
 describe 'The Server', ->
   before ->
-  check "http://localhost:#{config.server.port}/"
+  check "http://localhost:#{defaultOptions.app.port}/"
 return

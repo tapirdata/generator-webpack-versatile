@@ -1,9 +1,10 @@
 
+import path from 'path';
 import _ from 'lodash';
 import minimist from 'minimist';
 import gutil from 'gulp-util';
 
-import modeFactory from './mode';
+import configFactory from './config';
 import dirsFactory from './dirs';
 import globPatterns from './globPatterns';
 import bundleDefsFactory from './bundleDefs';
@@ -15,11 +16,9 @@ import buildBrowsifiedFactory from './buildBrowsified'
 <% if (use.modernizr) { -%>
 import modernizrFactory from './modernizr';
 <% } -%>
-import config from 'config';
 
-const argv = minimist(process.argv.slice(2));
-const mode = modeFactory(argv.env); // sets process.NODE_ENV
-const dirs = dirsFactory(config);  // config uses process.NODE_ENV
+const config = configFactory();
+const dirs = dirsFactory(config);
 
 function handleError(err) {
   gutil.log(gutil.colors.red(`ERROR: ${err}`));
@@ -27,14 +26,25 @@ function handleError(err) {
 };
 
 const build = {
-  argv,
-  mode,
   config,
   dirs,
   globPatterns,
   watchEnabled: false,
   headlessEnabled: false,
-  handleError
+  handleError,
+  rootDir: path.join(__dirname, '..'),
+  getRelPath(fromFilename, opts) {
+    const dirs = this.dirs;
+    const {
+      to,
+      fromSourceBase = dirs.test.server,
+      fromDestBase = dirs.tgt.serverTest,
+      toDestBase = dirs.tgt.server
+    } = opts;
+    const fromBaseRel = path.relative(path.dirname(fromFilename), fromSourceBase);
+    const destBaseRel = path.relative(fromDestBase, toDestBase);
+    return path.join(fromBaseRel, destBaseRel, to);
+  }
 };
 
 <% if (use.crusher) { -%>

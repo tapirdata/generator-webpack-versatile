@@ -1,0 +1,8 @@
+{
+  "app": {
+    "port": <%= build.config.server.port %>,
+    "clientDir": "<%= build.dirs.tgt.client %>",
+    "vendorDir": "<%= build.dirs.tgt.clientVendor %>"
+  }
+}
+

@@ -15,18 +15,13 @@ export default function(build) {
         done();
         return;
       }
-      let starter = require(`../${build.dirs.tgt.server}/scripts/startapp`);
-      return server = starter({
-        port: this.port,
-        clientDir: build.dirs.tgt.client,
-        vendorDir: build.dirs.tgt.clientVendor
-        }, err => {
-          if (!err) {
-            this.server = server;
-          }
-          return done(err);
-        }
-      );
+      let starter = require(`../${build.dirs.tgt.server}/scripts/start`).default;
+      starter({})
+      .then(server => {
+        this.server = server;
+        done();
+      })
+      .catch(err => done(err));
     },
 
     stop(done) {

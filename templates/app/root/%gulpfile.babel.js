@@ -6,6 +6,7 @@ import gutil from 'gulp-util';
 import pluginsFactory from 'gulp-load-plugins';
 import runSequence from 'run-sequence';
 import lazypipe from 'lazypipe';
+import child_process from 'child_process';
 
 import browserSync from 'browser-sync';
 import jsStylish from 'jshint-stylish';
@@ -21,8 +22,7 @@ let makeScriptPipe = function() {
   let jsFilter = plugins.filter([gp.JS], {restore: true});
   let lp = lazypipe()
     .pipe(() => jsFilter)
-    .pipe(plugins.jshint, jshintConfig)
-    .pipe(plugins.jshint.reporter, jsStylish)
+    .pipe(plugins.babel)
     .pipe(() => jsFilter.restore);
   return lp();  
 };
@@ -54,10 +54,11 @@ gulp.task('build-server-templates', function() {
 }
 );
 
-gulp.task('build-config', function() {
-  let dest = build.dirs.tgt.config;
-  return gulp.src([gp.ALL, '!**/*development*.*', '!**/*testing*.*'], {cwd: 'config'})
+gulp.task('build-server-config', function() {
+  let dest = `${build.dirs.tgt.server}/config`;
+  return gulp.src([gp.ALL], {cwd: `${build.dirs.src.server}/config`})
     .pipe(build.streams.plumber())
+    .pipe(plugins.ejs({build}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest));
 }
@@ -66,8 +67,8 @@ gulp.task('build-config', function() {
 gulp.task('build-starter', function() {
   let dest = __dirname;
   return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.src.server}/starter`})
-    .pipe(plugins.template({configDir: build.dirs.tgt.config}))
     .pipe(build.streams.plumber())
+    .pipe(plugins.ejs({build}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest));
 }
@@ -116,7 +117,7 @@ gulp.task('build-client-styles', function() {
   let scssFilter = plugins.filter([gp.SCSS], {restore: true});<% } %>
   return gulp.src([gp.CSS<% if (use.sass) { %>, gp.SASS, gp.SCSS<% } %>], {cwd: `${build.dirs.src.client}/styles`})
     .pipe(build.streams.plumber())
-    .pipe(plugins.template(templateConfig))<% if (use.sass) { %>
+    .pipe(plugins.ejs(templateConfig))<% if (use.sass) { %>
     .pipe(sassFilter)
     .pipe(plugins.sass({includePaths, indentedSyntax: true}))
     .pipe(sassFilter.restore)
@@ -174,10 +175,11 @@ gulp.task('build-client-vendor-assets', done =>
 );
 
 gulp.task('build-test-server-scripts', function() {
-  let dest = `${build.dirs.tgt.server}/test/scripts`;
+  let dest = `${build.dirs.tgt.serverTest}/scripts`;
   return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.test.server}/scripts`})
     .pipe(build.streams.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
+    .pipe(plugins.ejs({build}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest))
     .pipe(build.streams.rerunMocha());
@@ -199,7 +201,6 @@ gulp.task('build-test-client-scripts', ['hint-test-client-scripts'], () => build
 );
 
 gulp.task('pack', function(done) {
-  let child_process = require('child_process');
   let tar = child_process.spawn('tar', [
     '-czf',
     'dist.tar.gz',
@@ -255,7 +256,8 @@ gulp.task('build-server-assets', done =>
 gulp.task('build-server', done =>
   runSequence([
     'build-server-scripts',
-    'build-server-assets'
+    'build-server-assets',
+    'build-server-config'
   ], done)
 
 );
@@ -293,8 +295,7 @@ gulp.task('build', function(done) {
     'build-server',
     'build-client'
   ];
-  if (build.mode.isProduction) {
-    tasks.push('build-config');
+  if (build.config.mode.isProduction) {
     tasks.push('build-starter');
   }
   return runSequence(tasks, done);

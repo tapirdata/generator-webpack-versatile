@@ -19,18 +19,19 @@ function dirsFactory(config) {
     tgt: _.clone(config.dirs.tgt) || {}
   };
 
-  _.defaults(dirs.tgt,
-    {root: '.tmp'});
+  _.defaults(dirs.tgt, {
+    root: '.tmp'
+  });
 
   _.defaults(dirs.tgt, {
     server: path.join(dirs.tgt.root, 'server'),
-    client: path.join(dirs.tgt.root, 'client'),
-    config: path.join(dirs.tgt.root, 'config')
-  }
-  );
+    client: path.join(dirs.tgt.root, 'client')
+  });
 
-  _.defaults(dirs.tgt,
-    {clientVendor: path.join(dirs.tgt.client, 'vendor')});
+  _.defaults(dirs.tgt, {
+    clientVendor: path.join(dirs.tgt.client, 'vendor'),
+    serverTest: path.join(dirs.tgt.server, 'test')
+  });
 
   return dirs;
 }
