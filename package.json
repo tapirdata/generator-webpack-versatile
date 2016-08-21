@@ -8,6 +8,8 @@
     "commonjs",
     "browsersync",
     "browserify",
+    "es6",
+    "es2015",
     "express",
     "jade",
     "karma",

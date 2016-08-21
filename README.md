@@ -13,6 +13,8 @@ Use [browersify](http://browserify.org/) to write client code in [CommonJS](http
 
 Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices. 
 
+Use [babel](http://babeljs.io/) to transpile ES2015.
+
 Use [gulp](http://gulpjs.com/) for all task automation.
 
 Use [jade](http://jade-lang.com/) for server and client templating.
