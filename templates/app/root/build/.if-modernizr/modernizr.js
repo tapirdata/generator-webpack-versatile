@@ -5,7 +5,7 @@ import { Readable } from 'stream';
 import VinylFile from 'vinyl';
 import Modernizr from 'modernizr';
 
-export default function(build) {
+export default function() {
   return function(options) {
     if (!options) { options = {}; }
     let { configPath } = options;
@@ -19,14 +19,15 @@ export default function(build) {
       if (buildStarted) {
         return outStream.push(null);
       } else {
+        let config;
         if (configPath) { 
           try {
-            var config = JSON.parse(fs.readFileSync(configPath));
+            config = JSON.parse(fs.readFileSync(configPath));
           } catch (error) {
             throw `Cannot find Modernizer config file '${configPath}': ${error}`;
           }
         } else {
-          var config = {};
+          config = {};
         }
         if (options.config) {
           _.merge(config, options.config);
@@ -44,7 +45,7 @@ export default function(build) {
     };
     return outStream;
   };
-};
+}
 
 
 

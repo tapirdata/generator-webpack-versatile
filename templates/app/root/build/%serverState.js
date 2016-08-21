@@ -1,4 +1,4 @@
-
+import gutil from 'gulp-util';
 
 export default function(build) {
   return {
@@ -8,7 +8,6 @@ export default function(build) {
       return !!this.server;
     },
     start(done) {
-      let server;
       done = done || function() {};
       if (this.isActive()) {
         gutil.log('server already running!');
@@ -54,6 +53,6 @@ export default function(build) {
       );
     }
   };
-};
+}
 
 

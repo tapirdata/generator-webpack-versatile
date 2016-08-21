@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs';
-import _ from 'lodash';
 import minimatch from 'minimatch';
 
 class BranchFinder {
@@ -17,7 +16,7 @@ class BranchFinder {
     this.transformers = options.transformers || [];
   }
 
-  getTi(srcName, opOptions) {
+  getTi(srcName) {
     let tgtName = srcName;
     let transFns = [];
     for (let i = 0; i < this.transformers.length; i++) {
@@ -74,11 +73,9 @@ class BranchFinder {
   }
 }
 
-BranchFinder.prototype.dummyOp = function(srcPath, tgtPath) {
-  console.log('op', srcPath, '->', tgtPath);
-};
 
-if (0) {
+const _do_run = false;
+if (_do_run) {
   let bf = new BranchFinder(__dirname + '/../app/templates', '/tmp/ho-srv', {
     branches: {
       backbone: true,
@@ -94,5 +91,11 @@ if (0) {
   });
   bf.run();
 }
+
+BranchFinder.prototype.dummyOp = function(srcPath, tgtPath) {
+  // eslint-disable-next-line no-console
+  console.log('op', srcPath, '->', tgtPath);
+};
+
 
 export default BranchFinder;

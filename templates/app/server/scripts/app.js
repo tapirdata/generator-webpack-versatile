@@ -15,4 +15,4 @@ export default function(options) {
   app.use('/vendor', express.static(options.vendorDir));
   app.use('/', routes);
   return app;
-};
+}

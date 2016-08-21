@@ -1,13 +1,13 @@
-import fs from 'fs'
-import path from 'path'
-import _ from 'lodash'
-import yargs from 'yargs'
+import fs from 'fs';
+import path from 'path';
+import _ from 'lodash';
+import yargs from 'yargs';
 
 const envNames = [
   'development',
   'testing',
   'production',
-]
+];
 
 const configBase = './config';
 
@@ -38,6 +38,7 @@ function readConf(config, envName) {
     try {
       confText = fs.readFileSync(confPath);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log(`No such config file: "${confPath}".`);
       continue;
     }
@@ -52,7 +53,7 @@ function configFactory() {
   const envName = guessEnv(process.env.NODE_ENV || argv.env);
   const mode = {
     ['is' + _.capitalize(envName)]: true
-  }
+  };
   const config = {
     mode
   };

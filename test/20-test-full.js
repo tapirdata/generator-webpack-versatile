@@ -1,4 +1,4 @@
-/*global describe, beforeEach, it */
+/* eslint-env mocha  */
 
 import path from 'path';
 import fs from 'fs';
@@ -14,7 +14,7 @@ import settings from './settings';
 
 class ProjectTestError extends Error {
   constructor(fails) {
-    super()
+    super();
     this.fails = fails;
     Object.defineProperty(this, 'message', { get() {
       let lines = _(this.fails)
@@ -27,9 +27,7 @@ class ProjectTestError extends Error {
       .flatten()
       .value();
       return `ProjectTestError\n${lines.join('\n')}`;
-    }
-  }
-    );
+    }});
   }
 }
 
@@ -42,11 +40,8 @@ let backupRepos = (testDir, bakDir, cb) =>
       fs.rename(path.join(testDir, 'bower_components'), path.join(bakDir, 'bower_components'), () =>
         fs.rename(path.join(testDir, 'node_modules'), path.join(bakDir, 'node_modules'), () => cb()
         )
-      
       )
-    
     )
-  
   )
 ;
 
@@ -59,19 +54,17 @@ let restoreRepos = (testDir, bakDir, cb) =>
 ;
 
 let testDirectoryFaster = function(testDir, cb) {
-   let bakDir = testDir + '.bak';
-   return backupRepos(testDir, bakDir, () =>
-     helpers.testDirectory(testDir, function(err) {
-       if (err) {
-         cb(err);
-         return;
-       }
-       restoreRepos(testDir, bakDir, cb);
-     }
-     )
-   
-   );
- };
+  let bakDir = testDir + '.bak';
+  return backupRepos(testDir, bakDir, () =>
+    helpers.testDirectory(testDir, function(err) {
+      if (err) {
+        cb(err);
+        return;
+      }
+      restoreRepos(testDir, bakDir, cb);
+    })
+  );
+};
 
 
 let runAppTest = function(cb) { 
@@ -83,41 +76,35 @@ let runAppTest = function(cb) {
   appTest.stderr.on('data', function(data) {
     process.stderr.write('ERROR: ');
     return process.stderr.write(data);
-  }
-  );
+  });
 
   return appTest.on('close', function(code) {
     assert(code === 0, `gulp test returns with code ${code}`);
     return cb();
-  }
-  );
+  });
 };
 
 let checkResults = (file, cb) =>
   fs.readFile(file, function(err, xml) {
     if (err) {
       cb(err);
-      return;
     }
     return xml2js.parseString(xml, function(err, result) { 
       if (err) {
         cb(err);
-        return;
       }
-      // console.log('result=', result)
+      let suites;
       if (result.testsuites) {
-        var suites = result.testsuites.testsuite;
+        suites = result.testsuites.testsuite;
       } else {
-        var suites = [result.testsuite];
+        suites = [result.testsuite];
       }
-      // console.log('suites=', suites)
       assert.ok(suites && suites.length > 0, 'no testsuite found'); 
       let fails = [];
       for (let i = 0; i < suites.length; i++) {
         let suite = suites[i];
         (function(suite) {
           let suiteAttributes = suite.$;
-          // console.log('suiteAttributes=', suiteAttributes)
           if (Number(suiteAttributes.failures) > 0) {
             return suite.testcase.map((testcase) =>
               (function(testcase) {
@@ -154,7 +141,7 @@ for (let i = 0; i < settings.length; i++) {
     if (!ts.full) {
       return;
     }
-    let STYLE_EXT = ts.sass ? '.sass' : '.css';
+    // let STYLE_EXT = ts.sass ? '.sass' : '.css';
     return describe(`browserify-versatile generator ${ts.toString()}`, function() {
       this.timeout(5 * 60 * 1000);
       let serverResultsFile = null;
@@ -162,7 +149,7 @@ for (let i = 0; i < settings.length; i++) {
       let testDir = path.join(__dirname, 'project');
       let resultsDir = path.join(testDir, 'results');
       before(function(done) {
-        testDirectoryFaster(testDir, err => {
+        testDirectoryFaster(testDir, () => {
           this.app = helpers.createGenerator(
             'browserify-versatile:app',
             [ '../../generators/app' ],
@@ -179,14 +166,12 @@ for (let i = 0; i < settings.length; i++) {
         this.app.run(function() {
           runAppTest(done);
         });
-      }
-      );
+      });
       it('run tests without server failures', function(done) {
         serverResultsFile = path.join(resultsDir, 'server.xml');
         assert.file(serverResultsFile);
         return checkResults(serverResultsFile, done);
-      }
-      );
+      });
       let iterable = ['PhantomJS'];
       for (let j = 0; j < iterable.length; j++) {  
         let browserName = iterable[j];
@@ -198,12 +183,9 @@ for (let i = 0; i < settings.length; i++) {
             clientResultsFile = clientResultsFiles[0];
             assert.file(clientResultsFile);
             return checkResults(clientResultsFile, done);
-          }
-          )
-        
+          })
         );
       }
-    }
-    );
+    });
   })(ts);
 }

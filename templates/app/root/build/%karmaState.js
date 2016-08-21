@@ -33,7 +33,7 @@ export default function(build) {
           }
         ],
         frameworks: [
-         'mocha'
+          'mocha'
         ],
         browsers: build.headlessEnabled ? this.browsers.ci : this.browsers.work,
         reporters: build.headlessEnabled ? this.reporters.ci : this.reporters.work,
@@ -55,7 +55,7 @@ export default function(build) {
       };
 
       // gutil.log 'karma start...'
-      let karmaServer = new karma.Server(karmaConf, exitCode => {
+      let karmaServer = new karma.Server(karmaConf, () => {
         // gutil.log 'karma start done. code=%s', exitCode
         this.server = null;
         if (done) {
@@ -70,17 +70,16 @@ export default function(build) {
     run: _.debounce(
       done =>
         // gutil.log 'karma run...'
-        karma.runner.run({}, function(exitCode) {
+        karma.runner.run({}, function() {
           // gutil.log 'karma run done. code=%s', exitCode
           if (done) {
             return done();
           }
-        }
-        )
+        })
       ,
       1000)
   };
-};
+}
 
 
 

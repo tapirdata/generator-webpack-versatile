@@ -1,18 +1,17 @@
 
 import path from 'path';
 import _ from 'lodash';
-import minimist from 'minimist';
 import gutil from 'gulp-util';
 
 import configFactory from './config';
 import dirsFactory from './dirs';
 import globPatterns from './globPatterns';
 import bundleDefsFactory from './bundleDefs';
-import serverStateFactory from './serverState'
-import mochaStateFactory from './mochaState'
-import karmaStateFactory from './karmaState'
-import streamsFactory from './streams'
-import buildBrowsifiedFactory from './buildBrowsified'
+import serverStateFactory from './serverState';
+import mochaStateFactory from './mochaState';
+import karmaStateFactory from './karmaState';
+import streamsFactory from './streams';
+import buildBrowsifiedFactory from './buildBrowsified';
 <% if (use.modernizr) { -%>
 import modernizrFactory from './modernizr';
 <% } -%>
@@ -23,7 +22,7 @@ const dirs = dirsFactory(config);
 function handleError(err) {
   gutil.log(gutil.colors.red(`ERROR: ${err}`));
   return this.emit('end');
-};
+}
 
 const build = {
   config,

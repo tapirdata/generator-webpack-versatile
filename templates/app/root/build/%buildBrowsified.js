@@ -93,22 +93,18 @@ export default function(build) {
       );
 
       _.forEach(bundle.exports, function(exp) {
-          // gutil.log 'export: ', exp
-          let expOpts = {};
-          if (exp.alias !== exp.name) {
-            expOpts.expose = exp.alias;
-          }
-          return b.require(exp.name, expOpts);
+        let expOpts = {};
+        if (exp.alias !== exp.name) {
+          expOpts.expose = exp.alias;
         }
-      );
+        return b.require(exp.name, expOpts);
+      });
 
       if (bundle.doWatch) {
         b = watchify(b);
-        b.on('update', file =>
-          // gutil.log 'Rebuild bundle: ' + gutil.colors.blue(bundle.name)
+        b.on('update', () =>
           buildIt()
-            .pipe(build.streams.reloadClient())
-        
+          .pipe(build.streams.reloadClient())
         );
       }
 
@@ -117,40 +113,37 @@ export default function(build) {
           b = b.transform({
             sourcemap: true,
             global: true
-          },
-            uglifyify);
+          }, uglifyify);
         }
         let stream = b.bundle()
         .on('error', build.handleError);
 
         if (bundle.debug) {
           stream = stream
-            .pipe(plugins.tap(() => mkdirp.sync(bundle.destDir))
-          )
-            .pipe(exorcist(path.join(bundle.destDir, bundle.destName + '.map')));
+          .pipe(plugins.tap(() => mkdirp.sync(bundle.destDir)))
+          .pipe(exorcist(path.join(bundle.destDir, bundle.destName + '.map')));
         }
 
         return stream
-          .pipe(source(bundle.destName))<% if (use.crusher) { %>
-          .pipe(build.crusher.puller())
-          .pipe(build.crusher.pusher({tagger: { relativeBase: path.join(build.dirs.src.client, 'scripts')
-        }}))<% } %>
-          .pipe(gulp.dest(bundle.destDir));
+        .pipe(source(bundle.destName))<% if (use.crusher) { %>
+        .pipe(build.crusher.puller())
+        .pipe(build.crusher.pusher({
+          tagger: { relativeBase: path.join(build.dirs.src.client, 'scripts')}
+        }))<% } %>
+        .pipe(gulp.dest(bundle.destDir));
       };
 
 
-      return promises.push(new Promise((resolve, recect) =>
+      return promises.push(new Promise((resolve) =>
         buildIt()
-          .pipe(plugins.tap(() =>
-            resolve()
-          )
-        )
-      )
-      );
+        .pipe(plugins.tap(() =>
+          resolve()
+        ))
+      ));
     });
 
     return Promise.all(promises);
   };
-};
+}
 
 

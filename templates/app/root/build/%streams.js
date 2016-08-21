@@ -45,7 +45,7 @@ export default function(build) {
       }
     },
 
-    rerunMocha(options) {
+    rerunMocha() {
       return plugins.tap(function() {
         if (build.watchEnabled) {
           return build.mochaState.restart();
@@ -53,6 +53,6 @@ export default function(build) {
       });
     }
   };
-};
+}
 
 

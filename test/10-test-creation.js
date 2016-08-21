@@ -1,4 +1,4 @@
-/*global describe, beforeEach, it */
+/* eslint-env mocha  */
 
 import path from 'path';
 import helpers from 'yeoman-test';
@@ -60,12 +60,12 @@ for (let i = 0; i < settings.length; i++) {
           ];
           if (ts.backbone) {
             expected = expected.concat([
-             'src/client/scripts/router.js',
-             'src/client/scripts/views/simple.js',
-             'src/client/templates/home.jade',
-             'src/client/templates/about.jade',
-             'src/client/templates/contact.jade',
-             'src/client/templates/dummy.jade'
+              'src/client/scripts/router.js',
+              'src/client/scripts/views/simple.js',
+              'src/client/templates/home.jade',
+              'src/client/templates/about.jade',
+              'src/client/templates/contact.jade',
+              'src/client/templates/dummy.jade'
             ]);
           } else {
             expected = expected.concat([

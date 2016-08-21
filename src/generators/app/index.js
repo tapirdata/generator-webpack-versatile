@@ -1,10 +1,9 @@
-import util from 'util'; 
 import path from 'path'; 
 import yosay from 'yosay'; 
-import chalk from 'chalk'; 
-import _ from 'lodash'; 
 
 import BaseGenerator from '../../lib/base';
+
+/* eslint-disable no-console */
 
 let Generator = BaseGenerator.extend({
 

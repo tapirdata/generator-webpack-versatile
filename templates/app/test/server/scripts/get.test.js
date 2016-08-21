@@ -1,9 +1,11 @@
+/* eslint-env mocha  */
+
 import fetch from 'node-fetch';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import lint from 'html5-lint';
 import setupFactory from '<%= build.getRelPath(filename, {to: 'scripts/setup'}) %>';
-chai.use(chaiAsPromised)
+chai.use(chaiAsPromised);
 let { expect } = chai;
 
 let defaultOptions = setupFactory();

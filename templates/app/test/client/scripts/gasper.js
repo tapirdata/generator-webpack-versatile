@@ -1,6 +1,5 @@
 /* global window */
 
-import _ from 'lodash';
 import $ from 'jquery';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -12,7 +11,7 @@ function lift(fn) {
   return function(...args) {
     return Promise.resolve()
     .then(() => fn.apply(this, args));
-  }
+  };
 }
 
 
@@ -21,7 +20,7 @@ function delay(duration) {
     return new Promise(function(resolve) {
       window.setTimeout(resolve, duration);
     });
-  }
+  };
 } 
 
 
@@ -45,7 +44,6 @@ class Gasper {
 
   gaspHtml(html) {
     const options = options || {};
-    const { headFilter, bodyFilter } = options;
     const hs = this.splitHtml(html);
 
     $('head').html('');
@@ -112,7 +110,7 @@ class Gasper {
           .then(() => _retry(dt, left - 1, wrappedFn))
         );
       }
-    };
+    }
 
     if (typeof steps === 'function') {
       fn = steps;

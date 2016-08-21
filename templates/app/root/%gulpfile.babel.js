@@ -1,5 +1,4 @@
 
-import fs from 'fs';
 import del from 'del';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
@@ -9,8 +8,6 @@ import lazypipe from 'lazypipe';
 import child_process from 'child_process';
 
 import browserSync from 'browser-sync';
-import jsStylish from 'jshint-stylish';
-import jshintConfig from './.jshint.json';
 import build from './build';
 
 let plugins = pluginsFactory();
@@ -22,6 +19,8 @@ let makeScriptPipe = function() {
   let jsFilter = plugins.filter([gp.JS], {restore: true});
   let lp = lazypipe()
     .pipe(() => jsFilter)
+    .pipe(plugins.eslint)
+    .pipe(plugins.eslint.format)
     .pipe(plugins.babel)
     .pipe(() => jsFilter.restore);
   return lp();  
@@ -39,8 +38,7 @@ gulp.task('build-server-scripts', function() {
     .pipe(gulp.dest(dest))
     .pipe(build.streams.reloadServer())
     .pipe(build.streams.rerunMocha());
-}
-);
+});
 
 gulp.task('build-server-templates', function() {
   let dest = `${build.dirs.tgt.server}/templates`;
@@ -51,8 +49,7 @@ gulp.task('build-server-templates', function() {
     .pipe(gulp.dest(dest))
     .pipe(build.streams.reloadServer())
     .pipe(build.streams.rerunMocha());
-}
-);
+});
 
 gulp.task('build-server-config', function() {
   let dest = `${build.dirs.tgt.server}/config`;
@@ -61,8 +58,7 @@ gulp.task('build-server-config', function() {
     .pipe(plugins.ejs({build}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest));
-}
-);
+});
 
 gulp.task('build-starter', function() {
   let dest = __dirname;
@@ -71,21 +67,19 @@ gulp.task('build-starter', function() {
     .pipe(plugins.ejs({build}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest));
-}
-);
+});
 
-gulp.task('hint-client-scripts', function() {
+gulp.task('lint-client-scripts', function() {
   let dest = `${build.dirs.tgt.client}/scripts`;
   let destName = 'main.js';
   return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.src.client}/scripts`})
     .pipe(build.streams.plumber())
     .pipe(plugins.newer({dest: `${dest}/${destName}`}))
-    .pipe(makeScriptPipe()) // just hint & forget
+    .pipe(makeScriptPipe()) // just lint & forget
     .resume();
-}
-);
+});
 
-gulp.task('build-client-scripts', ['hint-client-scripts'], () =>
+gulp.task('build-client-scripts', ['lint-client-scripts'], () =>
   build.buildBrowsified(
     build.getBundleDefs('app'),
     {doWatch: build.watchEnabled}
@@ -98,7 +92,6 @@ gulp.task('build-client-images', () =>
     .pipe(build.crusher.pusher())<% } %>
     .pipe(gulp.dest(`${build.dirs.tgt.client}/images`))
     .pipe(build.streams.reloadClient())
-
 );
 
 gulp.task('build-client-pages', () =>
@@ -106,7 +99,6 @@ gulp.task('build-client-pages', () =>
     .pipe(build.streams.plumber())
     .pipe(gulp.dest(`${build.dirs.tgt.client}/pages`))
     .pipe(build.streams.reloadClient())
-
 );
 
 gulp.task('build-client-styles', function() {
@@ -131,8 +123,7 @@ gulp.task('build-client-styles', function() {
     .pipe(build.crusher.pusher())<% } %>
     .pipe(gulp.dest(`${build.dirs.tgt.client}/styles`))
     .pipe(build.streams.reloadClient());
-}
-);
+});
 
 <% if (use.modernizr) { -%>
 gulp.task('build-client-vendor-modernizr', () =>
@@ -146,13 +137,11 @@ gulp.task('build-client-vendor-modernizr', () =>
 gulp.task('build-client-vendor-foundation-scripts', () =>
   gulp.src(['foundation.js'], {cwd: 'node_modules/foundation-sites/dist'})
     .pipe(gulp.dest(`${build.dirs.tgt.clientVendor}/foundation`))
-
 );
 
 gulp.task('build-client-vendor-foundation-fonts', () =>
   gulp.src(['**/*.{eot,svg,ttf,woff}'], {cwd: 'bower_components/foundation-icon-fonts'})
     .pipe(gulp.dest(`${build.dirs.tgt.clientVendor}/foundation/assets/fonts`))
-
 );
 <% } -%>
 
@@ -160,7 +149,6 @@ gulp.task('build-client-vendor-foundation-fonts', () =>
 gulp.task('build-client-vendor-bootstrap-fonts', () =>
   gulp.src(['**/*'], {cwd: 'node_modules/bootstrap-sass/assets/fonts'})
     .pipe(gulp.dest(`${build.dirs.tgt.clientVendor}/bootstrap/assets/fonts`))
-
 );
 <% } -%>
 
@@ -175,7 +163,6 @@ gulp.task('build-client-vendor-assets', done =>
     'build-client-vendor-bootstrap-fonts',<% } %>
     'nop'
   ], done)
-
 );
 
 gulp.task('build-test-server-scripts', function() {
@@ -187,21 +174,23 @@ gulp.task('build-test-server-scripts', function() {
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest))
     .pipe(build.streams.rerunMocha());
-}
-);
+});
 
-gulp.task('hint-test-client-scripts', function() {
+gulp.task('lint-test-client-scripts', function() {
   let dest = `${build.dirs.tgt.client}/test/scripts`;
   let destName = 'main.js';
   return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.test.client}/scripts`})
     .pipe(build.streams.plumber())
     .pipe(plugins.newer({dest: `${dest}/${destName}`}))
-    .pipe(makeScriptPipe()) // just hint & forget
+    .pipe(makeScriptPipe()) // just lint & forget
     .resume();
-}
-);
+});
 
-gulp.task('build-test-client-scripts', ['hint-test-client-scripts'], () => build.buildBrowsified(build.getBundleDefs('test'), {doWatch: build.watchEnabled})
+gulp.task('build-test-client-scripts', ['lint-test-client-scripts'], () => 
+  build.buildBrowsified(
+    build.getBundleDefs('test'),
+    {doWatch: build.watchEnabled}
+  )
 );
 
 gulp.task('pack', function(done) {
@@ -220,33 +209,31 @@ gulp.task('pack', function(done) {
     }
   }
   );
-}
-);
+});
 
 gulp.task('serve', function(done) {
   build.serverState.start(done);
-}
-);
+});
 
 gulp.task('bs', done =>
   browserSync({
     proxy: `localhost:${build.serverState.port}`,
     browser: build.config.browserSync.browser
-  },
-    done)
-
+  }, done)
 );
 
-gulp.task('mocha', () => build.mochaState.start()
+gulp.task('mocha', () =>
+  build.mochaState.start()
 );
 
 gulp.task('karma', done =>
-  build.karmaState.start({singleRun: true}, () => build.serverState.stop(done)
+  build.karmaState.start({singleRun: true}, () =>
+    build.serverState.stop(done)
   )
-
 );
 
-gulp.task('karma-watch', () => build.karmaState.start({singleRun: false})
+gulp.task('karma-watch', () =>
+  build.karmaState.start({singleRun: false})
 );
 
 
@@ -254,7 +241,6 @@ gulp.task('build-server-assets', done =>
   runSequence([
     'build-server-templates'
   ], done)
-
 );
 
 gulp.task('build-server', done =>
@@ -263,7 +249,6 @@ gulp.task('build-server', done =>
     'build-server-assets',
     'build-server-config'
   ], done)
-
 );
 
 gulp.task('build-client-assets', done =>
@@ -273,7 +258,6 @@ gulp.task('build-client-assets', done =>
     'build-client-pages',
     'build-client-vendor-assets'
   ], done)
-
 );
 
 gulp.task('build-client', done =>
@@ -281,7 +265,6 @@ gulp.task('build-client', done =>
     'build-client-assets',
     'build-client-scripts'
   ], done)
-
 );
 
 gulp.task('build-test', done =>
@@ -291,7 +274,6 @@ gulp.task('build-test', done =>
     'build-test-server-scripts',
     'build-test-client-scripts'
   ], done)
-
 );
 
 gulp.task('build', function(done) {
@@ -303,24 +285,29 @@ gulp.task('build', function(done) {
     tasks.push('build-starter');
   }
   return runSequence(tasks, done);
-}
+});
+
+
+gulp.task('watch-on', () =>
+  build.watchEnabled = true
 );
 
-
-gulp.task('watch-on', () => build.watchEnabled = true
-);
-
-gulp.task('headless-on', () => build.headlessEnabled = true
+gulp.task('headless-on', () =>
+  build.headlessEnabled = true
 );
 
 <% if (use.crusher) { -%>
-gulp.task('crush-on', () => build.crusher.enabled = true
-);<% } -%>
+gulp.task('crush-on', () =>
+  build.crusher.enabled = true
+);
+<% } -%>
 
-gulp.task('watch-server-assets', () => gulp.watch([`${build.dirs.src.server}/templates/${gp.ALL}`], ['build-server-templates'])
+gulp.task('watch-server-assets', () =>
+  gulp.watch([`${build.dirs.src.server}/templates/${gp.ALL}`], ['build-server-templates'])
 );
 
-gulp.task('watch-server-scripts', () => gulp.watch([`${build.dirs.src.server}/scripts/${gp.SCRIPT}`], ['build-server-scripts'])
+gulp.task('watch-server-scripts', () =>
+  gulp.watch([`${build.dirs.src.server}/scripts/${gp.SCRIPT}`], ['build-server-scripts'])
 );
 
 gulp.task('watch-server', ['watch-server-assets', 'watch-server-scripts']);
@@ -329,16 +316,18 @@ gulp.task('watch-client-assets', function() {
   gulp.watch([`${build.dirs.src.client}/styles/${gp.ALL}`], ['build-client-styles']);
   gulp.watch([`${build.dirs.src.client}/images/${gp.ALL}`], ['build-client-images']);
   return gulp.watch([`${build.dirs.src.client}/pages/${gp.ALL}`], ['build-client-pages']);
-}
+});
+
+gulp.task('watch-client-scripts', () =>
+  gulp.watch([`${build.dirs.src.client}/scripts/${gp.SCRIPT}`], ['lint-client-scripts'])
 );
 
-gulp.task('watch-client-scripts', () => gulp.watch([`${build.dirs.src.client}/scripts/${gp.SCRIPT}`], ['hint-client-scripts'])
+gulp.task('watch-test-server-scripts', () =>
+  gulp.watch([`${build.dirs.test.server}/scripts/${gp.SCRIPT}`], ['build-test-server-scripts'])
 );
 
-gulp.task('watch-test-server-scripts', () => gulp.watch([`${build.dirs.test.server}/scripts/${gp.SCRIPT}`], ['build-test-server-scripts'])
-);
-
-gulp.task('watch-test-client-scripts', () => gulp.watch([`${build.dirs.test.client}/scripts/${gp.SCRIPT}`], ['hint-test-client-scripts'])
+gulp.task('watch-test-client-scripts', () =>
+  gulp.watch([`${build.dirs.test.client}/scripts/${gp.SCRIPT}`], ['lint-test-client-scripts'])
 );
 
 gulp.task('watch-client', ['watch-client-assets', 'watch-client-scripts']);

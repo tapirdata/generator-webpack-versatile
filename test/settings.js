@@ -5,8 +5,8 @@ class TestSetting {
     for (let i = 0; i < this.featureNames.length; i++) {
       let name = this.featureNames[i];
       (name => {
-       this[name] = !!options[name];
-     })(name);
+        this[name] = !!options[name];
+      })(name);
     }
     this.unsupported = !!options.unsupported;
     this.full = !!options.full;
@@ -67,6 +67,6 @@ let testSettings = [
   return new TestSetting(options);
 });
 
-export default testSettings
+export default testSettings;
 
 

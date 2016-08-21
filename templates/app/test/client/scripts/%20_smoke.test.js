@@ -1,4 +1,4 @@
-// global describe, before, it */
+/* eslint-env mocha  */
 
 import $ from 'jquery';
 import chai from 'chai';
@@ -9,7 +9,7 @@ let { expect } = chai;
 
 let gasper = new Gasper({
   headFilter($child) {
-   return !$child.is('script');
+    return !$child.is('script');
   }
 });
 
