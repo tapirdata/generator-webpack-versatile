@@ -1,6 +1,6 @@
 {
   "name": "generator-browserify-versatile",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "Yeoman generator for client/server development with browserify, gulp, jade, karma, mocha and some more selectable tools",
   "keywords": [
     "yeoman-generator",
@@ -43,7 +43,7 @@
   "scripts": {
     "build": "rm -rf dist; babel -d dist src",
     "test": "mocha --compilers js:babel-register --reporter spec",
-    "lint":  "eslint src/** generators/** test/*.js",
+    "lint": "eslint src/** generators/** test/*.js",
     "prepublish": "npm run build"
   },
   "dependencies": {
