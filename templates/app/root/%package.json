@@ -24,7 +24,7 @@
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.1",
     "browserify-shim": "^3.8.3",<% if (use.crusher) { %>
-    "cache-crusher": "^0.5.3",<% } %>
+    "cache-crusher": "^1.0.0",<% } %>
     "chai": "^3.3.0",
     "chai-as-promised": "^5.1.0",
     "chai-jq": "0.0.9",
@@ -55,7 +55,7 @@
     "jadeify": "^4.1.0",
     "jquery": "^3.1.0",
     "karma": "^1.1.1",
-    "karma-chrome-launcher": "^1.0.1",
+    "karma-chrome-launcher": "^2.0.0",
     "karma-firefox-launcher": "^1.0.0",
     "karma-junit-reporter": "^1.0.0",
     "karma-mocha": "^1.0.1",

@@ -32,7 +32,7 @@ Router.prototype.routes = {
   'about': 'showAbout',
   'contact': 'showContact',
   '*actions': 'defaultAction'
-}
+};
 
 export default Router;
 

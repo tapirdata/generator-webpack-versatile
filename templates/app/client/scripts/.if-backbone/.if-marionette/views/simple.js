@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Marionette from 'backbone.marionette';
 
 class SimpleView extends Marionette.LayoutView {

@@ -104,4 +104,4 @@ export default function() {
   const app = new App();
   return app.launch()
   .then(() => app);
-};
+}

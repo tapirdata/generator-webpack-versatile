@@ -7,9 +7,9 @@ class Router extends Marionette.AppRouter {
       'about': 'showAbout',
       'contact': 'showContact',
       '*actions': 'defaultAction'
-    }
+    };
   }
-};
+}
 
 export default Router;
 
