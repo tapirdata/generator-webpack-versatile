@@ -1,6 +1,6 @@
 {
   "name": "generator-browserify-versatile",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Yeoman generator for client/server development with browserify, gulp, jade, karma, mocha and some more selectable tools",
   "keywords": [
     "yeoman-generator",
