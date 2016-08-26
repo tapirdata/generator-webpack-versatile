@@ -1,6 +1,6 @@
 import Marionette from 'backbone.marionette';
 
-class SimpleView extends Marionette.LayoutView {
+class SimpleView extends Marionette.View {
   initialize(options) {
     this.template = options.template;
     this.app = options.app;

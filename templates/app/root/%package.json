@@ -19,7 +19,7 @@
     "babel-register": "^6.14.0",
     "babelify": "^7.3.0",<% if (use.backbone) { %>
     "backbone": "^1.1.2",<% } %><% if (use.marionette) { %>
-    "backbone.marionette": "^2.4.7",<% } %><% if (use.bootstrap) { %>
+    "backbone.marionette": "^3.0.0",<% } %><% if (use.bootstrap) { %>
     "bootstrap-sass": "^3.3.7",<% } %>
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.1",
