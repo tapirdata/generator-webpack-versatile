@@ -3,7 +3,7 @@
 import fetch from 'node-fetch';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import lint from 'html5-lint';
+import validator from 'html-validator';
 import setupFactory from '<%= build.getRelPath(filename, {to: 'scripts/setup'}) %>';
 chai.use(chaiAsPromised);
 let { expect } = chai;
@@ -32,27 +32,33 @@ let check = function(url) {
   );
   return it('should serve valid HTML5', function() {
     this.timeout(16000);
-    return new Promise((resolve, reject) =>
-      lint(text, function(err, results) {
+    return new Promise((resolve, reject) => {
+      const opts = {
+        data: text,
+      };
+      validator(opts, function(err, resultJson) {
         if (err) {
-          reject(new Error(`Failed to lint html: ${err}`));
+          reject(new Error(`Failed to validate html: ${err}`));
         }
+        const result = JSON.parse(resultJson);
         let lines = [];
-        for (const message of results.messages) {
+        for (const message of result.messages) {
           if (message.type === 'info') {
             continue;
           }
-          lines.push(`[${message.type}] line ${message.lastLine}:`);
-          lines.push(`${message.extract}`);
-          lines.push(`#cause: ${message.message}`);
+          lines.push(`[${message.type}] ${message.message} @line ${message.lastLine} column ${message.lastColumn}:`);
+          for (const extractLine of message.extract.split('\n')) {
+            lines.push(`| ${extractLine}`);
+          }
+          lines.push('');
         }
         if (lines.length > 0) {
-          reject(new Error(`Bad html at '${url}'\n` + lines.join('\n'))); 
+          reject(new Error(`Bad html at '${url}'\n` + lines.join('\n')));
         } else {
           resolve();
         }
-      })
-    );
+      });
+    });
   });
 };
 

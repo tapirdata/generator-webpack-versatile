@@ -29,7 +29,6 @@
     "chai-as-promised": "^5.1.0",
     "chai-jq": "0.0.9",
     "del": "^2.0.2",
-    "es5-shim": "^4.1.0",
     "eslint": "^3.3.1",
     "eslint-config-google": "^0.6.0",
     "exorcist": "^0.4.0",<% if (use.foundation) { %>
@@ -51,7 +50,7 @@
     "gulp-sass": "^2.0.4",<% } %>
     "gulp-tap": "^0.1.3",
     "gulp-util": "^3.0.3",
-    "html5-lint": "^0.2.3",
+    "html-validator": "^2.0.0",
     "jadeify": "^4.1.0",
     "jquery": "^3.1.0",
     "karma": "^1.1.1",
