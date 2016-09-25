@@ -2,9 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 
-function dirsFactory(config) {
+function dirsFactory(root, config) {
 
   let dirs = {
+    root: root,
     bower:  JSON.parse(fs.readFileSync('./.bowerrc')).directory,
     src: {
       root:   '<%= dirs.src %>',

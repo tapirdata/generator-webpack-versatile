@@ -1,6 +1,8 @@
-let plugins = require('gulp-load-plugins')();
-import browserSync from 'browser-sync';
 import gutil from 'gulp-util';
+import pluginsFactory from 'gulp-load-plugins';
+import browserSync from 'browser-sync';
+
+let plugins = pluginsFactory();
 
 export default function(build) {
 
@@ -18,40 +20,31 @@ export default function(build) {
     },
 
     reloadServer() {
-      return plugins.tap(function() {
+      // gutil.log('reloadServer...');
+      return plugins.tap(() => {
         if (build.serverState.isActive()) {
-          return build.serverState.restart(function() {
+          return build.serverState.restart()
+          .then(() => {
             if (browserSync.active) {
               browserSync.reload();
             }
-            if (build.karmaState.isActive()) {
-              return build.karmaState.run();
-            }
+            return build.karmaState.rerun();
           });
         }
       });
     },
 
-
     reloadClient() {
+      // gutil.log('reloadClient...');
       if (browserSync.active) {
         return browserSync.reload({stream: true});
       } else {
-        return plugins.tap(function() {
-          if (build.karmaState.isActive()) {
-            return build.karmaState.run();
-          }
+        return plugins.tap(() => {
+          return build.karmaState.rerun();
         });
       }
     },
 
-    rerunMocha() {
-      return plugins.tap(function() {
-        if (build.watchEnabled) {
-          return build.mochaState.restart();
-        }
-      });
-    }
   };
 }
 

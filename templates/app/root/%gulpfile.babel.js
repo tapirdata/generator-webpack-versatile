@@ -1,5 +1,7 @@
 
+import path from 'path';
 import del from 'del';
+import glob from 'glob';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 import pluginsFactory from 'gulp-load-plugins';
@@ -9,6 +11,14 @@ import child_process from 'child_process';
 
 import browserSync from 'browser-sync';
 import build from './build';
+
+
+function exitAfter(done) {
+  return function(err) {
+    done(err);
+    process.exit();
+  }
+}
 
 let plugins = pluginsFactory();
 let gp = build.globPatterns;
@@ -37,18 +47,21 @@ gulp.task('build-server-scripts', function() {
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest))
     .pipe(build.streams.reloadServer())
-    .pipe(build.streams.rerunMocha());
+    .pipe(build.mochaState.rerunIfWatch());
 });
 
 gulp.task('build-server-templates', function() {
   let dest = `${build.dirs.tgt.server}/templates`;
   return gulp.src([gp.JADE], {cwd: `${build.dirs.src.server}/templates`})
     .pipe(build.streams.plumber())
-    .pipe(plugins.newer({dest}))<% if (use.crusher) { %>
-    .pipe(build.crusher.puller())<% } %>
+    .pipe(plugins.newer({dest}))
+    .pipe(plugins.ejs({build}))
+<% if (use.crusher) { -%>
+    .pipe(build.crusher.puller())
+<% } -%>
     .pipe(gulp.dest(dest))
     .pipe(build.streams.reloadServer())
-    .pipe(build.streams.rerunMocha());
+    .pipe(build.mochaState.rerunIfWatch());
 });
 
 gulp.task('build-server-config', function() {
@@ -69,22 +82,19 @@ gulp.task('build-starter', function() {
     .pipe(gulp.dest(dest));
 });
 
-gulp.task('lint-client-scripts', function() {
-  let dest = `${build.dirs.tgt.client}/scripts`;
-  let destName = 'main.js';
-  return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.src.client}/scripts`})
-    .pipe(build.streams.plumber())
-    .pipe(plugins.newer({dest: `${dest}/${destName}`}))
-    .pipe(makeScriptPipe()) // just lint & forget
-    .resume();
+gulp.task('build-client-bundles', () => {
+  let opt = {
+    entry: path.join(build.dirs.src.client, 'scripts', 'main.js'),
+    uglify: build.config.mode.isProduction,
+  }
+  if (build.watchEnabled) {
+    return build.bundler.startDevServer(opt);
+  } else {
+    let dest = `${build.dirs.tgt.client}/bundles`;
+    return build.bundler.createStream(opt)
+      .pipe(gulp.dest(dest));
+  }
 });
-
-gulp.task('build-client-scripts', ['lint-client-scripts'], () =>
-  build.buildBrowsified(
-    build.getBundleDefs('app'),
-    {doWatch: build.watchEnabled}
-  )
-);
 
 gulp.task('build-client-images', () =>
   gulp.src([gp.ALL], {cwd: `${build.dirs.src.client}/images`})
@@ -173,25 +183,22 @@ gulp.task('build-test-server-scripts', function() {
     .pipe(plugins.ejs({build}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest))
-    .pipe(build.streams.rerunMocha());
+    .pipe(build.mochaState.rerunIfWatch());
 });
 
-gulp.task('lint-test-client-scripts', function() {
-  let dest = `${build.dirs.tgt.client}/test/scripts`;
-  let destName = 'main.js';
-  return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.test.client}/scripts`})
-    .pipe(build.streams.plumber())
-    .pipe(plugins.newer({dest: `${dest}/${destName}`}))
-    .pipe(makeScriptPipe()) // just lint & forget
-    .resume();
-});
-
-gulp.task('build-test-client-scripts', ['lint-test-client-scripts'], () => 
-  build.buildBrowsified(
-    build.getBundleDefs('test'),
-    {doWatch: build.watchEnabled}
-  )
-);
+gulp.task('build-test-client-bundles', () => {
+  let opt = {
+    entry: glob.sync(path.join(build.dirs.test.client, 'scripts', '*.test.js')),
+    watch: true,
+  }
+  let dest = `${build.dirs.tgt.client}/bundles`;
+  let bundleStream = build.bundler.createStream(opt, (err, stats) => {
+    gutil.log('webpack compile done. err=%s', err);
+    build.karmaState.rerun();
+  });
+  bundleStream
+    .pipe(gulp.dest(dest));
+})
 
 gulp.task('pack', function(done) {
   let tar = child_process.spawn('tar', [
@@ -211,8 +218,8 @@ gulp.task('pack', function(done) {
   );
 });
 
-gulp.task('serve', function(done) {
-  build.serverState.start(done);
+gulp.task('serve', () => {
+  return build.serverState.start();
 });
 
 gulp.task('bs', done =>
@@ -226,15 +233,17 @@ gulp.task('mocha', () =>
   build.mochaState.start()
 );
 
-gulp.task('karma', done =>
-  build.karmaState.start({singleRun: true}, () =>
-    build.serverState.stop(done)
-  )
+gulp.task('karma', ()  =>
+  build.karmaState.start({singleRun: true})
+    .then(() =>
+      build.serverState.stop()
+    )
 );
 
-gulp.task('karma-watch', () =>
+gulp.task('karma-watch', () => {
+  // don't wait for stop
   build.karmaState.start({singleRun: false})
-);
+});
 
 
 gulp.task('build-server-assets', done =>
@@ -263,7 +272,7 @@ gulp.task('build-client-assets', done =>
 gulp.task('build-client', done =>
   runSequence([
     'build-client-assets',
-    'build-client-scripts'
+    'build-client-bundles'
   ], done)
 );
 
@@ -272,7 +281,7 @@ gulp.task('build-test', done =>
     'build-server',
     'build-client-assets',
     'build-test-server-scripts',
-    'build-test-client-scripts'
+    'build-test-client-bundles'
   ], done)
 );
 
@@ -312,44 +321,43 @@ gulp.task('watch-server-scripts', () =>
 
 gulp.task('watch-server', ['watch-server-assets', 'watch-server-scripts']);
 
-gulp.task('watch-client-assets', function() {
+gulp.task('watch-client-assets', () => {
   gulp.watch([`${build.dirs.src.client}/styles/${gp.ALL}`], ['build-client-styles']);
   gulp.watch([`${build.dirs.src.client}/images/${gp.ALL}`], ['build-client-images']);
-  return gulp.watch([`${build.dirs.src.client}/pages/${gp.ALL}`], ['build-client-pages']);
+  gulp.watch([`${build.dirs.src.client}/pages/${gp.ALL}`], ['build-client-pages']);
 });
 
-gulp.task('watch-client-scripts', () =>
-  gulp.watch([`${build.dirs.src.client}/scripts/${gp.SCRIPT}`], ['lint-client-scripts'])
-);
-
 gulp.task('watch-test-server-scripts', () =>
-  gulp.watch([`${build.dirs.test.server}/scripts/${gp.SCRIPT}`], ['build-test-server-scripts'])
+    gulp.watch([`${build.dirs.test.server}/scripts/${gp.SCRIPT}`], ['build-test-server-scripts'])
 );
 
-gulp.task('watch-test-client-scripts', () =>
-  gulp.watch([`${build.dirs.test.client}/scripts/${gp.SCRIPT}`], ['lint-test-client-scripts'])
-);
-
-gulp.task('watch-client', ['watch-client-assets', 'watch-client-scripts']);
+gulp.task('watch-client', ['watch-client-assets']);
 
 gulp.task('watch', ['watch-server', 'watch-client']);
 
-gulp.task('watch-test', ['watch-test-server-scripts', 'watch-test-client-scripts']);
+gulp.task('watch-test', ['watch-test-server-scripts']);
 
 gulp.task('run', done => runSequence('clean', 'build', 'serve', done)
 );
 
-gulp.task('run-watch', done => runSequence('watch-on', 'clean', 'build', ['serve', 'bs'], 'watch', done)
+gulp.task('run-watch', done => runSequence('watch-on', 'clean', 'build', 'serve', 'bs', 'watch', done)
 );
 
 gulp.task('test', done =>
-  runSequence(<% if (use.crusher) { %>'crush-on', <% } %>'clean', 'build-test', ['serve', 'mocha', 'karma'], done)
+  runSequence(<% if (use.crusher) { %>'crush-on', <% } %>'clean', 'build-test', 'serve', 'mocha', 'karma',
+    exitAfter(done))
 );
 
-gulp.task('test-ci', done => runSequence(<% if (use.crusher) { %>'crush-on', <% } %>'headless-on', 'clean', 'build-test', 'serve', 'mocha', 'karma', done)
+gulp.task('test-ci', done => runSequence(
+      <% if (use.crusher) { %>'crush-on', <% } %>'headless-on', 'clean', 'build-test',
+      'serve', 'mocha', 'karma',
+      exitAfter(done))
 );
 
-gulp.task('test-watch', done => runSequence('watch-on', 'clean', 'build-test', ['serve', 'mocha', 'karma-watch'], ['watch-server', 'watch-client-assets', 'watch-test'], done)
+gulp.task('test-watch', done => runSequence(
+      'watch-on', 'clean', 'build-test', 'serve', 'mocha', 'karma-watch',
+      'watch-server', 'watch-client-assets', 'watch-test',
+      done)
 );
 
 gulp.task('dist', done => runSequence(<% if (use.crusher) { %>'crush-on', <% } %>'clean', 'build', 'pack', done)

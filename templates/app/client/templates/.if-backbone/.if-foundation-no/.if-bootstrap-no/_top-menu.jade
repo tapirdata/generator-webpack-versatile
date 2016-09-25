@@ -1,10 +1,11 @@
-.header
-  ul#main-nav
-    li.item(class=main_sel === 'home' ? 'active' : '')
-      a(href='#') Home
-    li.item(class=main_sel === 'about' ? 'active' : '')
-      a(href='#/about') About
-    li.item(class=main_sel === 'contact' ? 'active' : '')
-      a(href='#/contact') Contact
-  h3= title
+mixin top-menu(main_sel)
+  .header
+    ul#main-nav
+      li.item(class=main_sel === 'home' ? 'active' : '')
+        a(href='#') Home
+      li.item(class=main_sel === 'about' ? 'active' : '')
+        a(href='#/about') About
+      li.item(class=main_sel === 'contact' ? 'active' : '')
+        a(href='#/contact') Contact
+    h3= title
 

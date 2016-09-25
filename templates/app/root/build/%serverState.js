@@ -7,51 +7,42 @@ export default function(build) {
     isActive() {
       return !!this.server;
     },
-    start(done) {
-      done = done || function() {};
-      if (this.isActive()) {
-        gutil.log('server already running!');
-        done();
-        return;
-      }
-      let starter = require(`../${build.dirs.tgt.server}/scripts/start`).default;
-      starter({})
-      .then(server => {
-        this.server = server;
-        done();
-      })
-      .catch(err => done(err));
-    },
-
-    stop(done) {
-      done = done || function() {};
-      if (this.isActive()) {
-        return this.server.close(err => {
-          // gutil.log 'server stopped.'
-          this.server = null;
-          done(err);
+    start() {
+      // gutil.log('serverState start');
+      return Promise.resolve() 
+      .then(() => {
+        if (this.isActive()) {
+          gutil.warn('server already running!');
+          return;
         }
-        );
-      } else {
-        gutil.log('no server running!');
-        done();
-        return;
-      }
+        let starter = require(`../${build.dirs.tgt.server}/scripts/start`).default;
+        return starter({})
+        .then(server => {
+          // gutil.log('serverState started');
+          this.server = server;
+        })
+      });
     },
-
-    restart(done) {
-      done = done || function() {};
-      return this.stop(err => {
-        if (err) {
-          return done(err);
-        } else {
-          return this.start(function(err) {
-            done(err);
+    stop() {
+      return new Promise((resolve, reject) => {
+        if (this.isActive()) {
+          this.server.close(err => {
+            this.server = null;
+            if (err) reject(err);
+            else resolve();
           });
+        } else {
+          gutil.warn('no server running!');
+          resolve()
         }
-      }
-      );
-    }
+      });
+    },
+    restart() {
+      return this.stop()
+      .then(() => {
+        return this.start();
+      });
+    },
   };
 }
 

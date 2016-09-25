@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import gutil from 'gulp-util';
 import karma from 'karma';
 
 
@@ -20,16 +21,17 @@ export default function(build) {
     isActive() {
       return !!this.server;
     },
-    start(options, done) {
+    start(options) {
       let karmaConf = {
         urlRoot: '/__karma__/',
         files: [
           {
-            pattern: `${build.dirs.tgt.client}/scripts/vendor?(-+([a-f0-9])).js`,
-            watched: false
+            pattern: `${build.dirs.tgt.client}/bundles/vendor.bundle?(-+([a-f0-9])).js`,
+            watched: false,
           },
           {
-            pattern: `${build.dirs.tgt.client}/test/scripts/main?(-+([a-f0-9])).js`
+            pattern: `${build.dirs.tgt.client}/bundles/app.bundle?(-+([a-f0-9])).js`,
+            watched: false,
           }
         ],
         frameworks: [
@@ -54,30 +56,32 @@ export default function(build) {
         browserNoActivityTimeout: 10000
       };
 
-      // gutil.log 'karma start...'
-      let karmaServer = new karma.Server(karmaConf, () => {
-        // gutil.log 'karma start done. code=%s', exitCode
-        this.server = null;
-        if (done) {
-          return done();
-        }
-      }
-      );
-      karmaServer.start();    
-      return this.server = true;
+      this.karmaConf = karmaConf;
+
+      return new Promise((resolve) => {
+        this.server = new karma.Server(karmaConf, (exitCode) => {
+          // gutil.log('karma start done. code=%s', exitCode);
+          this.server = null;
+          resolve(exitCode);
+        });
+        this.server.start();
+      });
+
     },
 
-    run: _.debounce(
-      done =>
-        // gutil.log 'karma run...'
-        karma.runner.run({}, function() {
-          // gutil.log 'karma run done. code=%s', exitCode
-          if (done) {
-            return done();
-          }
+    rerun() {
+      // gutil.log('karma rerun');
+      if (!this.isActive()) {
+        return Promise.resolve();
+      }
+      let karmaConf = this.karmaConf;
+      return new Promise((resolve) => {
+        karma.runner.run(karmaConf, (exitCode) => {
+          gutil.log('karma rerun done. code=%s', exitCode);
+          resolve(exitCode);
         })
-      ,
-      1000)
+      });
+    },
   };
 }
 

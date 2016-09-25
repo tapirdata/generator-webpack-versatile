@@ -22,32 +22,35 @@ describe('The Application', function() {
       gasper.app = app;
     })
   );
-  it('should show the home page', function() {
+  it('should show the home page', () => {
     expect($('div.jumbotron')).to.have.length(1);
-    return expect($('#main-nav li.item').eq(0)).$class('active');
+    expect($('#main-nav li.item').eq(0)).$class('active');
   });
   it('home page should show the yeoman image', () =>
-    Promise.resolve().then(() => gasper.retry(function() {
+    Promise.resolve()
+    .then(() => gasper.retry(() => {
       let $imgs = $('img[alt="the yeoman"]');
       expect($imgs).to.have.length(1);
       let img = $imgs[0];
       expect(img.naturalWidth).above(10);
-      return expect(img.naturalHeight).above(10);
+      expect(img.naturalHeight).above(10);
     }))
   );
 <% if (use.foundation) { -%>
   it('home page should have the stylesheet applied', () =>
-    Promise.resolve().then(() => gasper.retry(function() {
+    Promise.resolve()
+    .then(() => gasper.retry(() => {
       let $btn = $('.button.success');
-      return expect($btn).to.have.$css('background-color', 'rgb(58, 219, 118)');
+      expect($btn).to.have.$css('background-color', 'rgb(58, 219, 118)');
     }))
   );
 <% } -%>
 <% if (use.bootstrap) { -%>
   it('home page should have the stylesheet applied', () =>
-    Promise.resolve().then(() => gasper.retry(function() {
+    Promise.resolve()
+    .then(() => gasper.retry(() => {
       let $btn = $('.btn-success');
-      return expect($btn).to.have.$css('background-color', 'rgb(92, 184, 92)');
+      expect($btn).to.have.$css('background-color', 'rgb(92, 184, 92)');
     }))
   );
 <% } -%>
@@ -59,7 +62,7 @@ describe('The Application', function() {
     )
     .then(() => gasper.retry(function() {
       expect($('div.jumbotron')).to.have.length(0);
-      return expect($('p').text()).to.contain('about');
+      expect($('p').text()).to.contain('about');
     }))
   );
 
@@ -72,7 +75,7 @@ describe('The Application', function() {
     )
     .then(() => gasper.retry(function() {
       expect($('div.jumbotron')).to.have.length(0);
-      return expect($('p').text()).to.contain('contact');
+      expect($('p').text()).to.contain('contact');
     }))
   );
   return it('should show the home page again', () =>

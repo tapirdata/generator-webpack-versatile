@@ -5,7 +5,6 @@
 // global document */
 <% } -%>
 
-// require 'es5-shim'
 import $ from 'jquery';
 <% if (use.backbone) { -%>
 import Backbone from 'backbone';
@@ -51,7 +50,6 @@ class App {
 <% } -%>
 
   launch() {
-    // console.log 'app.launch'
     return this.amendPage()
     .then(() => {
       return this.start();

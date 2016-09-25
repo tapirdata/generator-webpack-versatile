@@ -24,11 +24,20 @@ export default function(build) {
       );
     },
 
-    restart() {
+    rerun() {
       if (this.isActive) {
         return this.start();
       }
-    }
+    },
+
+    rerunIfWatch() {
+      return plugins.tap(() => {
+        if (build.watchEnabled) {
+          return this.rerun();
+        }
+      });
+    },
+
   };
 }
 

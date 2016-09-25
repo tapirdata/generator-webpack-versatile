@@ -6,8 +6,8 @@ html
 <% if (use.modernizr) { -%>
     script(type='text/javascript', src='/vendor/modernizr/modernizr.js')
 <% } -%>
-    script(type='text/javascript', src='/app/scripts/vendor.js')
-    script(type='text/javascript', src='/app/scripts/main.js')
+    script(type='text/javascript', src='<%%= build.getBundleUrl() %>/vendor.bundle.js')
+    script(type='text/javascript', src='<%%= build.getBundleUrl() %>/app.bundle.js')
   body
     <!--[if lt IE 9]>
     p.browsehappy
