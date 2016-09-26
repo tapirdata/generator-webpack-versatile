@@ -189,15 +189,18 @@ gulp.task('build-test-server-scripts', function() {
 gulp.task('build-test-client-bundles', () => {
   let opt = {
     entry: glob.sync(path.join(build.dirs.test.client, 'scripts', '*.test.js')),
-    watch: true,
+    watch: build.watchEnabled,
   };
   let dest = `${build.dirs.tgt.client}/bundles`;
   let bundleStream = build.bundler.createStream(opt, (err) => {
-    gutil.log('webpack compile done. err=%s', err);
+    gutil.log('webpack bundle done.%s', err === null ? '' : ' ERROR: ' + err);
     build.karmaState.rerun();
   });
-  bundleStream
+  let result = bundleStream
     .pipe(gulp.dest(dest));
+  if (!build.watchEnabled) {
+    return result;
+  }
 });
 
 gulp.task('pack', function(done) {
