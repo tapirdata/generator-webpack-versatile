@@ -50,8 +50,8 @@ for (let i = 0; i < settings.length; i++) {
             'src/server/scripts/app.js',
             'src/server/scripts/setup.js',
             'src/server/scripts/start.js',
-            'src/server/templates/layout.jade',
-            'src/server/templates/index.jade',
+            'src/server/templates/layout.pug',
+            'src/server/templates/index.pug',
             'src/client/images/favicon.ico',
             'src/client/pages/robots.txt',
             'src/client/pages/404.html',
@@ -63,15 +63,15 @@ for (let i = 0; i < settings.length; i++) {
             expected = expected.concat([
               'src/client/scripts/router.js',
               'src/client/scripts/views/simple.js',
-              'src/client/templates/home.jade',
-              'src/client/templates/about.jade',
-              'src/client/templates/contact.jade',
-              'src/client/templates/dummy.jade'
+              'src/client/templates/home.pug',
+              'src/client/templates/about.pug',
+              'src/client/templates/contact.pug',
+              'src/client/templates/dummy.pug'
             ]);
           } else {
             expected = expected.concat([
-              'src/server/templates/about.jade',
-              'src/server/templates/contact.jade'
+              'src/server/templates/about.pug',
+              'src/server/templates/contact.pug'
             ]);
           }
           // console.log(expected)

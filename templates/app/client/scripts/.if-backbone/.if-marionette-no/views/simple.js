@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Backbone from 'backbone';
 
 class SimpleView extends Backbone.View {

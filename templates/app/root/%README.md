@@ -11,12 +11,12 @@ This project was created by [generator-browserify-versatile](https://www.npmjs.c
   - `scripts/views/`: Backbone/Marionette views
 <% } -%>
 - `styles/`: style-sheets (.sass, .scss, .css)
-- `templates/`: jade-templates to be rendered client sided
+- `templates/`: pug-templates to be rendered client sided
 
 ### `<%= dirs.serverSrc %>/`:
 - `scripts/`: 
   - `starter/server.js`: the server-sided entry-point for target *production*
-- `templates/`: jade-templates to be rendered server sided
+- `templates/`: pug-templates to be rendered server sided
 
 ### `config/`
 

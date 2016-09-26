@@ -1,13 +1,12 @@
 extends layout
+include _top-menu.pug
 
 block content
   .container
-    - var main_sel = 'about'
-    include _top-menu.jade
+    +top-menu('about')
     div
       p
-        | contact ...
+        | about ...
     .footer
       p
         span from the Yeoman team
-

@@ -1,6 +1,4 @@
-import $ from 'jquery';
 import Backbone from 'backbone';
-import SimpleView from './views/simple';
 
 class Router extends Backbone.Router {
 

@@ -1,9 +1,9 @@
 extends layout
+include _top-menu.pug
 
 block content
   .container
-    - var main_sel = 'contact'
-    include _top-menu.jade
+    +top-menu('contact')
 
     .row
       .small-12.columns

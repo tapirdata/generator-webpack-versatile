@@ -1,19 +1,18 @@
 extends layout
+include _top-menu.pug
 
 block content
   .container
-    - var main_sel = 'home'
-    include _top-menu.jade
+    +top-menu('home')
     .jumbotron
       h1 'Allo, 'Allo!
       img(src='/app/images/yeoman.png' alt='the yeoman')
-      p.lead Always a pleasure scaffolding your apps.
+      p Always a pleasure scaffolding your apps.
       p
-        a.btn.btn-lg.btn-success(href='#') Splendid!
-          span.glyphicon.glyphicon-ok
+        a(href='#') Splendid!
 
-    .row.marketing
-      .col-lg-6
+    .row
+      .col
 <% if (use.backbone) { -%>
         h4 Backbone
         p
@@ -52,4 +51,4 @@ block content
 <% } -%>
     .footer
       p
-        span.glyphicon.glyphicon-heart from the Yeoman team
+        span from the Yeoman team

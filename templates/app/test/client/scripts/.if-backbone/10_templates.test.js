@@ -1,7 +1,7 @@
 /* global describe, it */
 
 import chai from 'chai';
-import aboutTemplate from '../../../src/client/templates/about.jade';
+import aboutTemplate from '../../../src/client/templates/about.pug';
 
 const { expect } = chai;
 

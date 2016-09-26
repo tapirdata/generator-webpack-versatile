@@ -65,7 +65,9 @@ build.crusher = cacheCrusher({
   resolver: {
     timeout: 20000
   }
-});<% } -%>
+});
+build.crusher.extractorOptions.catalog.registerExts('html', '.pug');
+<% } -%>
 
 
 build.serverState = serverStateFactory(build);

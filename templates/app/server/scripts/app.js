@@ -7,7 +7,7 @@ import robots from 'robots.txt';
 export default function(options) {
   const app = express();
   app.set('views', path.join(__dirname, '..', 'templates'));
-  app.set('view engine', 'jade');
+  app.set('view engine', 'pug');
   app.locals.pretty = true;
   app.use(favicon(path.join(options.clientDir, 'images', 'favicon.ico')));
   app.use(robots(path.join(options.clientDir, 'pages', 'robots.txt')));

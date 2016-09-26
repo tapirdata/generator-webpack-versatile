@@ -43,7 +43,9 @@ class Bundler {
       output: {
         filename: 'app.bundle.js',
       },
+<% if (use.crusher) { -%>
       crusher: build.crusher,
+<% } -%>
       module: {
         loaders: [
           {
@@ -55,13 +57,15 @@ class Bundler {
             loaders: ['babel-loader', 'eslint-loader'],
           },
           {
-            test: /\.jade$/,
+            test: /\.pug$/,
             loader: 'pug-loader',
           },
+<% if (use.crusher) { -%>
           {
             test: path.resolve(build.dirs.root, build.dirs.src.client),
             loader: path.resolve(__dirname, 'crusher-puller-loader'),
-          }
+          },
+<% } -%>
         ]
       },
       plugins: [
@@ -98,11 +102,13 @@ class Bundler {
     conf.watch = opt.watch;
     return gulp.src(path.resolve(__dirname, 'null.js'))
     .pipe(webpackStream(conf, null, cb))
+<% if (use.crusher) { -%>
     .pipe(this.build.crusher.pusher({
       tagger: { 
         relativeBase: path.join(this.build.dirs.src.client, 'bundles')
       }
     }))
+<% } -%>
   }
 
   startDevServer(opt) {

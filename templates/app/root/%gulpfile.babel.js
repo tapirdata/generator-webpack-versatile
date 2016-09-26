@@ -17,7 +17,7 @@ function exitAfter(done) {
   return function(err) {
     done(err);
     process.exit();
-  }
+  };
 }
 
 let plugins = pluginsFactory();
@@ -52,7 +52,7 @@ gulp.task('build-server-scripts', function() {
 
 gulp.task('build-server-templates', function() {
   let dest = `${build.dirs.tgt.server}/templates`;
-  return gulp.src([gp.JADE], {cwd: `${build.dirs.src.server}/templates`})
+  return gulp.src([gp.PUG], {cwd: `${build.dirs.src.server}/templates`})
     .pipe(build.streams.plumber())
     .pipe(plugins.newer({dest}))
     .pipe(plugins.ejs({build}))
@@ -86,7 +86,7 @@ gulp.task('build-client-bundles', () => {
   let opt = {
     entry: path.join(build.dirs.src.client, 'scripts', 'main.js'),
     uglify: build.config.mode.isProduction,
-  }
+  };
   if (build.watchEnabled) {
     return build.bundler.startDevServer(opt);
   } else {
@@ -190,15 +190,15 @@ gulp.task('build-test-client-bundles', () => {
   let opt = {
     entry: glob.sync(path.join(build.dirs.test.client, 'scripts', '*.test.js')),
     watch: true,
-  }
+  };
   let dest = `${build.dirs.tgt.client}/bundles`;
-  let bundleStream = build.bundler.createStream(opt, (err, stats) => {
+  let bundleStream = build.bundler.createStream(opt, (err) => {
     gutil.log('webpack compile done. err=%s', err);
     build.karmaState.rerun();
   });
   bundleStream
     .pipe(gulp.dest(dest));
-})
+});
 
 gulp.task('pack', function(done) {
   let tar = child_process.spawn('tar', [
@@ -242,7 +242,7 @@ gulp.task('karma', ()  =>
 
 gulp.task('karma-watch', () => {
   // don't wait for stop
-  build.karmaState.start({singleRun: false})
+  build.karmaState.start({singleRun: false});
 });
 
 

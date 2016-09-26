@@ -17,7 +17,7 @@ Use [babel](http://babeljs.io/) to transpile ES2015.
 
 Use [gulp](http://gulpjs.com/) for all task automation.
 
-Use [jade](http://jade-lang.com/) for server and client templating.
+Use [pug](http://pug-js.org) for server and client templating.
 
 Use [karma](http://karma-runner.github.io/0.12/index.html) for client-tests. There is also support for smoke-testing your application - either in your installed browsers or
 headlessly using [PhantomJS](http://phantomjs.org/).

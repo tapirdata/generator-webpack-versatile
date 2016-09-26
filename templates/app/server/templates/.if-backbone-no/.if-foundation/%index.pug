@@ -1,20 +1,30 @@
 extends layout
+include _top-menu.pug
 
 block content
   .container
-    .header
-    - var main_sel = 'home'
-    include _top-menu.jade
-    .jumbotron
-      h1 'Allo, 'Allo!
-      img(src='/app/images/yeoman.png' alt='the yeoman')
-      p Always a pleasure scaffolding your apps.
-      p
-        a(href='#') Splendid!
+    +top-menu('home')
+    .row
+      .small-12.columns
+        .jumbotron
+          h1 'Allo, 'Allo!
+          img(src='/app/images/yeoman.png' alt='the yeoman')
+          p.lead Always a pleasure scaffolding your apps.
+          p
+            a.button.success.radius(href='#') Splendid!
+              |  
+              i.fi-check
 
     .row
-      .col
+<% if (use.foundation) { -%>
+      .small-12.large-4.columns
+        h4 Foundation
+        p 
+          | The most advanced responsive 
+          | front-end framework in the world.
+<% } -%>
 <% if (use.backbone) { -%>
+      .small-12.large-4.columns
         h4 Backbone
         p
           | Backbone.js gives structure to web applications by providing models with
@@ -22,34 +32,37 @@ block content
           | enumerable functions, views with declarative event handling, and
           | connects it all to your existing API over a RESTful JSON interface.
 <% } -%>
-<% if (use.foundation) { -%>
-        h4 Foundation
-        p 
-          | The most advanced responsive 
-          | front-end framework in the world.
-<% } -%>
 <% if (use.bootstrap) { -%>
+      .small-12.large-4.columns
         h4 Bootstrap
         p 
           | Sleek, intuitive, and powerful mobile first front-end framework for faster and
           | easier web development.
 <% } -%>
+      .small-12.large-4.columns
         h4 Browserify
         p 
           | Browserify lets you require('modules') in the browser by bundling up all of
           | your dependencies.
 <% if (use.modernizr) { -%>
+      .small-12.large-4.columns
         h4 Modernizr
         p 
           | Modernizr is a JavaScript library that detects HTML5 and CSS3 features in
           | the user’s browser.
 <% } -%>
 <% if (use.sass) { -%>
+      .small-12.large-4.columns
         h4 Sass
         p 
           | Sass is the most mature, stable, and powerful professional grade CSS extension language
           | in the world.
 <% } -%>
-    .footer
-      p
-        span from the Yeoman team
+    .row
+      .small-12.columns
+        .footer
+          p
+            i.fi-heart
+            |  from the Yeoman team
+
+

@@ -37,15 +37,15 @@ class Controller {
   }
 
   showHome() {
-    return this._showTemplate(require('../templates/home.jade'));
+    return this._showTemplate(require('../templates/home.pug'));
   }
 
   showAbout() {
-    return this._showTemplate(require('../templates/about.jade'));
+    return this._showTemplate(require('../templates/about.pug'));
   }
 
   showContact() {
-    return this._showTemplate(require('../templates/contact.jade'));
+    return this._showTemplate(require('../templates/contact.pug'));
   }
 
   defaultAction() {

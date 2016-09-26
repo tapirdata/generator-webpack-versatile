@@ -1,11 +1,11 @@
 <% if (use.bootstrap || use.foundation) { -%>
 // global window */
+import $ from 'jquery';
 <% } -%>
 <% if (use.foundation) { -%>
 // global document */
 <% } -%>
 
-import $ from 'jquery';
 <% if (use.backbone) { -%>
 import Backbone from 'backbone';
 import Controller from './controller';
@@ -87,11 +87,13 @@ class App {
 
   instrumentPage() {
     // things to be done after page contents has been modified
-    return Promise.resolve()
 <% if (use.foundation) { -%>
+    return Promise.resolve()
     .then(function() {
       $(document).foundation();
     });
+<% } else { -%>
+    return Promise.resolve();
 <% } -%>
   }
 
