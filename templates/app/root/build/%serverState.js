@@ -20,7 +20,7 @@ export default function(build) {
         .then(server => {
           // gutil.log('serverState started');
           this.server = server;
-        })
+        });
       });
     },
     stop() {
@@ -33,7 +33,7 @@ export default function(build) {
           });
         } else {
           gutil.warn('no server running!');
-          resolve()
+          resolve();
         }
       });
     },

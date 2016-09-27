@@ -1,6 +1,5 @@
 
 import path from 'path';
-import _ from 'lodash';
 import gutil from 'gulp-util';
 
 import configFactory from './config';
@@ -45,7 +44,7 @@ const build = {
   },
   getBundleUrl() {
     if (this.watchEnabled) {
-      return `http://localhost:8080/bundles`;
+      return `http://localhost:${8080}/bundles`;
     } else {
       return '/app/bundles';
     }

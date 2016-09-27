@@ -11,6 +11,7 @@ module.exports = function(source) {
       let rest = source;
       let matches = [];
       let strs = [];
+      /*eslint-disable no-constant-condition*/
       while (true) {
         let match = options.pattern.exec(rest);
         if (match == null) {
@@ -62,4 +63,4 @@ module.exports = function(source) {
     }
   }  
   return source;
-}
+};

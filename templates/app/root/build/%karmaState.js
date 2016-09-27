@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import gutil from 'gulp-util';
 import karma from 'karma';
 
@@ -79,7 +78,7 @@ export default function(build) {
         karma.runner.run(karmaConf, (exitCode) => {
           gutil.log('karma rerun done. code=%s', exitCode);
           resolve(exitCode);
-        })
+        });
       });
     },
   };
