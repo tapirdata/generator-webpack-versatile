@@ -1,24 +1,25 @@
+import path from 'path';
 import gulp from 'gulp';
 let plugins = require('gulp-load-plugins')();
 
-export default function(build) {
+export default function(builder) {
 
   return {
     start() {
       this.isActive = true;
-      let reporter = build.headlessEnabled ?
-        (process.env.JUNIT_REPORT_PATH = 'results/server.xml',
+      let reporter = builder.headlessEnabled ?
+        (process.env.JUNIT_REPORT_PATH = path.join(builder.dirs.tmp, 'test-results', 'server.xml'),
         'mocha-jenkins-reporter')
       :
         'spec';
       return (
-        gulp.src(build.globPatterns.TEST, {
-          cwd: `${build.dirs.tgt.server}/test/scripts`,
+        gulp.src(builder.globPatterns.TEST, {
+          cwd: `${builder.dirs.tgt.server}/test/scripts`,
           read: false
         }
         )
       )
-        .pipe(build.streams.plumber())
+        .pipe(builder.plumber())
         .pipe(plugins.mocha({
           reporter})
       );
@@ -32,7 +33,7 @@ export default function(build) {
 
     rerunIfWatch() {
       return plugins.tap(() => {
-        if (build.watchEnabled) {
+        if (builder.watchEnabled) {
           return this.rerun();
         }
       });

@@ -2,7 +2,6 @@ node_modules
 <%= dirs.bower %>
 /.tmp
 /dist
-/results
 /.sass-cache
 /server.js
 /dist.tar.gz

@@ -1,12 +1,13 @@
+import path from 'path';
 import gutil from 'gulp-util';
 import karma from 'karma';
 
 
-export default function(build) {
+export default function(builder) {
 
   return {
     server: null,
-    browsers: build.config.karma.browsers,
+    browsers: builder.config.karma.browsers,
     reporters: {
       work: [
         'mocha'
@@ -20,30 +21,31 @@ export default function(build) {
     isActive() {
       return !!this.server;
     },
+
     start(options) {
       let karmaConf = {
         urlRoot: '/__karma__/',
         files: [
           {
-            pattern: `${build.dirs.tgt.client}/bundles/vendor.bundle?(-+([a-f0-9])).js`,
+            pattern: `${builder.dirs.tgt.client}/bundles/vendor.bundle?(-+([a-f0-9])).js`,
             watched: false,
           },
           {
-            pattern: `${build.dirs.tgt.client}/bundles/app.bundle?(-+([a-f0-9])).js`,
+            pattern: `${builder.dirs.tgt.client}/bundles/app.bundle?(-+([a-f0-9])).js`,
             watched: false,
           }
         ],
         frameworks: [
           'mocha'
         ],
-        browsers: build.headlessEnabled ? this.browsers.ci : this.browsers.work,
-        reporters: build.headlessEnabled ? this.reporters.ci : this.reporters.work,
+        browsers: builder.headlessEnabled ? this.browsers.ci : this.browsers.work,
+        reporters: builder.headlessEnabled ? this.reporters.ci : this.reporters.work,
         junitReporter: {
-          outputDir: 'results',
+          outputDir: path.join(builder.dirs.tmp, 'test-results'),
           outputFile: 'client.xml'
         },
         proxies: {
-          '/': `http://localhost:${build.serverState.port}/`
+          '/': `http://localhost:${builder.server.port}/`
         },
         client: {
           captureConsole: true,

@@ -6,6 +6,7 @@ function dirsFactory(root, config) {
 
   let dirs = {
     root: root,
+    tmp: '<%= dirs.tmp %>',
     bower:  JSON.parse(fs.readFileSync('./.bowerrc')).directory,
     src: {
       root:   '<%= dirs.src %>',

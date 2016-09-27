@@ -9,21 +9,21 @@ import webpackStream from 'webpack-stream';
 
 class Bundler {
 
-  constructor(build) {
-    this.build = build;
+  constructor(builder) {
+    this.builder = builder;
     this.server = null;
   }
 
   getConf(opt) {
-    let build = this.build;
-    let testScriptDir = path.resolve(build.dirs.root, build.dirs.test.client, 'scripts');
-    let scriptDir = path.resolve(build.dirs.root, build.dirs.src.client, 'scripts');
+    let builder = this.builder;
+    let testScriptDir = path.resolve(builder.dirs.root, builder.dirs.test.client, 'scripts');
+    let scriptDir = path.resolve(builder.dirs.root, builder.dirs.src.client, 'scripts');
 
     let appEntries = opt.entry;
     if (!_.isArray(appEntries)) {
       appEntries = [appEntries];
     }
-    appEntries = _.map(appEntries, entry => path.resolve(build.dirs.root, entry));
+    appEntries = _.map(appEntries, entry => path.resolve(builder.dirs.root, entry));
 
     let conf = {
       entry: {
@@ -42,7 +42,7 @@ class Bundler {
         filename: 'app.bundle.js',
       },
 <% if (use.crusher) { -%>
-      crusher: build.crusher,
+      crusher: builder.crusher,
 <% } -%>
       module: {
         loaders: [
@@ -60,7 +60,7 @@ class Bundler {
           },
 <% if (use.crusher) { -%>
           {
-            test: path.resolve(build.dirs.root, build.dirs.src.client),
+            test: path.resolve(builder.dirs.root, builder.dirs.src.client),
             loader: path.resolve(__dirname, 'crusher-puller-loader'),
           },
 <% } -%>
@@ -100,9 +100,9 @@ class Bundler {
     conf.watch = opt.watch;
     return gulp.src(path.resolve(__dirname, 'null.js'))
       .pipe(webpackStream(conf, null, cb))<% if (use.crusher) { %>
-      .pipe(this.build.crusher.pusher({
+      .pipe(this.builder.crusher.pusher({
         tagger: { 
-          relativeBase: path.join(this.build.dirs.src.client, 'bundles')
+          relativeBase: path.join(this.builder.dirs.src.client, 'bundles')
         }
       }))<% } %>;
   }
@@ -128,8 +128,8 @@ class Bundler {
   }
 }
 
-export default function(build) {
-  return new Bundler(build);
+export default function(builder) {
+  return new Bundler(builder);
 }  
 
 

@@ -26,11 +26,11 @@ Config files to setup paths and options
 
 Projects are built here for targets *development*, *testing*, *production*.
 
-### `build/`
+### `builder/`
 
-Helper scripts to be used by `gruntfile`
+Helper scripts to be used by `gulpfile`
 
-### `results/`
+### `<%= dirs.tmpDev %>/test-results/`
 
 Test results
 

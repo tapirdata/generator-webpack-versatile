@@ -1,19 +1,21 @@
 
 import path from 'path';
 import gutil from 'gulp-util';
+import pluginsFactory from 'gulp-load-plugins';
 
 import configFactory from './config';
 import dirsFactory from './dirs';
-import globPatterns from './globPatterns';
-import serverStateFactory from './serverState';
-import mochaStateFactory from './mochaState';
-import karmaStateFactory from './karmaState';
-import streamsFactory from './streams';
+import globPatterns from './glob-patterns';
+import serverFactory from './server';
+import mochaFactory from './mocha';
+import karmaFactory from './karma';
+import syncFactory from './sync';
 import BundlerFactory from './bundler';
 <% if (use.modernizr) { -%>
 import modernizrFactory from './modernizr';
 <% } -%>
 
+const plugins = pluginsFactory();
 const config = configFactory();
 const dirs = dirsFactory(path.resolve(__dirname, '..'), config);
 
@@ -22,7 +24,7 @@ function handleError(err) {
   return this.emit('end');
 }
 
-const build = {
+const builder = {
   config,
   dirs,
   globPatterns,
@@ -49,34 +51,47 @@ const build = {
       return '/app/bundles';
     }
   },
+
+  plumber() {
+    return plugins.plumber({
+      errorHandler(err) {
+        gutil.log(
+          gutil.colors.red('Error:\n'),
+          err.toString()
+        );
+        return this.emit('end');
+      }
+    });
+  },
+
 };
 
 <% if (use.crusher) { -%>
 import cacheCrusher from 'cache-crusher';
-build.crusher = cacheCrusher({
+builder.crusher = cacheCrusher({
   enabled: false,
   extractor: {
     urlBase: '/app/'
   },
   mapper: {
-    counterparts: [{urlRoot: '/app', tagRoot: build.dirs.src.client, globs: ['!images/favicon.ico', '!**/*.map']}]
+    counterparts: [{urlRoot: '/app', tagRoot: builder.dirs.src.client, globs: ['!images/favicon.ico', '!**/*.map']}]
   },
   resolver: {
     timeout: 20000
   }
 });
-build.crusher.extractorOptions.catalog.registerExts('html', '.pug');
+builder.crusher.extractorOptions.catalog.registerExts('html', '.pug');
 <% } -%>
 
 
-build.serverState = serverStateFactory(build);
-build.mochaState = mochaStateFactory(build);
-build.karmaState = karmaStateFactory(build);
-build.streams = streamsFactory(build);
-build.bundler = BundlerFactory(build);
+builder.server = serverFactory(builder);
+builder.mocha = mochaFactory(builder);
+builder.karma = karmaFactory(builder);
+builder.sync = syncFactory(builder);
+builder.bundler = BundlerFactory(builder);
 <% if (use.modernizr) { -%>
-build.modernizr = modernizrFactory(build);
+builder.modernizr = modernizrFactory(builder);
 <% } -%>
 
-export default build;
+export default builder;
 

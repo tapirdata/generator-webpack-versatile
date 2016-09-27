@@ -147,7 +147,7 @@ for (let i = 0; i < settings.length; i++) {
       let serverResultsFile = null;
       let clientResultsFile = null;
       let testDir = path.join(__dirname, 'project');
-      let resultsDir = path.join(testDir, 'results');
+      let resultsDir = path.join(testDir, '.tmp', 'test-results');
       before(function(done) {
         testDirectoryFaster(testDir, () => {
           this.app = helpers.createGenerator(

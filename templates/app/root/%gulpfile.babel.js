@@ -8,9 +8,7 @@ import pluginsFactory from 'gulp-load-plugins';
 import runSequence from 'run-sequence';
 import lazypipe from 'lazypipe';
 import child_process from 'child_process';
-
-import browserSync from 'browser-sync';
-import build from './build';
+import builder from './builder';
 
 
 function exitAfter(done) {
@@ -20,10 +18,12 @@ function exitAfter(done) {
   };
 }
 
-let plugins = pluginsFactory();
-let gp = build.globPatterns;
+const plugins = pluginsFactory();
+const gp = builder.globPatterns;
 
-let mapScript = p => gutil.replaceExtension(p, '.js');
+function mapScript(p) {
+  return  gutil.replaceExtension(p, '.js');
+}
 
 let makeScriptPipe = function() {
   let jsFilter = plugins.filter([gp.JS], {restore: true});
@@ -36,79 +36,79 @@ let makeScriptPipe = function() {
   return lp();  
 };
 
-gulp.task('clean', done => del(build.dirs.tgt.root, done)
+gulp.task('clean', done => del(builder.dirs.tgt.root, done)
 );
 
 gulp.task('build-server-scripts', function() {
-  let dest = `${build.dirs.tgt.server}/scripts`;
-  return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.src.server}/scripts`})
-    .pipe(build.streams.plumber())
+  let dest = `${builder.dirs.tgt.server}/scripts`;
+  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.server}/scripts`})
+    .pipe(builder.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest))
-    .pipe(build.streams.reloadServer())
-    .pipe(build.mochaState.rerunIfWatch());
+    .pipe(builder.sync.reloadServer())
+    .pipe(builder.mocha.rerunIfWatch());
 });
 
 gulp.task('build-server-templates', function() {
-  let dest = `${build.dirs.tgt.server}/templates`;
-  return gulp.src([gp.PUG], {cwd: `${build.dirs.src.server}/templates`})
-    .pipe(build.streams.plumber())
+  let dest = `${builder.dirs.tgt.server}/templates`;
+  return gulp.src([gp.PUG], {cwd: `${builder.dirs.src.server}/templates`})
+    .pipe(builder.plumber())
     .pipe(plugins.newer({dest}))
-    .pipe(plugins.ejs({build}))
+    .pipe(plugins.ejs({builder}))
 <% if (use.crusher) { -%>
-    .pipe(build.crusher.puller())
+    .pipe(builder.crusher.puller())
 <% } -%>
     .pipe(gulp.dest(dest))
-    .pipe(build.streams.reloadServer())
-    .pipe(build.mochaState.rerunIfWatch());
+    .pipe(builder.sync.reloadServer())
+    .pipe(builder.mocha.rerunIfWatch());
 });
 
 gulp.task('build-server-config', function() {
-  let dest = `${build.dirs.tgt.server}/config`;
-  return gulp.src([gp.ALL], {cwd: `${build.dirs.src.server}/config`})
-    .pipe(build.streams.plumber())
-    .pipe(plugins.ejs({build}))
+  let dest = `${builder.dirs.tgt.server}/config`;
+  return gulp.src([gp.ALL], {cwd: `${builder.dirs.src.server}/config`})
+    .pipe(builder.plumber())
+    .pipe(plugins.ejs({builder}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest));
 });
 
 gulp.task('build-starter', function() {
   let dest = __dirname;
-  return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.src.server}/starter`})
-    .pipe(build.streams.plumber())
-    .pipe(plugins.ejs({build}))
+  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.server}/starter`})
+    .pipe(builder.plumber())
+    .pipe(plugins.ejs({builder}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest));
 });
 
 gulp.task('build-client-bundles', () => {
   let opt = {
-    entry: path.join(build.dirs.src.client, 'scripts', 'main.js'),
-    uglify: build.config.mode.isProduction,
+    entry: path.join(builder.dirs.src.client, 'scripts', 'main.js'),
+    uglify: builder.config.mode.isProduction,
   };
-  if (build.watchEnabled) {
-    return build.bundler.startDevServer(opt);
+  if (builder.watchEnabled) {
+    return builder.bundler.startDevServer(opt);
   } else {
-    let dest = `${build.dirs.tgt.client}/bundles`;
-    return build.bundler.createStream(opt)
+    let dest = `${builder.dirs.tgt.client}/bundles`;
+    return builder.bundler.createStream(opt)
       .pipe(gulp.dest(dest));
   }
 });
 
 gulp.task('build-client-images', () =>
-  gulp.src([gp.ALL], {cwd: `${build.dirs.src.client}/images`})
-    .pipe(build.streams.plumber())<% if (use.crusher) { %>
-    .pipe(build.crusher.pusher())<% } %>
-    .pipe(gulp.dest(`${build.dirs.tgt.client}/images`))
-    .pipe(build.streams.reloadClient())
+  gulp.src([gp.ALL], {cwd: `${builder.dirs.src.client}/images`})
+    .pipe(builder.plumber())<% if (use.crusher) { %>
+    .pipe(builder.crusher.pusher())<% } %>
+    .pipe(gulp.dest(`${builder.dirs.tgt.client}/images`))
+    .pipe(builder.sync.reloadClient())
 );
 
 gulp.task('build-client-pages', () =>
-  gulp.src([gp.ALL], {cwd: `${build.dirs.src.client}/pages`})
-    .pipe(build.streams.plumber())
-    .pipe(gulp.dest(`${build.dirs.tgt.client}/pages`))
-    .pipe(build.streams.reloadClient())
+  gulp.src([gp.ALL], {cwd: `${builder.dirs.src.client}/pages`})
+    .pipe(builder.plumber())
+    .pipe(gulp.dest(`${builder.dirs.tgt.client}/pages`))
+    .pipe(builder.sync.reloadClient())
 );
 
 gulp.task('build-client-styles', function() {
@@ -121,8 +121,8 @@ gulp.task('build-client-styles', function() {
   includePaths.push(templateConfig.foundationSassPath);<% } %>
   let sassFilter = plugins.filter([gp.SASS], {restore: true});
   let scssFilter = plugins.filter([gp.SCSS], {restore: true});<% } %>
-  return gulp.src([gp.CSS<% if (use.sass) { %>, gp.SASS, gp.SCSS<% } %>], {cwd: `${build.dirs.src.client}/styles`})
-    .pipe(build.streams.plumber())
+  return gulp.src([gp.CSS<% if (use.sass) { %>, gp.SASS, gp.SCSS<% } %>], {cwd: `${builder.dirs.src.client}/styles`})
+    .pipe(builder.plumber())
     .pipe(plugins.ejs(templateConfig))<% if (use.sass) { %>
     .pipe(sassFilter)
     .pipe(plugins.sass({includePaths, indentedSyntax: true}))
@@ -130,15 +130,15 @@ gulp.task('build-client-styles', function() {
     .pipe(scssFilter)
     .pipe(plugins.sass({includePaths}))
     .pipe(scssFilter.restore)<% } if (use.crusher) { %>
-    .pipe(build.crusher.pusher())<% } %>
-    .pipe(gulp.dest(`${build.dirs.tgt.client}/styles`))
-    .pipe(build.streams.reloadClient());
+    .pipe(builder.crusher.pusher())<% } %>
+    .pipe(gulp.dest(`${builder.dirs.tgt.client}/styles`))
+    .pipe(builder.sync.reloadClient());
 });
 
 <% if (use.modernizr) { -%>
 gulp.task('build-client-vendor-modernizr', () =>
-  build.modernizr(build.config.modernizr)
-    .pipe(gulp.dest(`${build.dirs.tgt.clientVendor}/modernizr`))
+  builder.modernizr(builder.config.modernizr)
+    .pipe(gulp.dest(`${builder.dirs.tgt.clientVendor}/modernizr`))
 
 );
 <% } -%>
@@ -146,19 +146,19 @@ gulp.task('build-client-vendor-modernizr', () =>
 <% if (use.foundation) { -%>
 gulp.task('build-client-vendor-foundation-scripts', () =>
   gulp.src(['foundation.js'], {cwd: 'node_modules/foundation-sites/dist'})
-    .pipe(gulp.dest(`${build.dirs.tgt.clientVendor}/foundation`))
+    .pipe(gulp.dest(`${builder.dirs.tgt.clientVendor}/foundation`))
 );
 
 gulp.task('build-client-vendor-foundation-fonts', () =>
   gulp.src(['**/*.{eot,svg,ttf,woff}'], {cwd: 'bower_components/foundation-icon-fonts'})
-    .pipe(gulp.dest(`${build.dirs.tgt.clientVendor}/foundation/assets/fonts`))
+    .pipe(gulp.dest(`${builder.dirs.tgt.clientVendor}/foundation/assets/fonts`))
 );
 <% } -%>
 
 <% if (use.bootstrap) { -%>
 gulp.task('build-client-vendor-bootstrap-fonts', () =>
   gulp.src(['**/*'], {cwd: 'node_modules/bootstrap-sass/assets/fonts'})
-    .pipe(gulp.dest(`${build.dirs.tgt.clientVendor}/bootstrap/assets/fonts`))
+    .pipe(gulp.dest(`${builder.dirs.tgt.clientVendor}/bootstrap/assets/fonts`))
 );
 <% } -%>
 
@@ -176,29 +176,29 @@ gulp.task('build-client-vendor-assets', done =>
 );
 
 gulp.task('build-test-server-scripts', function() {
-  let dest = `${build.dirs.tgt.serverTest}/scripts`;
-  return gulp.src(gp.SCRIPT, {cwd: `${build.dirs.test.server}/scripts`})
-    .pipe(build.streams.plumber())
+  let dest = `${builder.dirs.tgt.serverTest}/scripts`;
+  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.test.server}/scripts`})
+    .pipe(builder.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
-    .pipe(plugins.ejs({build}))
+    .pipe(plugins.ejs({builder}))
     .pipe(makeScriptPipe())
     .pipe(gulp.dest(dest))
-    .pipe(build.mochaState.rerunIfWatch());
+    .pipe(builder.mocha.rerunIfWatch());
 });
 
 gulp.task('build-test-client-bundles', () => {
   let opt = {
-    entry: glob.sync(path.join(build.dirs.test.client, 'scripts', '*.test.js')),
-    watch: build.watchEnabled,
+    entry: glob.sync(path.join(builder.dirs.test.client, 'scripts', '*.test.js')),
+    watch: builder.watchEnabled,
   };
-  let dest = `${build.dirs.tgt.client}/bundles`;
-  let bundleStream = build.bundler.createStream(opt, (err) => {
+  let dest = `${builder.dirs.tgt.client}/bundles`;
+  let bundleStream = builder.bundler.createStream(opt, (err) => {
     gutil.log('webpack bundle done.%s', err === null ? '' : ' ERROR: ' + err);
-    build.karmaState.rerun();
+    builder.karma.rerun();
   });
   let result = bundleStream
     .pipe(gulp.dest(dest));
-  if (!build.watchEnabled) {
+  if (!builder.watchEnabled) {
     return result;
   }
 });
@@ -209,7 +209,7 @@ gulp.task('pack', function(done) {
     'dist.tar.gz',
     'package.json',
     'server.js',
-    build.dirs.tgt.root
+    builder.dirs.tgt.root
   ]);
   tar.on('close', function(code) {
     if (code) {
@@ -222,30 +222,27 @@ gulp.task('pack', function(done) {
 });
 
 gulp.task('serve', () => {
-  return build.serverState.start();
+  return builder.server.start();
 });
 
-gulp.task('bs', done =>
-  browserSync({
-    proxy: `localhost:${build.serverState.port}`,
-    browser: build.config.browserSync.browser
-  }, done)
+gulp.task('start-sync', () =>
+  builder.sync.start()
 );
 
 gulp.task('mocha', () =>
-  build.mochaState.start()
+  builder.mocha.start()
 );
 
 gulp.task('karma', ()  =>
-  build.karmaState.start({singleRun: true})
+  builder.karma.start({singleRun: true})
     .then(() =>
-      build.serverState.stop()
+      builder.server.stop()
     )
 );
 
 gulp.task('karma-watch', () => {
   // don't wait for stop
-  build.karmaState.start({singleRun: false});
+  builder.karma.start({singleRun: false});
 });
 
 
@@ -293,7 +290,7 @@ gulp.task('build', function(done) {
     'build-server',
     'build-client'
   ];
-  if (build.config.mode.isProduction) {
+  if (builder.config.mode.isProduction) {
     tasks.push('build-starter');
   }
   return runSequence(tasks, done);
@@ -301,37 +298,37 @@ gulp.task('build', function(done) {
 
 
 gulp.task('watch-on', () =>
-  build.watchEnabled = true
+  builder.watchEnabled = true
 );
 
 gulp.task('headless-on', () =>
-  build.headlessEnabled = true
+  builder.headlessEnabled = true
 );
 
 <% if (use.crusher) { -%>
 gulp.task('crush-on', () =>
-  build.crusher.enabled = true
+  builder.crusher.enabled = true
 );
 <% } -%>
 
 gulp.task('watch-server-assets', () =>
-  gulp.watch([`${build.dirs.src.server}/templates/${gp.ALL}`], ['build-server-templates'])
+  gulp.watch([`${builder.dirs.src.server}/templates/${gp.ALL}`], ['build-server-templates'])
 );
 
 gulp.task('watch-server-scripts', () =>
-  gulp.watch([`${build.dirs.src.server}/scripts/${gp.SCRIPT}`], ['build-server-scripts'])
+  gulp.watch([`${builder.dirs.src.server}/scripts/${gp.SCRIPT}`], ['build-server-scripts'])
 );
 
 gulp.task('watch-server', ['watch-server-assets', 'watch-server-scripts']);
 
 gulp.task('watch-client-assets', () => {
-  gulp.watch([`${build.dirs.src.client}/styles/${gp.ALL}`], ['build-client-styles']);
-  gulp.watch([`${build.dirs.src.client}/images/${gp.ALL}`], ['build-client-images']);
-  gulp.watch([`${build.dirs.src.client}/pages/${gp.ALL}`], ['build-client-pages']);
+  gulp.watch([`${builder.dirs.src.client}/styles/${gp.ALL}`], ['build-client-styles']);
+  gulp.watch([`${builder.dirs.src.client}/images/${gp.ALL}`], ['build-client-images']);
+  gulp.watch([`${builder.dirs.src.client}/pages/${gp.ALL}`], ['build-client-pages']);
 });
 
 gulp.task('watch-test-server-scripts', () =>
-    gulp.watch([`${build.dirs.test.server}/scripts/${gp.SCRIPT}`], ['build-test-server-scripts'])
+    gulp.watch([`${builder.dirs.test.server}/scripts/${gp.SCRIPT}`], ['build-test-server-scripts'])
 );
 
 gulp.task('watch-client', ['watch-client-assets']);
@@ -343,7 +340,7 @@ gulp.task('watch-test', ['watch-test-server-scripts']);
 gulp.task('run', done => runSequence('clean', 'build', 'serve', done)
 );
 
-gulp.task('run-watch', done => runSequence('watch-on', 'clean', 'build', 'serve', 'bs', 'watch', done)
+gulp.task('run-watch', done => runSequence('watch-on', 'clean', 'build', 'serve', 'start-sync', 'watch', done)
 );
 
 gulp.task('test', done =>
