@@ -142,7 +142,7 @@ for (let i = 0; i < settings.length; i++) {
       return;
     }
     // let STYLE_EXT = ts.sass ? '.sass' : '.css';
-    return describe(`browserify-versatile generator ${ts.toString()}`, function() {
+    return describe(`webpack-versatile generator ${ts.toString()}`, function() {
       this.timeout(5 * 60 * 1000);
       let serverResultsFile = null;
       let clientResultsFile = null;
@@ -151,7 +151,7 @@ for (let i = 0; i < settings.length; i++) {
       before(function(done) {
         testDirectoryFaster(testDir, () => {
           this.app = helpers.createGenerator(
-            'browserify-versatile:app',
+            'webpack-versatile:app',
             [ '../../generators/app' ],
             []
           );

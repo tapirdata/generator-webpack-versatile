@@ -9,7 +9,7 @@ for (let i = 0; i < settings.length; i++) {
   let ts = settings[i];
   (function(ts) {
     let STYLE_EXT = ts.sass ? '.sass' : '.css';
-    return describe(`browserify-versatile generator ${ts.toString()}`, function() {
+    return describe(`webpack-versatile generator ${ts.toString()}`, function() {
       before(function(done) {
         // @timeout 1000
         helpers.testDirectory(path.join(__dirname, 'temp'), err => {
@@ -17,7 +17,7 @@ for (let i = 0; i < settings.length; i++) {
             done(err);
             return;
           }
-          this.app = helpers.createGenerator('browserify-versatile:app', [ '../../generators/app' ], [], {'test-framework': 'none'});
+          this.app = helpers.createGenerator('webpack-versatile:app', [ '../../generators/app' ], [], {'test-framework': 'none'});
           // console.log "app=#{@app} features=#{ts.activeFeatures()}"
           helpers.mockPrompt(this.app, {'features': ts.activeFeatures()});
           done();
