@@ -1,4 +1,4 @@
-This project was created by [generator-browserify-versatile](https://www.npmjs.com/package/generator-browserify-versatile).
+This project was created by [generator-webpack-versatile](https://www.npmjs.com/package/generator-webpack-versatile).
 
 ## Layout of this Project
 
@@ -62,7 +62,7 @@ $ gulp --env test test-ci
 ```
 cleans the target-tree, builds the application, runs server application and runs server-
 and client-test headlessly using PhantomJS. Test-results are written into `test-results.xml`.
-This task is also used by `browserify-versatiles` self-tests.
+This task is also used by `webpack-versatile`'s self-tests.
 
 ```bash
 $ gulp --env prod dist

@@ -1,15 +1,15 @@
-# generator-browserify-versatile
+# generator-webpack-versatile
 
-[![npm version](https://img.shields.io/npm/v/generator-browserify-versatile.svg?style=flat-square)](https://www.npmjs.com/package/generator-browserify-versatile)
-[![Build Status](https://secure.travis-ci.org/tapirdata/generator-browserify-versatile.png?branch=master)](https://travis-ci.org/tapirdata/generator-browserify-versatile)
-[![Dependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile)
-[![devDependency Status](https://david-dm.org/tapirdata/generator-browserify-versatile/dev-status.svg)](https://david-dm.org/tapirdata/generator-browserify-versatile#info=devDependencies)
+[![npm version](https://img.shields.io/npm/v/generator-webpack-versatile.svg?style=flat-square)](https://www.npmjs.com/package/generator-webpack-versatile)
+[![Build Status](https://secure.travis-ci.org/tapirdata/generator-webpack-versatile.png?branch=master)](https://travis-ci.org/tapirdata/generator-webpack-versatile)
+[![Dependency Status](https://david-dm.org/tapirdata/generator-webpack-versatile.svg)](https://david-dm.org/tapirdata/generator-webpack-versatile)
+[![devDependency Status](https://david-dm.org/tapirdata/generator-webpack-versatile/dev-status.svg)](https://david-dm.org/tapirdata/generator-webpack-versatile#info=devDependencies)
 
 > [Yeoman](http://yeoman.io) generator will setup an express-project with a bunch of tools (some fixed, some selectable) pre-setup to provide an eligible work flow.
 
 ## Features
 
-Use [browersify](http://browserify.org/) to write client code in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format. (That's the same, that is used for server-code.)
+Use [webpack](http://webpack.github.io/) to write client code in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format. (That's the same, that is used for server-code.)
 
 Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices. 
 
@@ -44,13 +44,13 @@ Use [cache-crusher](https://www.npmjs.com/package/cache-crusher) to provide cach
 The following additional npm-packages are assumed to be installed globally: *bower*, *gulp*, *yo*.
 
 ```bash
-$ npm install -g bower gulp yo generator-browserify-versatile
+$ npm install -g bower gulp yo generator-webpack-versatile
 ```
 
 Finally, initiate the generator:
 
 ```bash
-$ yo browserify-versatile
+$ yo webpack-versatile
 ```
 
 ## Generators

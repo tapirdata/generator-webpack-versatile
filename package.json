@@ -1,13 +1,13 @@
 {
-  "name": "generator-browserify-versatile",
+  "name": "generator-webpack-versatile",
   "version": "2.1.0",
-  "description": "Yeoman generator for client/server development with browserify, gulp, pug, karma, mocha and some more selectable tools",
+  "description": "Yeoman generator for client/server development with webpack, gulp, pug, karma, mocha and some more selectable tools",
   "keywords": [
     "yeoman-generator",
     "scaffold",
     "commonjs",
     "browsersync",
-    "browserify",
+    "webpack",
     "es6",
     "es2015",
     "express",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "tapirdata/generator-browserify-versatile"
+    "url": "tapirdata/generator-webpack-versatile"
   },
   "author": {
     "name": "Andreas Riedl",
