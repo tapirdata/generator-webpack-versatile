@@ -9,7 +9,7 @@
 
 ## Features
 
-Use [webpack](http://webpack.github.io/) to write client code in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format. (That's the same, that is used for server-code.)
+Use [webpack](http://webpack.github.io/) to write client code as ES2015 modules or in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format.
 
 Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices. 
 
