@@ -34,26 +34,25 @@ class ProjectTestError extends Error {
 ProjectTestError.prototype.name = 'ProjectTestError';
 
 
-let backupRepos = (testDir, bakDir, cb) =>
-  rimraf(bakDir, () =>
+function backupRepos(testDir, bakDir, cb) {
+  return rimraf(bakDir, () =>
     fs.mkdir(bakDir, () =>
       fs.rename(path.join(testDir, 'bower_components'), path.join(bakDir, 'bower_components'), () =>
         fs.rename(path.join(testDir, 'node_modules'), path.join(bakDir, 'node_modules'), () => cb()
         )
       )
     )
-  )
-;
+  );
+}
 
-let restoreRepos = (testDir, bakDir, cb) =>
-  fs.rename(path.join(bakDir, 'bower_components'), path.join(testDir, 'bower_components'), () =>
+function restoreRepos(testDir, bakDir, cb) {
+  return fs.rename(path.join(bakDir, 'bower_components'), path.join(testDir, 'bower_components'), () =>
     fs.rename(path.join(bakDir, 'node_modules'), path.join(testDir, 'node_modules'), () => cb()
     )
+  );
+}
 
-  )
-;
-
-let testDirectoryFaster = function(testDir, cb) {
+function testDirectoryFaster(testDir, cb) {
   let bakDir = testDir + '.bak';
   return backupRepos(testDir, bakDir, () =>
     helpers.testDirectory(testDir, function(err) {
@@ -64,10 +63,10 @@ let testDirectoryFaster = function(testDir, cb) {
       restoreRepos(testDir, bakDir, cb);
     })
   );
-};
+}
 
 
-let runAppTest = function(cb) {
+function runAppTest(cb) {
   let appTest = child_process.spawn('./node_modules/.bin/gulp', ['--env', 'test', 'test-ci']);
 
   appTest.stdout.on('data', data => process.stdout.write(data)
@@ -82,10 +81,10 @@ let runAppTest = function(cb) {
     assert(code === 0, `gulp test returns with code ${code}`);
     return cb();
   });
-};
+}
 
-let checkResults = (file, cb) =>
-  fs.readFile(file, function(err, xml) {
+function checkResults(file, cb) {
+  return fs.readFile(file, function(err, xml) {
     if (err) {
       cb(err);
     }
@@ -131,59 +130,53 @@ let checkResults = (file, cb) =>
       cb();
     }
     );
-  }
-  )
-;
+  });
+}
 
-for (let i = 0; i < settings.length; i++) {
-  let ts = settings[i];
-  (function(ts) {
-    if (!ts.full) {
-      return;
-    }
-    return describe(`webpack-versatile generator ${ts.toString()}`, function() {
-      this.timeout(5 * 60 * 1000);
-      let serverResultsFile = null;
-      let clientResultsFile = null;
-      let testDir = path.join(__dirname, 'project');
-      let resultsDir = path.join(testDir, '.tmp', 'test-results');
-      before(function(done) {
-        testDirectoryFaster(testDir, () => {
-          this.app = helpers.createGenerator(
-            'webpack-versatile:app',
-            [ '../../generators/app' ],
-            []
-          );
-          done();
-        }
+for (const ts of settings) {
+  if (!ts.full) {
+    continue;
+  }
+  describe(`webpack-versatile generator ${ts.toString()}`, function() {
+    let app;
+    this.timeout(5 * 60 * 1000);
+    let serverResultsFile = null;
+    let clientResultsFile = null;
+    let testDir = path.join(__dirname, 'project');
+    let resultsDir = path.join(testDir, '.tmp', 'test-results');
+    before(function(done) {
+      testDirectoryFaster(testDir, () => {
+        app = helpers.createGenerator(
+          'webpack-versatile:app',
+          [ '../../generators/app' ],
+          []
         );
+        done();
       });
-      it('runs the project tests', function(done) {
-        helpers.mockPrompt(this.app, ts.getAnswers());
-        // @app.options['skip-install'] = true
-        this.app.run(function() {
-          runAppTest(done);
-        });
-      });
-      it('run tests without server failures', function(done) {
-        serverResultsFile = path.join(resultsDir, 'server.xml');
-        assert.file(serverResultsFile);
-        return checkResults(serverResultsFile, done);
-      });
-      let iterable = ['PhantomJS'];
-      for (let j = 0; j < iterable.length; j++) {
-        let browserName = iterable[j];
-        it(`run tests without client failures for '${browserName}'` , done =>
-          glob(path.join(resultsDir, browserName + '*', 'client.xml'), function(err, clientResultsFiles) {
-            gutil.log(`clientResultsFiles=${clientResultsFiles}`);
-            assert(err === null, 'cannot read "client.xml"');
-            assert(clientResultsFiles.length === 1, 'missing or multiple "client.xml"');
-            clientResultsFile = clientResultsFiles[0];
-            assert.file(clientResultsFile);
-            return checkResults(clientResultsFile, done);
-          })
-        );
-      }
     });
-  })(ts);
+    it('runs the project tests', function(done) {
+      helpers.mockPrompt(app, ts.getAnswers());
+      app.run(function() {
+        runAppTest(done);
+      });
+    });
+    it('run tests without server failures', function(done) {
+      serverResultsFile = path.join(resultsDir, 'server.xml');
+      assert.file(serverResultsFile);
+      return checkResults(serverResultsFile, done);
+    });
+    const browserNames = ['PhantomJS'];
+    for (const browserName of browserNames) {
+      it(`run tests without client failures for '${browserName}'` , done =>
+        glob(path.join(resultsDir, browserName + '*', 'client.xml'), function(err, clientResultsFiles) {
+          // gutil.log(`clientResultsFiles=${clientResultsFiles}`);
+          assert(err === null, 'cannot read "client.xml"');
+          assert(clientResultsFiles.length === 1, 'missing or multiple "client.xml"');
+          clientResultsFile = clientResultsFiles[0];
+          assert.file(clientResultsFile);
+          return checkResults(clientResultsFile, done);
+        })
+      );
+    }
+  });
 }

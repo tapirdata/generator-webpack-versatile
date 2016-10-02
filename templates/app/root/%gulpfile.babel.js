@@ -150,7 +150,7 @@ gulp.task('build-client-vendor-foundation-scripts', () =>
 );
 
 gulp.task('build-client-vendor-foundation-fonts', () =>
-  gulp.src(['**/*.{eot,svg,ttf,woff}'], {cwd: 'bower_components/foundation-icon-fonts'})
+  gulp.src(['**/*.{eot,svg,ttf,woff}'], {cwd: '<%= dirs.bower %>/foundation-icon-fonts'})
     .pipe(gulp.dest(`${builder.dirs.tgt.clientVendor}/foundation/assets/fonts`))
 );
 <% } -%>

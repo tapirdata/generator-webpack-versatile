@@ -2,50 +2,40 @@ import _ from 'lodash';
 
 class TestSetting {
 
-  constructor(conf, opt = {}) {
-    this.conf = conf;
+  constructor(answers, opt = {}) {
+    this.answers = answers;
     this.unsupported = opt.unsupported;
     this.full = opt.full;
   }
 
   getAnswers() {
-    const { conf } = this;
-    return {
-      frontend: conf.frontend,
-      mvend: conf.mvend,
-      features: _(this.constructor.featureNames)
-        .filter(name => conf.features[name])
-        .value(),
-    }
+    return this.answers;
   }
 
   toString() {
-    const { conf } = this;
-    const sFeatures = _(this.constructor.featureNames)
-      .filter(name => conf.features[name])
-      .join();
-    return `(frontend=${conf.frontend}, mv=${conf.mvend}, features=[${sFeatures}])`;
+    const { answers } = this;
+    return `(framework=${answers.framework}, frontend=${answers.frontend}, features=[${answers.features.join(',')}])`;
   }
 
   static fromString(s) {
-    const names = s.split(/, */);
-    const hasNames = _(names)
-     .map(name => [name, true])
-     .fromPairs()
-     .value();
-    const conf = {
+    const parts = s.split(/, */);
+    function hasPart(part) {
+      return parts.indexOf(part) >= 0;
+    }
+
+    const answers = {
+      framework: hasPart('marionette') ? 'marionette' : hasPart('backbone') ? 'backbone': 'none',
+      frontend: hasPart('foundation') ? 'foundation' : hasPart('bootstrap') ? 'bootstrap': 'none',
       features: _(TestSetting.featureNames)
-        .map(name => [name, !!hasNames[name]])
-        .fromPairs()
+        .filter(name => hasPart(name))
         .value(),
-      frontend: hasNames.foundation ? 'foundation' : hasNames.bootstrap ? 'bootstrap': 'none',
-      mvend: hasNames.marionette ? 'marionette' : hasNames.backbone ? 'backbone': 'none',
-    }
+      noAdjust: true,
+    };
     const opt = {
-      full: !!hasNames.full,
-      unsupported: !!hasNames.unsupported,
-    }
-    return new TestSetting(conf, opt);
+      full: hasPart('full'),
+      unsupported: hasPart('unsupported'),
+    };
+    return new TestSetting(answers, opt);
   }
 }
 
