@@ -21,7 +21,7 @@ function delay(duration) {
       window.setTimeout(resolve, duration);
     });
   };
-} 
+}
 
 
 class Gasper {
@@ -67,7 +67,7 @@ class Gasper {
       });
     }
   }
-      
+
   show(location) {
     if (location[0] === '#') {
       window.location = location;
@@ -97,7 +97,7 @@ class Gasper {
 
 
   retry(grace, steps, fn) {
-    
+
     function _retry (dt, left, wrappedFn) {
       const result = wrappedFn();
       if (left <= 0) {

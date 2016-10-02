@@ -8,7 +8,7 @@ import settings from './settings';
 for (let i = 0; i < settings.length; i++) {
   let ts = settings[i];
   (function(ts) {
-    let STYLE_EXT = ts.sass ? '.sass' : '.css';
+    let STYLE_EXT = ts.conf.features.sass ? '.sass' : '.css';
     return describe(`webpack-versatile generator ${ts.toString()}`, function() {
       before(function(done) {
         // @timeout 1000
@@ -18,8 +18,7 @@ for (let i = 0; i < settings.length; i++) {
             return;
           }
           this.app = helpers.createGenerator('webpack-versatile:app', [ '../../generators/app' ], [], {'test-framework': 'none'});
-          // console.log "app=#{@app} features=#{ts.activeFeatures()}"
-          helpers.mockPrompt(this.app, {'features': ts.activeFeatures()});
+          helpers.mockPrompt(this.app, ts.getAnswers());
           done();
         }
         );
@@ -59,7 +58,7 @@ for (let i = 0; i < settings.length; i++) {
             'src/client/scripts/app-starter.js',
             `src/client/styles/main${STYLE_EXT}`
           ];
-          if (ts.backbone) {
+          if (ts.conf.mvend === 'backbone' || ts.conf.mvend === 'marionette') {
             expected = expected.concat([
               'src/client/scripts/router.js',
               'src/client/scripts/views/simple.js',

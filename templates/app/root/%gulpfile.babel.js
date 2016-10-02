@@ -33,7 +33,7 @@ let makeScriptPipe = function() {
     .pipe(plugins.eslint.format)
     .pipe(plugins.babel)
     .pipe(() => jsFilter.restore);
-  return lp();  
+  return lp();
 };
 
 gulp.task('clean', done => del(builder.dirs.tgt.root, done)

@@ -1,12 +1,12 @@
-import path from 'path'; 
+import path from 'path';
 import _ from 'lodash';
-import yosay from 'yosay'; 
+import yosay from 'yosay';
 import slug from 'slug';
 
 import BaseGenerator from '../../lib/base';
 
 
-class AppGenerator extends BaseGenerator { 
+class AppGenerator extends BaseGenerator {
 
   constructor(...args) {
     super(...args);
@@ -85,65 +85,96 @@ class AppGenerator extends BaseGenerator {
     }
     let questions = [
       {
-        type: 'checkbox',
-        name: 'features',
-        message: 'What more would you like?',
+        type: 'list',
+        name: 'frontend',
+        message: 'What Front-end framework would you like to use?',
         choices: [
           {
-            name: 'Modernizr',
-            value: 'modernizr',
-            checked: use.modernizr
+            name: 'None',
+            value: 'none',
           },
           {
             name: 'Foundation',
             value: 'foundation',
-            checked: use.foundation
           },
           {
             name: 'Bootstrap',
             value: 'bootstrap',
-            checked: use.bootstrap
+          },
+        ],
+        default: use.foundation ? 'foundation' : use.bootstrap ? 'bootstrap' : 'none',
+      },
+      {
+        type: 'list',
+        name: 'mvend',
+        message: 'What Model-View-* framework would you like to use?',
+        choices: [
+          {
+            name: 'None',
+            value: 'none',
           },
           {
             name: 'Backbone',
             value: 'backbone',
-            checked: use.backbone
           },
           {
-            name: 'Marionette',
+            name: 'Backbone + Marionette',
             value: 'marionette',
-            checked: use.marionette
           },
-          {
-            name: 'Sass',
-            value: 'sass',
-            checked: use.sass
-          },
-          {
-            name: 'Cache-crusher',
-            value: 'crusher',
-            checked: use.crusher
-          }
-        ]
+        ],
+        default: use.marionette ? 'marionette' : use.backbone ? 'backbone' : 'none',
+      },
+      {
+        type: 'checkbox',
+        name: 'features',
+        message: 'What extra features would you like?',
+        choices: answers => {
+          const choices = [
+            {
+              name: 'Modernizr',
+              value: 'modernizr',
+              checked: use.modernizr,
+              disabled: answers.frontend === 'foundation' ? 'required by foundation' : false,
+            },
+            {
+              name: 'Sass',
+              value: 'sass',
+              checked: use.sass,
+            },
+            {
+              name: 'Cache-crusher',
+              value: 'crusher',
+              checked: use.crusher,
+            }
+          ];
+          return choices;
+        }
       }
     ];
     return this.prompt(questions)
       .then(answers => {
-        let hasFeature = feat => answers.features.indexOf(feat) !== -1;
+        const features = answers.features;
+        const frontend = answers.frontend;
+        const mvend = answers.mvend;
+        function hasFeature(feat) {
+          return features.indexOf(feat) !== -1;
+        };
+        use.foundation = frontend === 'foundation';
+        use.bootstrap = frontend === 'bootstrap';
 
-        use.modernizr = hasFeature('modernizr');
-        use.foundation = hasFeature('foundation');
-        use.bootstrap = hasFeature('bootstrap');
-        use.backbone = hasFeature('backbone');
-        use.marionette = hasFeature('marionette');
+        use.marionette = mvend === 'marionette';
+        use.backbone = use.marionette || mvend === 'backbone';
+
+        use.modernizr = use.foundation || hasFeature('modernizr');
         use.sass = hasFeature('sass');
         use.crusher = hasFeature('crusher');
-        return config.set('use', use);
+
+        config.set('use', use);
       }
     );
   }
 
-  configuring() { 
+  configuring() {
     this.config.set(this.settings);
     this.config.save();
   }
@@ -160,21 +191,21 @@ class AppGenerator extends BaseGenerator {
 
     // this.log('copy server files');
     this._branchCopy({
-      source: 'server', 
+      source: 'server',
       target: dirs.serverSrc,
       branches: use,
     });
 
     // this.log('copy client files');
     this._branchCopy({
-      source: 'client', 
+      source: 'client',
       target: dirs.clientSrc,
       branches: use,
     });
 
     // this.log('copy test files');
     this._branchCopy({
-      source: 'test', 
+      source: 'test',
       target: dirs.test,
       branches: use,
     });
@@ -186,5 +217,5 @@ class AppGenerator extends BaseGenerator {
     }
   }
 };
- 
+
 export default AppGenerator;

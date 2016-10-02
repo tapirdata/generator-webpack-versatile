@@ -33,7 +33,7 @@ function guessEnv(preName) {
 function readConf(config, envName) {
   const confs = [];
   for (const name of [envName, 'default']) {
-    const confPath = path.join(configBase, name) + '.json'; 
+    const confPath = path.join(configBase, name) + '.json';
     let confText;
     try {
       confText = fs.readFileSync(confPath);

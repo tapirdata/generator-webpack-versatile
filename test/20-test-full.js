@@ -34,7 +34,7 @@ class ProjectTestError extends Error {
 ProjectTestError.prototype.name = 'ProjectTestError';
 
 
-let backupRepos = (testDir, bakDir, cb) =>  
+let backupRepos = (testDir, bakDir, cb) =>
   rimraf(bakDir, () =>
     fs.mkdir(bakDir, () =>
       fs.rename(path.join(testDir, 'bower_components'), path.join(bakDir, 'bower_components'), () =>
@@ -45,11 +45,11 @@ let backupRepos = (testDir, bakDir, cb) =>
   )
 ;
 
-let restoreRepos = (testDir, bakDir, cb) =>  
+let restoreRepos = (testDir, bakDir, cb) =>
   fs.rename(path.join(bakDir, 'bower_components'), path.join(testDir, 'bower_components'), () =>
     fs.rename(path.join(bakDir, 'node_modules'), path.join(testDir, 'node_modules'), () => cb()
     )
-  
+
   )
 ;
 
@@ -67,7 +67,7 @@ let testDirectoryFaster = function(testDir, cb) {
 };
 
 
-let runAppTest = function(cb) { 
+let runAppTest = function(cb) {
   let appTest = child_process.spawn('./node_modules/.bin/gulp', ['--env', 'test', 'test-ci']);
 
   appTest.stdout.on('data', data => process.stdout.write(data)
@@ -89,7 +89,7 @@ let checkResults = (file, cb) =>
     if (err) {
       cb(err);
     }
-    return xml2js.parseString(xml, function(err, result) { 
+    return xml2js.parseString(xml, function(err, result) {
       if (err) {
         cb(err);
       }
@@ -99,7 +99,7 @@ let checkResults = (file, cb) =>
       } else {
         suites = [result.testsuite];
       }
-      assert.ok(suites && suites.length > 0, 'no testsuite found'); 
+      assert.ok(suites && suites.length > 0, 'no testsuite found');
       let fails = [];
       for (let i = 0; i < suites.length; i++) {
         let suite = suites[i];
@@ -141,7 +141,6 @@ for (let i = 0; i < settings.length; i++) {
     if (!ts.full) {
       return;
     }
-    // let STYLE_EXT = ts.sass ? '.sass' : '.css';
     return describe(`webpack-versatile generator ${ts.toString()}`, function() {
       this.timeout(5 * 60 * 1000);
       let serverResultsFile = null;
@@ -160,8 +159,7 @@ for (let i = 0; i < settings.length; i++) {
         );
       });
       it('runs the project tests', function(done) {
-        helpers.mockPrompt(this.app,
-          {features: ts.activeFeatures()});
+        helpers.mockPrompt(this.app, ts.getAnswers());
         // @app.options['skip-install'] = true
         this.app.run(function() {
           runAppTest(done);
@@ -173,7 +171,7 @@ for (let i = 0; i < settings.length; i++) {
         return checkResults(serverResultsFile, done);
       });
       let iterable = ['PhantomJS'];
-      for (let j = 0; j < iterable.length; j++) {  
+      for (let j = 0; j < iterable.length; j++) {
         let browserName = iterable[j];
         it(`run tests without client failures for '${browserName}'` , done =>
           glob(path.join(resultsDir, browserName + '*', 'client.xml'), function(err, clientResultsFiles) {

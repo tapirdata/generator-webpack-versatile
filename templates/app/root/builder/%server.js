@@ -11,7 +11,7 @@ export default function(builder) {
 
     start() {
       gutil.log('server start..');
-      return Promise.resolve() 
+      return Promise.resolve()
       .then(() => {
         if (this.isActive()) {
           gutil.warn('server already running!');
@@ -25,7 +25,7 @@ export default function(builder) {
         });
       });
     },
-    
+
     stop() {
       gutil.log('server stop...');
       return new Promise((resolve, reject) => {
@@ -35,7 +35,7 @@ export default function(builder) {
             this.server = null;
             if (err) {
               reject(err);
-            } else {  
+            } else {
               resolve();
             }
           });
@@ -45,7 +45,7 @@ export default function(builder) {
         }
       });
     },
-    
+
     restart() {
       return this.stop()
       .then(() => {

@@ -1,38 +1,58 @@
 import _ from 'lodash';
 
 class TestSetting {
-  constructor(options) { 
-    for (let i = 0; i < this.featureNames.length; i++) {
-      let name = this.featureNames[i];
-      (name => {
-        this[name] = !!options[name];
-      })(name);
-    }
-    this.unsupported = !!options.unsupported;
-    this.full = !!options.full;
+
+  constructor(conf, opt = {}) {
+    this.conf = conf;
+    this.unsupported = opt.unsupported;
+    this.full = opt.full;
   }
 
-  activeFeatures() { 
-    let names = [];
-    for (let i = 0; i < this.featureNames.length; i++) {
-      let name = this.featureNames[i];
-      (name => { 
-        if (this[name]) {
-          names.push(name);
-          return;
-        }
-      })(name);
+  getAnswers() {
+    const { conf } = this;
+    return {
+      frontend: conf.frontend,
+      mvend: conf.mvend,
+      features: _(this.constructor.featureNames)
+        .filter(name => conf.features[name])
+        .value(),
     }
-    return names;    
   }
 
-  toString() { 
-    return `(features=[${this.activeFeatures().toString()}])`;
+  toString() {
+    const { conf } = this;
+    const sFeatures = _(this.constructor.featureNames)
+      .filter(name => conf.features[name])
+      .join();
+    return `(frontend=${conf.frontend}, mv=${conf.mvend}, features=[${sFeatures}])`;
+  }
+
+  static fromString(s) {
+    const names = s.split(/, */);
+    const hasNames = _(names)
+     .map(name => [name, true])
+     .fromPairs()
+     .value();
+    const conf = {
+      features: _(TestSetting.featureNames)
+        .map(name => [name, !!hasNames[name]])
+        .fromPairs()
+        .value(),
+      frontend: hasNames.foundation ? 'foundation' : hasNames.bootstrap ? 'bootstrap': 'none',
+      mvend: hasNames.marionette ? 'marionette' : hasNames.backbone ? 'backbone': 'none',
+    }
+    const opt = {
+      full: !!hasNames.full,
+      unsupported: !!hasNames.unsupported,
+    }
+    return new TestSetting(conf, opt);
   }
 }
 
-TestSetting.prototype.featureNames = [
-  'modernizr', 'foundation', 'bootstrap', 'backbone', 'sass', 'crusher'
+TestSetting.featureNames = [
+  'modernizr',
+  'sass',
+  'crusher',
 ];
 
 
@@ -61,11 +81,7 @@ let testSettings = [
 
   'foundation,bootstrap,modernizr,sass,unsupported'
 
-].map(function(s) { 
-  let parts = s.split(/, */);
-  let options = _.fromPairs(_.map(parts, name => [name, true]));
-  return new TestSetting(options);
-});
+].map(s => TestSetting.fromString(s) );
 
 export default testSettings;
 

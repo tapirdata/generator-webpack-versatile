@@ -11,7 +11,7 @@
 
 Use [webpack](http://webpack.github.io/) to write client code as ES2015 modules or in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format.
 
-Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices. 
+Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices.
 
 Use [babel](http://babeljs.io/) to transpile ES2015.
 
@@ -28,7 +28,7 @@ Use [mocha](http://mochajs.org/) with [chai](http://chaijs.com/) for unit-tests.
 
 Use [modernizr](http://modernizr.com/) for browser-feature detection.
 
-Use [foundation](http://foundation.zurb.com/) or [bootstrap](http://getbootstrap.com/) for responsive client-side styling.   
+Use [foundation](http://foundation.zurb.com/) or [bootstrap](http://getbootstrap.com/) for responsive client-side styling.
 
 Use [backbone](http://backbonejs.org/) as a lightweight client-library to build agile single-page web applications.
 
@@ -59,7 +59,7 @@ $ yo webpack-versatile
 
 Just select your preferred options and wait till your project has been scaffolded...
 
-Look in the generated file `README.md` for details of project layout and usage of gulp tasks. 
+Look in the generated file `README.md` for details of project layout and usage of gulp tasks.
 
 ## License
 

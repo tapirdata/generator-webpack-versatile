@@ -47,7 +47,7 @@ class BranchFinder {
       if (srcStat.isFile()) {
         if (srcName === '.unsupported') {
           let msg = fs.readFileSync(srcPath);
-          throw new Error(msg); 
+          throw new Error(msg);
         }
         let ti = this.getTi(srcName);
         let { tgtName } = ti;
@@ -87,7 +87,7 @@ if (_do_run) {
       name: 'backup',
       src: /(.*)/,
       tgt: '$1.bak'
-    }] 
+    }]
   });
   bf.run();
 }

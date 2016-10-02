@@ -14,7 +14,7 @@ This project was created by [generator-webpack-versatile](https://www.npmjs.com/
 - `templates/`: pug-templates to be rendered client sided
 
 ### `<%= dirs.serverSrc %>/`:
-- `scripts/`: 
+- `scripts/`:
   - `starter/server.js`: the server-sided entry-point for target *production*
 - `templates/`: pug-templates to be rendered server sided
 

@@ -20,7 +20,7 @@ export default function() {
         return outStream.push(null);
       } else {
         let config;
-        if (configPath) { 
+        if (configPath) {
           try {
             config = JSON.parse(fs.readFileSync(configPath));
           } catch (error) {

@@ -101,7 +101,7 @@ class Bundler {
     return gulp.src(path.resolve(__dirname, 'null.js'))
       .pipe(webpackStream(conf, null, cb))<% if (use.crusher) { %>
       .pipe(this.builder.crusher.pusher({
-        tagger: { 
+        tagger: {
           relativeBase: path.join(this.builder.dirs.src.client, 'bundles')
         }
       }))<% } %>;
@@ -130,7 +130,7 @@ class Bundler {
 
 export default function(builder) {
   return new Bundler(builder);
-}  
+}
 
 
 

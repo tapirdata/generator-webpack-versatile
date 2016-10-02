@@ -54,7 +54,7 @@ class BaseGenerator extends yeoman.Base {
     const pattern = opt.pattern || '**/*';
     const branches = opt.branches || {};
     const srcBase = this.sourceRoot();
-    let _options = { 
+    let _options = {
       pattern: path.join(source, pattern),
       tgtRelalative: source,
       branches: branches,
