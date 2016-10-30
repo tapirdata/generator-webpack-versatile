@@ -1,3 +1,4 @@
+import os from 'os';
 import path from 'path';
 import _ from 'lodash';
 import gulp from 'gulp';
@@ -11,6 +12,10 @@ class Bundler {
 
   constructor(builder) {
     this.builder = builder;
+    this.serverOptions = {
+      host: os.hostname(),  // or: 'localhost',
+      port: 8080,
+    }
     this.server = null;
   }
 
@@ -124,17 +129,17 @@ class Bundler {
   startDevServer(opt) {
     let conf = this.getConf(opt);
     conf.output.path = '/';
-    conf.entry.app.unshift(`webpack-dev-server/client?http://localhost:${8080}/`);
+    const serverOptions = this.serverOptions;
+    conf.entry.app.unshift(`webpack-dev-server/client?http://${serverOptions.host}:${serverOptions.port}/`);
     let compiler = webpack(conf);
     let server = new WebpackDevServer(compiler, {
       publicPath: '/bundles/',
       stats: { colors: true },
       // noInfo: true,
     });
-    let port = 8080;
     return new Promise(resolve => {
-      server.listen(port, function() {
-        gutil.log(`WepPack Dev Server listening on port ${port}.`);
+      server.listen(serverOptions.port, function() {
+        gutil.log(`WepPack Dev Server listening on port ${serverOptions.port}.`);
         this.server = server;
         resolve();
       });

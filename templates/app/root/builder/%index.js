@@ -46,7 +46,8 @@ const builder = {
   },
   getBundleUrl() {
     if (this.watchEnabled) {
-      return `http://localhost:${8080}/bundles`;
+      const serverOptions = builder.bundler.serverOptions;
+      return `http://${serverOptions.host}:${serverOptions.port}/bundles`;
     } else {
       return '/app/bundles';
     }
