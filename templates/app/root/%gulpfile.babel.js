@@ -31,7 +31,11 @@ let makeScriptPipe = function() {
     .pipe(() => jsFilter)
     .pipe(plugins.eslint)
     .pipe(plugins.eslint.format)
-    .pipe(plugins.babel)
+    .pipe(plugins.babel, {
+      presets: ['es2015', 'stage-3'],
+      plugins: ['transform-runtime'],
+    })
+
     .pipe(() => jsFilter.restore);
   return lp();
 };

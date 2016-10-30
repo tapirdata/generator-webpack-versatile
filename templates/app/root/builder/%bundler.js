@@ -39,20 +39,34 @@ class Bundler {
         ],
       },
       output: {
-        filename: 'app.bundle.js',
+        filename: '[name]-bundle.js',
       },
 <% if (use.crusher) { -%>
       crusher: builder.crusher,
 <% } -%>
       module: {
+        preLoaders: [
+          {
+            test: /\.js$/,
+            loaders: ['eslint-loader'],
+          },
+        ],
         loaders: [
           {
-            test: scriptDir,
-            loaders: ['babel-loader', 'eslint-loader'],
+           test: new RegExp(`^${scriptDir}\/.*\.js$`),
+            loader: 'babel-loader',
+            query: {
+              presets: ['es2015', 'stage-3'],
+              plugins: ['transform-runtime'],
+            }
           },
           {
-            test: testScriptDir,
-            loaders: ['babel-loader', 'eslint-loader'],
+           test: new RegExp(`^${testScriptDir}\/.*\.js$`),
+            loader: 'babel-loader',
+            query: {
+              presets: ['es2015', 'stage-3'],
+              plugins: ['transform-runtime'],
+            }
           },
           {
             test: /\.pug$/,
@@ -69,7 +83,7 @@ class Bundler {
       plugins: [
         // Avoid publishing files when compilation fails
         new webpack.NoErrorsPlugin(),
-        new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js'),
+        new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor-bundle.js'),
       ],
       stats: {
         // Nice colored output
