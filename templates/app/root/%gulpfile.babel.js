@@ -149,7 +149,7 @@ gulp.task('build-client-vendor-modernizr', () =>
 
 <% if (use.foundation) { -%>
 gulp.task('build-client-vendor-foundation-scripts', () =>
-  gulp.src(['foundation.js'], {cwd: 'node_modules/foundation-sites/dist'})
+  gulp.src(['foundation.js'], {cwd: 'node_modules/foundation-sites/dist/js'})
     .pipe(gulp.dest(`${builder.dirs.tgt.clientVendor}/foundation`))
 );
 
