@@ -8,7 +8,7 @@
   "karma": {
     "browsers": {
       "work": [
-        "Chrome",
+        "Chromium",
         "Firefox"
       ],
       "ci": [

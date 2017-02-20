@@ -32,17 +32,11 @@ const builder = {
   headlessEnabled: false,
   handleError,
   rootDir: path.join(__dirname, '..'),
-  getRelPath(fromFilename, opts) {
-    const dirs = this.dirs;
-    const {
-      to,
-      fromSourceBase = dirs.test.server,
-      fromDestBase = dirs.tgt.serverTest,
-      toDestBase = dirs.tgt.server
-    } = opts;
-    const fromBaseRel = path.relative(path.dirname(fromFilename), fromSourceBase);
-    const destBaseRel = path.relative(fromDestBase, toDestBase);
-    return path.join(fromBaseRel, destBaseRel, to);
+  joinRelative(fromParts, toParts) {
+    return path.relative(
+        path.join.apply(null, toParts),
+        path.join.apply(null, fromParts),
+        );
   },
   getBundleUrl() {
     if (this.watchEnabled) {

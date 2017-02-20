@@ -1,6 +1,6 @@
 
 module.exports = function(source) {
-  let crusher = this.options.crusher;
+  let crusher = this.query.crusher;
   if (crusher.enabled) {
     let fakeFile = {path: this.resourcePath};
     let tagger = crusher.getTagger();

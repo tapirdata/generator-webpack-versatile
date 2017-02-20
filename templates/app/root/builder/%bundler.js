@@ -30,47 +30,37 @@ class Bundler {
     }
     appEntries = _.map(appEntries, entry => path.resolve(builder.dirs.root, entry));
 
+    let presets = [
+      ['es2015', { modules: false }],
+      'stage-3',
+    ]
+
     let conf = {
       entry: {
         app: appEntries,
-        vendor: [
-          'jquery',
-          'lodash',
-<% if (use.backbone) { -%>
-          'backbone',
-<% if (use.marionette) { -%>
-          'backbone.marionette',
-<% }} -%>
-        ],
       },
       output: {
         filename: '[name]-bundle.js',
       },
-<% if (use.crusher) { -%>
-      crusher: builder.crusher,
-<% } -%>
       module: {
-        preLoaders: [
+        rules: [
           {
+            enforce: 'pre',
             test: /\.js$/,
             loaders: ['eslint-loader'],
           },
-        ],
-        loaders: [
           {
-           test: new RegExp(`^${scriptDir}\/.*\.js$`),
+            test: new RegExp(`^${scriptDir}\/.*\.js$`),
             loader: 'babel-loader',
             query: {
-              presets: ['es2015', 'stage-3'],
-              plugins: ['transform-runtime'],
+              presets: presets,
             }
           },
           {
            test: new RegExp(`^${testScriptDir}\/.*\.js$`),
             loader: 'babel-loader',
             query: {
-              presets: ['es2015', 'stage-3'],
-              plugins: ['transform-runtime'],
+              presets: presets,
             }
           },
           {
@@ -81,14 +71,25 @@ class Bundler {
           {
             test: path.resolve(builder.dirs.root, builder.dirs.src.client),
             loader: path.resolve(__dirname, 'crusher-puller-loader'),
+            query: {
+              crusher: builder.crusher
+            }
           },
 <% } -%>
         ]
       },
       plugins: [
         // Avoid publishing files when compilation fails
-        new webpack.NoErrorsPlugin(),
-        new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor-bundle.js'),
+        new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.optimize.CommonsChunkPlugin({
+          name: 'vendor',
+          minChunks: function(module) {
+            return module.context && module.context.indexOf('node_modules') !== -1;
+          }
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+          name: 'manifest',
+        }),
       ],
       stats: {
         // Nice colored output
@@ -101,12 +102,6 @@ class Bundler {
     if (opt.uglify) {
       conf.plugins.push(
         new webpack.optimize.UglifyJsPlugin({
-          compress: {
-            warnings: false,
-          },
-          output: {
-            comments: false,
-          },
         })
       );
     }
@@ -118,7 +113,7 @@ class Bundler {
     let conf = this.getConf(opt);
     conf.watch = opt.watch;
     return gulp.src(path.resolve(__dirname, 'null.js'))
-      .pipe(webpackStream(conf, null, cb))<% if (use.crusher) { %>
+      .pipe(webpackStream(conf, webpack, cb))<% if (use.crusher) { %>
       .pipe(this.builder.crusher.pusher({
         tagger: {
           relativeBase: path.join(this.builder.dirs.src.client, 'bundles')

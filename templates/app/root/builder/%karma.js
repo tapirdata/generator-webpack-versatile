@@ -27,11 +27,15 @@ export default function(builder) {
         urlRoot: '/__karma__/',
         files: [
           {
-            pattern: `${builder.dirs.tgt.client}/bundles/vendor.bundle?(-+([a-f0-9])).js`,
+            pattern: `${builder.dirs.tgt.client}/bundles/manifest-bundle?(-+([a-f0-9])).js`,
             watched: false,
           },
           {
-            pattern: `${builder.dirs.tgt.client}/bundles/app.bundle?(-+([a-f0-9])).js`,
+            pattern: `${builder.dirs.tgt.client}/bundles/vendor-bundle?(-+([a-f0-9])).js`,
+            watched: false,
+          },
+          {
+            pattern: `${builder.dirs.tgt.client}/bundles/app-bundle?(-+([a-f0-9])).js`,
             watched: false,
           }
         ],

@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import validator from 'html-validator';
-import setupFactory from '<%= builder.getRelPath(filename, {to: 'scripts/setup'}) %>';
+import setupFactory from './setup';
 chai.use(chaiAsPromised);
 let { expect } = chai;
 

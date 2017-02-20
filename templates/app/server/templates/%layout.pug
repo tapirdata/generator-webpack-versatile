@@ -6,6 +6,7 @@ html
 <% if (use.modernizr) { -%>
     script(type='text/javascript', src='/vendor/modernizr/modernizr.js')
 <% } -%>
+    script(type='text/javascript', src='<%%= builder.getBundleUrl() %>/manifest-bundle.js')
     script(type='text/javascript', src='<%%= builder.getBundleUrl() %>/vendor-bundle.js')
     script(type='text/javascript', src='<%%= builder.getBundleUrl() %>/app-bundle.js')
   body

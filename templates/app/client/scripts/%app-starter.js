@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 <% if (use.bootstrap || use.foundation) { -%>
 // global window */
 import $ from 'jquery';
