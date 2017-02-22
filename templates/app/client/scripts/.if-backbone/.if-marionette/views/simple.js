@@ -7,7 +7,10 @@ class SimpleView extends Marionette.View {
   }
 
   render() {
-    this.$el.html(this.template({title: this.app.title}));
+    this.$el.html(this.template({
+      title: this.app.title,
+      urls: this.app.urls,
+    }));
     return Promise.resolve();
   }
 }

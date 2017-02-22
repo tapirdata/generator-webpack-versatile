@@ -16,7 +16,7 @@ class AppGenerator extends BaseGenerator {
   }
 
   _setupMakeup() {
-    const makeup = new Makeup();
+    const makeup = new Makeup(this);
     makeup.applyConfig(this.config.getAll());
     makeup.applyOptions(this.options);
     makeup.applyDefaults(this.appname);
@@ -44,6 +44,7 @@ class AppGenerator extends BaseGenerator {
 
   writing() {
     const templateConfig = this.makeup.getTemplateConfig();
+    this.log('templateConfig=', templateConfig);
     const dirs = templateConfig.dirs;
 
     const templateTransformer = {

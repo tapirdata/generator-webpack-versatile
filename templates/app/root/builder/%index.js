@@ -5,12 +5,13 @@ import pluginsFactory from 'gulp-load-plugins';
 
 import configFactory from './config';
 import dirsFactory from './dirs';
+import urlsFactory from './urls';
 import globPatterns from './glob-patterns';
 import serverFactory from './server';
 import mochaFactory from './mocha';
 import karmaFactory from './karma';
 import syncFactory from './sync';
-import BundlerFactory from './bundler';
+import bundlerFactory from './bundler';
 <% if (use.modernizr) { -%>
 import modernizrFactory from './modernizr';
 <% } -%>
@@ -18,6 +19,7 @@ import modernizrFactory from './modernizr';
 const plugins = pluginsFactory();
 const config = configFactory();
 const dirs = dirsFactory(path.resolve(__dirname, '..'), config);
+const urls = urlsFactory(config);
 
 function handleError(err) {
   gutil.log(gutil.colors.red(`ERROR: ${err}`));
@@ -43,7 +45,7 @@ const builder = {
       const serverOptions = builder.bundler.serverOptions;
       return `http://${serverOptions.host}:${serverOptions.port}/bundles`;
     } else {
-      return '/app/bundles';
+      return '<%= urls.staticBase %>/bundles';
     }
   },
 
@@ -66,10 +68,14 @@ import cacheCrusher from 'cache-crusher';
 builder.crusher = cacheCrusher({
   enabled: false,
   extractor: {
-    urlBase: '/app/'
+    urlBase: '<%= urls.staticBase %>/'
   },
   mapper: {
-    counterparts: [{urlRoot: '/app', tagRoot: builder.dirs.src.client, globs: ['!images/favicon.ico', '!**/*.map']}]
+    counterparts: [{urlRoot: '<%= urls.staticBase %>', tagRoot: builder.dirs.src.client, globs: [
+      '!vendor/**',
+      '!images/favicon.ico',
+      '!**/*.map',
+    ]}]
   },
   resolver: {
     timeout: 20000
@@ -83,7 +89,7 @@ builder.server = serverFactory(builder);
 builder.mocha = mochaFactory(builder);
 builder.karma = karmaFactory(builder);
 builder.sync = syncFactory(builder);
-builder.bundler = BundlerFactory(builder);
+builder.bundler = bundlerFactory(builder);
 <% if (use.modernizr) { -%>
 builder.modernizr = modernizrFactory(builder);
 <% } -%>

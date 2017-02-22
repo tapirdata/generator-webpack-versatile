@@ -8,8 +8,6 @@ router.get('/', function(req, res) {
   res.render('index', {
     title,
     omitHead: req.xhr
-  }
-  );
-}
-);
+  });
+});
 export default router;

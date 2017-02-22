@@ -4,7 +4,8 @@ import slug from 'slug';
 
 class Makeup {
 
-  constructor() {
+  constructor(generator) {
+    this.generator = generator;
     this.config = {};
   }
 
@@ -21,6 +22,16 @@ class Makeup {
   setDirs(dirs) {
     if (_.isObject(dirs)) {
       this.config.dirs = dirs;
+    } else {
+      this.config.dirs = {};
+    }
+  }
+
+  setUrls(urls) {
+    if (_.isObject(urls)) {
+      this.config.urls = urls;
+    } else {
+      this.config.urls = {};
     }
   }
 
@@ -68,6 +79,7 @@ class Makeup {
     // console.log('applyConfig config=', config);
     this.setAppname(config.appname);
     this.setDirs(config.dirs);
+    this.setUrls(config.urls);
     this.setFramework(config.framework);
     this.setFrontend(config.frontend);
     this.setFeatures(config.features);
@@ -87,14 +99,17 @@ class Makeup {
       tmpTest   : options.tmpTestDir,
       dist      : options.distDir,
     });
-    // console.log('applyOptions dirs=', this.config.dirs);
+    _.merge(this.config.urls, {
+      staticBase: options.staticBaseUrl
+    });
   }
 
   applyDefaults(appname) {
     let { config } = this;
-    let { dirs } = _.defaults(config, {
+    let { dirs, urls } = _.defaults(config, {
       appname: appname,
       dirs: {},
+      urls: {},
     });
 
     _.defaults(dirs, {
@@ -111,10 +126,15 @@ class Makeup {
       tmpTest: path.join(dirs.tmp, 'test')
     });
 
+    _.defaults(urls, {
+      staticBase: '/__static__'
+    });
+
     _.defaults(config, {
       framework: 'marionette',
       frontend: 'foundation',
     });
+
     if (!config.features)
       this.setFeatures(['modernizr', 'sass', 'crusher']);
   }
@@ -222,6 +242,7 @@ class Makeup {
       appnameSlug : slug(config.appname),
       appnameCap  : _.capitalize(config.appname),
       dirs        : config.dirs,
+      urls        : config.urls,
       use: {
         backbone   : config.framework === 'backbone' || config.framework === 'marionette',
         marionette : config.framework === 'marionette',

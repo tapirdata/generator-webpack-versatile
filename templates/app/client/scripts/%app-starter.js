@@ -78,7 +78,7 @@ class App {
     };
 
     return $.ajax({ // load script async
-      url: '/vendor/foundation/foundation.js',
+      url: '<%= urls.staticBase %>/vendor/foundation/foundation.js',
       dataType: 'script'
     });
 <% } else { -%>

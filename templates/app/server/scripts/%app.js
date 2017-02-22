@@ -11,8 +11,7 @@ export default function(options) {
   app.locals.pretty = true;
   app.use(favicon(path.join(options.clientDir, 'images', 'favicon.ico')));
   app.use(robots(path.join(options.clientDir, 'pages', 'robots.txt')));
-  app.use('/app', express.static(options.clientDir));
-  app.use('/vendor', express.static(options.vendorDir));
+  app.use('<%= urls.staticBase %>', express.static(options.clientDir));
   app.use('/', routes);
   return app;
 }

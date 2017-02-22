@@ -1,8 +1,7 @@
 {
   "app": {
     "port": <%= builder.config.server.port %>,
-    "clientDir": "<%= builder.dirs.tgt.client %>",
-    "vendorDir": "<%= builder.dirs.tgt.clientVendor %>"
+    "clientDir": "<%= builder.dirs.tgt.client %>"
   }
 }
 

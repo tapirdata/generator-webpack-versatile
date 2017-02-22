@@ -68,7 +68,8 @@
     "phantomjs-prebuilt": "^2.1.14",
     "pug-loader": "^2.3.0",
     "run-sequence": "^1.2.2",
-    "through2": "^2.0.3",
+    "through2": "^2.0.3",<% if (use.marionette) { %>
+    "underscore": "^1.8.3",<% } %>
     "vinyl": "^2.0.1",
     "vinyl-named": "^1.1.0",
     "vinyl-source-stream": "^1.1.0",
