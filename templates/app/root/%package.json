@@ -24,7 +24,7 @@
     "backbone.marionette": "^3.1.0",<% } %><% if (use.bootstrap) { %>
     "bootstrap-sass": "^3.3.7",<% } %>
     "browser-sync": "^2.18.8",<% if (use.crusher) { %>
-    "cache-crusher": "^1.0.1",<% } %>
+    "cache-crusher": "^1.1.0",<% } %>
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-jq": "0.0.9",

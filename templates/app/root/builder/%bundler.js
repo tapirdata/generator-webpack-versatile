@@ -52,14 +52,14 @@ class Bundler {
           {
             test: new RegExp(`^${scriptDir}\/.*\.js$`),
             loader: 'babel-loader',
-            query: {
+            options: {
               presets: presets,
             }
           },
           {
            test: new RegExp(`^${testScriptDir}\/.*\.js$`),
             loader: 'babel-loader',
-            query: {
+            options: {
               presets: presets,
             }
           },
@@ -71,7 +71,7 @@ class Bundler {
           {
             test: path.resolve(builder.dirs.root, builder.dirs.src.client),
             loader: path.resolve(__dirname, 'crusher-puller-loader'),
-            query: {
+            options: {
               crusher: builder.crusher
             }
           },
