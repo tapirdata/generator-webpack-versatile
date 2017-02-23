@@ -1,10 +1,10 @@
 import path from 'path';
-import yeoman from 'yeoman-generator';
+import Generator from 'yeoman-generator';
 
 import BranchFinder from './branch-finder';
 
 
-class BaseGenerator extends yeoman.Base {
+class BaseGenerator extends Generator {
 
   constructor(...args) {
     super(...args);
