@@ -44,7 +44,6 @@ class AppGenerator extends BaseGenerator {
 
   writing() {
     const templateConfig = this.makeup.getTemplateConfig();
-    this.log('templateConfig=', templateConfig);
     const dirs = templateConfig.dirs;
 
     const templateTransformer = {
