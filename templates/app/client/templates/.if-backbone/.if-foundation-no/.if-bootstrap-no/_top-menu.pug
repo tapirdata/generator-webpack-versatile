@@ -1,5 +1,6 @@
 mixin top-menu(main_sel)
   .header
+    h3= title
     ul#main-nav
       li.item(class=main_sel === 'home' ? 'active' : '')
         a(href='#') Home
@@ -7,5 +8,4 @@ mixin top-menu(main_sel)
         a(href='#/about') About
       li.item(class=main_sel === 'contact' ? 'active' : '')
         a(href='#/contact') Contact
-    h3= title
 

@@ -62,7 +62,7 @@ describe('The Application', function() {
     )
     .then(() => gasper.retry(function() {
       expect($('div.jumbotron')).to.have.length(0);
-      expect($('p').text()).to.contain('about');
+      expect($('h1').text()).to.contain('About');
     }))
   );
 
@@ -75,7 +75,7 @@ describe('The Application', function() {
     )
     .then(() => gasper.retry(function() {
       expect($('div.jumbotron')).to.have.length(0);
-      expect($('p').text()).to.contain('contact');
+      expect($('h1').text()).to.contain('Contact');
     }))
   );
   return it('should show the home page again', () =>

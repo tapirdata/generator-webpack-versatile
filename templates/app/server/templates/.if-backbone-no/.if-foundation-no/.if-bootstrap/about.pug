@@ -2,11 +2,9 @@ extends layout
 include _top-menu.pug
 
 block content
+  +top-menu('about')
   .container
-    +top-menu('about')
-    div
-      p
-        | about ...
-    .footer
-      p
-        span.glyphicon.glyphicon-heart from the Yeoman team
+    .row
+      .col-sm-12
+        h1 About
+  include _footer.pug

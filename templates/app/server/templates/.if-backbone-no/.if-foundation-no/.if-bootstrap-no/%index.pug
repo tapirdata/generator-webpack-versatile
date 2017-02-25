@@ -9,7 +9,7 @@ block content
       img(src='<%= urls.staticBase %>/images/yeoman.png' alt='the yeoman')
       p Always a pleasure scaffolding your apps.
       p
-        a(href='#') Splendid!
+        a.btn(href='#') Splendid!
 
     .row
       .col
@@ -49,6 +49,4 @@ block content
           | Sass is the most mature, stable, and powerful professional grade CSS extension language
           | in the world.
 <% } -%>
-    .footer
-      p
-        span from the Yeoman team
+    include _footer.pug
