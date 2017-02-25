@@ -26,7 +26,7 @@ class AppGenerator extends BaseGenerator {
   prompting () {
     if (!this.options['skip-welcome-message']) {
       // Have Yeoman greet the user.
-      this.log(yosay('Welcome to the marvelous ExpressDevelop generator!'));
+      this.log(yosay('Welcome to the marvelous WebpackVersatile generator!'));
     }
 
     let questions = this.makeup.getQuestions();
