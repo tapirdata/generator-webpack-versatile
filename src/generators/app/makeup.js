@@ -1,6 +1,7 @@
 import path from 'path';
 import _ from 'lodash';
 import slug from 'slug';
+import slash from 'slash';
 
 class Makeup {
 
@@ -120,10 +121,10 @@ class Makeup {
       dist: 'dist'
     });
     _.defaults(dirs, {
-      serverSrc: path.join(dirs.src, 'server'),
-      clientSrc: path.join(dirs.src, 'client'),
-      tmpDev: path.join(dirs.tmp, 'dev'),
-      tmpTest: path.join(dirs.tmp, 'test')
+      serverSrc: slash(path.join(dirs.src, 'server')),
+      clientSrc: slash(path.join(dirs.src, 'client')),
+      tmpDev: slash(path.join(dirs.tmp, 'dev')),
+      tmpTest: slash(path.join(dirs.tmp, 'test'))
     });
 
     _.defaults(urls, {

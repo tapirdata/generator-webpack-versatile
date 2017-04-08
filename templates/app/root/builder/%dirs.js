@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import slash from 'slash';
 import _ from 'lodash';
 
 function dirsFactory(root, config) {
@@ -26,13 +27,13 @@ function dirsFactory(root, config) {
   });
 
   _.defaults(dirs.tgt, {
-    server: path.join(dirs.tgt.root, 'server'),
-    client: path.join(dirs.tgt.root, 'client')
+    server: slash(path.join(dirs.tgt.root, 'server')),
+    client: slash(path.join(dirs.tgt.root, 'client'))
   });
 
   _.defaults(dirs.tgt, {
-    clientVendor: path.join(dirs.tgt.client, 'vendor'),
-    serverTest: path.join(dirs.tgt.server, 'test')
+    clientVendor: slash(path.join(dirs.tgt.client, 'vendor')),
+    serverTest: slash(path.join(dirs.tgt.server, 'test'))
   });
 
   return dirs;
