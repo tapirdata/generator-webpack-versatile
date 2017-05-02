@@ -2,12 +2,18 @@ import express from 'express';
 let router = express.Router();
 let title = '<%= appnameCap %>';
 
-/* GET home page. */
+function getSection(req, res, next) {
+  const params = {
+    title
+  };
+  res.render('index', params);
+  next();
+}
+
+router.get('/section/:section/', getSection);
 
 router.get('/', function(req, res) {
-  res.render('index', {
-    title,
-    omitHead: req.xhr
-  });
+  res.redirect('/section/home/');
 });
+
 export default router;

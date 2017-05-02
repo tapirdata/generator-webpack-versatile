@@ -28,24 +28,40 @@ class App {
   constructor(options) {
     this.initialize(options);
   }
-
 <% } -%>
+
   initialize() {
     this.title = '<%= appnameCap %>';
 <% if (use.marionette) { -%>
     return this.on('start', function() {
       this._createRouter();
-      Backbone.history.start();
+      Backbone.history.start({
+        pushState: true,
+        root: '/',
+      });
+      this._catchAnchors();
     });
 <% } -%>
   }
 
 <% if (use.backbone) { -%>
   _createRouter() {
-    new Router({
+    this.router = new Router({
       controller: new Controller({
         app: this
       })
+    });
+  }
+
+  _catchAnchors() {
+    $(document).on('click', 'a[data-internal]', (event) => {
+      const href = $(event.currentTarget).attr('href');
+      if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+        event.preventDefault();
+        // Remove leading slases and hash bangs (backward compatablility)
+        const url = href.replace(/^\//,'').replace('\#\!\/','');
+        this.router.navigate(url, { trigger: true });
+      }
     });
   }
 <% } -%>
@@ -61,7 +77,11 @@ class App {
   start() {
 <% if (use.backbone) { -%>
     this._createRouter();
-    Backbone.history.start();
+    Backbone.history.start(
+      pushState: true,
+      root: '/',
+    );
+    this._catchAnchors();
 <% } else { -%>
     return this.instrumentPage();
 <% } -%>

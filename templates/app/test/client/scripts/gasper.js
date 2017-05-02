@@ -87,14 +87,14 @@ class Gasper {
     }
   }
 
-  switch(location) {
-    return this.show(location);
-  }
-
   activate($a) {
-    return this.switch($a.attr('href'));
+    if ($a.data('internal') == null) {
+      return this.show($a.attr('href'));
+    } else {
+      $a[0].click();
+      return Promise.resolve();
+    }
   }
-
 
   retry(grace, steps, fn) {
 

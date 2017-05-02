@@ -1,0 +1,6 @@
+ul.dropdown.menu.vertical.medium-horizontal(data-dropdown-menu)
+  li.menu-text= app.title
+  each _section in ['home', 'about', 'contact']
+    li.item(class=(_section == section) ? 'active' : '')
+      a(data-internal href='/section/' + _section + '/')=sectionNames[_section]
+

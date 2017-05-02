@@ -1,4 +1,5 @@
-import SimpleView from './views/simple';
+import { PageView, MainNavView } from './views/';
+import mainNavTemplate from '../templates/_main-nav.pug';
 
 <% if (use.marionette) { -%>
 import Marionette from 'backbone.marionette';
@@ -11,45 +12,53 @@ class Controller {
 <% } -%>
 
   initialize(options) {
-    this.targetEl = '#body-container';
+    this.pageTargetEl = '#page-meat';
+    this.mainNavTargetEl = '#main-nav';
     this.app = options.app;
     this.currentView = null;
   }
 
-  _showView(view) {
-    return view.render()
+  _showView(pageView, mainNavView) {
+    return Promise.all([
+      mainNavView.render(),
+      pageView.render(),
+    ])
     .then(() => {
       return this.app.instrumentPage()
         .then(() => {
-          this.currentView = view;
+          this.currentView = pageView;
+          window.scrollTo(0, 0);
         }
       );
     });
   }
 
-  _showTemplate(template) {
-    return this._showView(new SimpleView({
-      el: this.targetEl,
-      template,
-      app: this.app
-    })
-    );
-  }
+  showSection(section) {
+    const templatePromises = [
+      import(`../templates/${section}.pug`),
+    ];
+    return Promise.all(templatePromises)
+    .then((templates) => {
+      const [pageTemplate] = templates;
 
-  showHome() {
-    return this._showTemplate(require('../templates/home.pug'));
-  }
-
-  showAbout() {
-    return this._showTemplate(require('../templates/about.pug'));
-  }
-
-  showContact() {
-    return this._showTemplate(require('../templates/contact.pug'));
+      const pageView = new PageView({
+        el: this.pageTargetEl,
+        app: this.app,
+        template: pageTemplate,
+        section: section,
+      });
+      const mainNavView = new MainNavView({
+        el: this.mainNavTargetEl,
+        app: this.app,
+        template: mainNavTemplate,
+        section: section,
+      });
+      return this._showView(pageView, mainNavView);
+    });
   }
 
   defaultAction() {
-    return this.showHome();
+    return this.showSection('home');
   }
 }
 

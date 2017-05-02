@@ -10,7 +10,7 @@ describe('Template Tests', function() {
     expect(aboutTemplate).to.be.a('function');
   });
   it('template "about" should render correctly', function() {
-    const snippet = aboutTemplate({title: 'TITLE'});
+    const snippet = aboutTemplate({aboutText: 'TITLE'});
     expect(snippet).to.contain('TITLE');
   });
 });

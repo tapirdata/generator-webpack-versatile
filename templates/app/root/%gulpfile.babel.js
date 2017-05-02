@@ -88,7 +88,10 @@ gulp.task('build-starter', function() {
 
 gulp.task('build-client-bundles', () => {
   let opt = {
-    entry: path.join(builder.dirs.src.client, 'scripts', 'main.js'),
+    entry: [
+      path.join(builder.dirs.src.client, 'scripts', 'main.js'),
+      path.join(builder.dirs.src.client, 'templates/**/*.pug'),
+    ],
     uglify: builder.config.mode.isProduction,
   };
   if (builder.watchEnabled) {
@@ -192,7 +195,10 @@ gulp.task('build-test-server-scripts', function() {
 
 gulp.task('build-test-client-bundles', () => {
   let opt = {
-    entry: glob.sync(path.join(builder.dirs.test.client, 'scripts', '*.test.js')),
+    entry: [
+      path.join(builder.dirs.test.client, 'scripts', '*.test.js'),
+      path.join(builder.dirs.src.client, 'templates/**/*.pug'),
+    ],
     watch: builder.watchEnabled,
   };
   let dest = `${builder.dirs.tgt.client}/bundles`;

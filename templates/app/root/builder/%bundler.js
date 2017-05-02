@@ -1,6 +1,7 @@
 import os from 'os';
 import path from 'path';
 import _ from 'lodash';
+import glob from 'glob';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 import webpack from 'webpack';
@@ -19,16 +20,25 @@ class Bundler {
     this.server = null;
   }
 
+  normalizeEntries(entries) {
+    let builder = this.builder;
+    if (!_.isArray(entries)) {
+      entries = [entries];
+    }
+    let normEntries = [];
+    for (let entry of entries) {
+      entry = path.resolve(builder.dirs.root, entry);
+      normEntries = normEntries.concat(glob.sync(entry));
+    }
+    return normEntries;
+  }
+
   getConf(opt) {
     let builder = this.builder;
     let testScriptDir = path.resolve(builder.dirs.root, builder.dirs.test.client, 'scripts');
     let scriptDir = path.resolve(builder.dirs.root, builder.dirs.src.client, 'scripts');
 
-    let appEntries = opt.entry;
-    if (!_.isArray(appEntries)) {
-      appEntries = [appEntries];
-    }
-    appEntries = _.map(appEntries, entry => path.resolve(builder.dirs.root, entry));
+    let appEntries = this.normalizeEntries(opt.entry);
 
     let presets = [
       ['es2015', { modules: false }],
