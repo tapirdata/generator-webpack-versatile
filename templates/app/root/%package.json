@@ -6,6 +6,7 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.23.0",
+    "compression": "^1.6.2",
     "express": "^4.14.1",
     "lodash": "^4.17.4",
     "pug": "^2.0.0-beta9",

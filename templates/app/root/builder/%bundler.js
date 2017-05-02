@@ -129,8 +129,8 @@ class Bundler {
     let compiler = webpack(conf);
     let server = new WebpackDevServer(compiler, {
       publicPath: '/bundles/',
+      public: serverOptions.host,
       stats: { colors: true },
-      // noInfo: true,
     });
     return new Promise(resolve => {
       server.listen(serverOptions.port, function() {
