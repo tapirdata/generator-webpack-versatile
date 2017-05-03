@@ -77,10 +77,10 @@ class App {
   start() {
 <% if (use.backbone) { -%>
     this._createRouter();
-    Backbone.history.start(
+    Backbone.history.start({
       pushState: true,
       root: '/',
-    );
+    });
     this._catchAnchors();
 <% } else { -%>
     return this.instrumentPage();

@@ -1,10 +1,10 @@
-import Marionette from 'backbone.marionette';
+import Backbone from 'backbone';
 import $ from 'jquery';
 
 import menuToggler from '../../templates/menu-toggler.pug';
 import footer from '../../templates/_footer.pug';
 
-class BaseView extends Marionette.View {
+class BaseView extends Backbone.View {
   initialize(options) {
     this.app = options.app;
     this.title = options.title;
@@ -47,3 +47,4 @@ class MainNavView extends BaseView {
 }
 
 export { PageView, MainNavView };
+

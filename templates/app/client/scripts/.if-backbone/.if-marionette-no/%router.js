@@ -7,16 +7,8 @@ class Router extends Backbone.Router {
     this.targetEl = '#body-container';
   }
 
-  showHome() {
-    this.controller.showHome();
-  }
-
-  showAbout() {
-    this.controller.showAbout();
-  }
-
-  showContact() {
-    this.controller.showContact();
+  showSection(section) {
+    this.controller.showSection(section);
   }
 
   defaultAction() {
@@ -26,9 +18,7 @@ class Router extends Backbone.Router {
 
 
 Router.prototype.routes = {
-  '': 'showHome',
-  'about': 'showAbout',
-  'contact': 'showContact',
+  'section/:section/': 'showSection',
   '*actions': 'defaultAction'
 };
 
