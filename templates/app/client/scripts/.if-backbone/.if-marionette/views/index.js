@@ -31,7 +31,8 @@ class MainNavView extends BaseView {
     this.$el.html(this.template({
       app: this.app,
       section: this.section,
-      sectionNames: {
+      sectionNames: ['home', 'about', 'contact'],
+      sectionTitles: {
         home: 'Home',
         about: 'About',
         contact: 'Contact',

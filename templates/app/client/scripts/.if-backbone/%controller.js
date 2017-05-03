@@ -1,8 +1,10 @@
+<% if (use.marionette) { -%>
+import Marionette from 'backbone.marionette';
+<% } -%>
 import { PageView, MainNavView } from './views/';
 import mainNavTemplate from '../templates/_main-nav.pug';
 
 <% if (use.marionette) { -%>
-import Marionette from 'backbone.marionette';
 class Controller extends Marionette.Object {
 <% } else { -%>
 class Controller {

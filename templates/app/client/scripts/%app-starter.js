@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-<% if (use.bootstrap || use.foundation) { -%>
+<% if (use.bootstrap || use.foundation || use.backbone) { -%>
 // global window */
 import $ from 'jquery';
 <% } -%>
