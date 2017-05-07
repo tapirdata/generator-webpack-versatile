@@ -1,5 +1,5 @@
 #main-navmenu.collapse.navbar-collapse
   ul.nav.navbar-nav
-    each _section in sectionNames
+    each _section in allSections
       li.item(class=(_section == section) ? 'active' : '')
         a(data-internal href='/section/' + _section + '/')= sectionTitles[_section]

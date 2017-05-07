@@ -1,6 +1,6 @@
 import path from 'path';
 import express from 'express';
-import routes from './routes/main';
+import routesFactory from './routes/main';
 import compression from 'compression';
 import favicon from 'serve-favicon';
 import robots from 'robots.txt';
@@ -14,6 +14,6 @@ export default function(options) {
   app.use(favicon(path.join(options.clientDir, 'images', 'favicon.ico')));
   app.use(robots(path.join(options.clientDir, 'pages', 'robots.txt')));
   app.use('<%= urls.staticBase %>', express.static(options.clientDir));
-  app.use('/', routes);
+  app.use('/', routesFactory(options));
   return app;
 }

@@ -37,7 +37,7 @@ class Controller {
 
   showSection(section) {
     const templatePromises = [
-      import(`../../templates/${section}.pug`),
+      import(`../../templates/sections/${section}.pug`),
     ];
     return Promise.all(templatePromises)
     .then((templates) => {

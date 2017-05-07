@@ -1,4 +1,7 @@
 {
+  "app": {
+    "title": "<%= appnameCap %>"
+  },
   "modernizr": {
     "configPath": ".modernizr.json",
     "config": {

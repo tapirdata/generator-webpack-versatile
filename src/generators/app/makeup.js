@@ -187,6 +187,14 @@ class Makeup {
         choices: answers => {
           const choices = [
             {
+              name: 'Server side rendering',
+              value: 'serverRender',
+              checked: this.hasFeature('serverRender'),
+              disabled: answers.framework === 'none'
+                ? 'required if no framework selected'
+                : false,
+            },
+            {
               name: 'Modernizr',
               value: 'modernizr',
               checked: this.hasFeature('modernizr'),
@@ -218,6 +226,8 @@ class Makeup {
 
   autoAdjust() {
     const { config } = this;
+    if (config.framework === 'none')
+      this.addFeatures(['serverRender']);
     if (config.frontend === 'foundation')
       this.addFeatures(['modernizr', 'sass']);
     if (config.frontend === 'bootstrap')
@@ -245,9 +255,10 @@ class Makeup {
         marionette : config.framework === 'marionette',
         foundation : config.frontend === 'foundation',
         bootstrap  : config.frontend === 'bootstrap',
-        modernizr  : this.hasFeature('modernizr'),
-        sass       : this.hasFeature('sass'),
-        crusher    : this.hasFeature('crusher'),
+        serverRender : this.hasFeature('serverRender'),
+        modernizr    : this.hasFeature('modernizr'),
+        sass         : this.hasFeature('sass'),
+        crusher      : this.hasFeature('crusher'),
       }
     };
   }
@@ -260,7 +271,7 @@ class Makeup {
 
 Makeup.allFrameworks = ['none', 'backbone', 'marionette'];
 Makeup.allFrontends = ['none', 'foundation', 'bootstrap'];
-Makeup.allFeatures = ['modernizr', 'sass', 'crusher'];
+Makeup.allFeatures = ['serverRender', 'modernizr', 'sass', 'crusher'];
 
 
 export default Makeup;

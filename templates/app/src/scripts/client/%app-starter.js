@@ -31,7 +31,6 @@ class App {
 <% } -%>
 
   initialize() {
-    this.title = '<%= appnameCap %>';
 <% if (use.marionette) { -%>
     return this.on('start', function() {
       this._createRouter();
