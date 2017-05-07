@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import chai from 'chai';
-import appStarter from '../../../src/client/scripts/app-starter';
+import appStarter from '../../../src/scripts/client/app-starter';
 import Gasper from './gasper';
 
 let { expect } = chai;

@@ -71,7 +71,7 @@ builder.crusher = cacheCrusher({
     urlBase: '<%= urls.staticBase %>/'
   },
   mapper: {
-    counterparts: [{urlRoot: '<%= urls.staticBase %>', tagRoot: builder.dirs.src.client, globs: [
+    counterparts: [{urlRoot: '<%= urls.staticBase %>', tagRoot: builder.dirs.src.root, globs: [
       '!vendor/**',
       '!images/favicon.ico',
       '!**/*.map',

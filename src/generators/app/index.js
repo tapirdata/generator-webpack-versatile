@@ -61,18 +61,10 @@ class AppGenerator extends BaseGenerator {
       transformers: [templateTransformer],
     });
 
-    // this.log('copy server files');
+    // this.log('copy src files');
     this._branchCopy({
-      source: 'server',
-      target: dirs.serverSrc,
-      branches: templateConfig.use,
-      transformers: [templateTransformer],
-    });
-
-    // this.log('copy client files');
-    this._branchCopy({
-      source: 'client',
-      target: dirs.clientSrc,
+      source: 'src',
+      target: dirs.src,
       branches: templateConfig.use,
       transformers: [templateTransformer],
     });

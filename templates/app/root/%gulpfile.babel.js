@@ -45,7 +45,7 @@ gulp.task('clean', done => del(builder.dirs.tgt.root, done)
 
 gulp.task('build-server-scripts', function() {
   let dest = `${builder.dirs.tgt.server}/scripts`;
-  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.server}/scripts`})
+  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.scripts}/server`})
     .pipe(builder.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
     .pipe(makeScriptPipe())
@@ -56,7 +56,7 @@ gulp.task('build-server-scripts', function() {
 
 gulp.task('build-server-templates', function() {
   let dest = `${builder.dirs.tgt.server}/templates`;
-  return gulp.src([gp.PUG], {cwd: `${builder.dirs.src.server}/templates`})
+  return gulp.src([gp.PUG], {cwd: `${builder.dirs.src.templates}`})
     .pipe(builder.plumber())
     .pipe(plugins.newer({dest}))
     .pipe(plugins.ejs({builder}))
@@ -70,7 +70,7 @@ gulp.task('build-server-templates', function() {
 
 gulp.task('build-server-config', function() {
   let dest = `${builder.dirs.tgt.server}/config`;
-  return gulp.src([gp.ALL], {cwd: `${builder.dirs.src.server}/config`})
+  return gulp.src([gp.ALL], {cwd: `${builder.dirs.src.config}`})
     .pipe(builder.plumber())
     .pipe(plugins.ejs({builder}))
     .pipe(makeScriptPipe())
@@ -79,7 +79,7 @@ gulp.task('build-server-config', function() {
 
 gulp.task('build-starter', function() {
   let dest = __dirname;
-  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.server}/starter`})
+  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.scripts}/starter`})
     .pipe(builder.plumber())
     .pipe(plugins.ejs({builder}))
     .pipe(makeScriptPipe())
@@ -89,8 +89,8 @@ gulp.task('build-starter', function() {
 gulp.task('build-client-bundles', () => {
   let opt = {
     entry: [
-      path.join(builder.dirs.src.client, 'scripts', 'main.js'),
-      path.join(builder.dirs.src.client, 'templates/**/*.pug'),
+      path.join(builder.dirs.src.scripts, 'client', 'main.js'),
+      path.join(builder.dirs.src.templates, '**/*.pug'),
     ],
     uglify: builder.config.mode.isProduction,
   };
@@ -104,7 +104,7 @@ gulp.task('build-client-bundles', () => {
 });
 
 gulp.task('build-client-images', () =>
-  gulp.src([gp.ALL], {cwd: `${builder.dirs.src.client}/images`})
+  gulp.src([gp.ALL], {cwd: `${builder.dirs.src.images}`})
     .pipe(builder.plumber())<% if (use.crusher) { %>
     .pipe(builder.crusher.pusher())<% } %>
     .pipe(gulp.dest(`${builder.dirs.tgt.client}/images`))
@@ -112,7 +112,7 @@ gulp.task('build-client-images', () =>
 );
 
 gulp.task('build-client-pages', () =>
-  gulp.src([gp.ALL], {cwd: `${builder.dirs.src.client}/pages`})
+  gulp.src([gp.ALL], {cwd: `${builder.dirs.src.pages}`})
     .pipe(builder.plumber())
     .pipe(gulp.dest(`${builder.dirs.tgt.client}/pages`))
     .pipe(builder.sync.reloadClient())
@@ -128,7 +128,7 @@ gulp.task('build-client-styles', function() {
   includePaths.push(templateConfig.foundationSassPath);<% } %>
   let sassFilter = plugins.filter([gp.SASS], {restore: true});
   let scssFilter = plugins.filter([gp.SCSS], {restore: true});<% } %>
-  return gulp.src([gp.CSS<% if (use.sass) { %>, gp.SASS, gp.SCSS<% } %>], {cwd: `${builder.dirs.src.client}/styles`})
+  return gulp.src([gp.CSS<% if (use.sass) { %>, gp.SASS, gp.SCSS<% } %>], {cwd: `${builder.dirs.src.styles}`})
     .pipe(builder.plumber())
     .pipe(plugins.ejs(templateConfig))<% if (use.sass) { %>
     .pipe(sassFilter)
@@ -184,7 +184,7 @@ gulp.task('build-client-vendor-assets', done =>
 
 gulp.task('build-test-server-scripts', function() {
   let dest = `${builder.dirs.tgt.serverTest}/scripts`;
-  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.test.server}/scripts`})
+  return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.test.scripts}/server`})
     .pipe(builder.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
     .pipe(plugins.ejs({builder}))
@@ -196,8 +196,8 @@ gulp.task('build-test-server-scripts', function() {
 gulp.task('build-test-client-bundles', () => {
   let opt = {
     entry: [
-      path.join(builder.dirs.test.client, 'scripts', '*.test.js'),
-      path.join(builder.dirs.src.client, 'templates/**/*.pug'),
+      path.join(builder.dirs.test.scripts, 'client', '*.test.js'),
+      path.join(builder.dirs.src.templates, '**/*.pug'),
     ],
     watch: builder.watchEnabled,
   };
@@ -322,23 +322,23 @@ gulp.task('crush-on', () =>
 <% } -%>
 
 gulp.task('watch-server-assets', () =>
-  gulp.watch([`${builder.dirs.src.server}/templates/${gp.ALL}`], ['build-server-templates'])
+  gulp.watch([`${builder.dirs.src.templates}/${gp.ALL}`], ['build-server-templates'])
 );
 
 gulp.task('watch-server-scripts', () =>
-  gulp.watch([`${builder.dirs.src.server}/scripts/${gp.SCRIPT}`], ['build-server-scripts'])
+  gulp.watch([`${builder.dirs.src.scripts}/server/${gp.SCRIPT}`], ['build-server-scripts'])
 );
 
 gulp.task('watch-server', ['watch-server-assets', 'watch-server-scripts']);
 
 gulp.task('watch-client-assets', () => {
-  gulp.watch([`${builder.dirs.src.client}/styles/${gp.ALL}`], ['build-client-styles']);
-  gulp.watch([`${builder.dirs.src.client}/images/${gp.ALL}`], ['build-client-images']);
-  gulp.watch([`${builder.dirs.src.client}/pages/${gp.ALL}`], ['build-client-pages']);
+  gulp.watch([`${builder.dirs.src.styles}/${gp.ALL}`], ['build-client-styles']);
+  gulp.watch([`${builder.dirs.src.images}/${gp.ALL}`], ['build-client-images']);
+  gulp.watch([`${builder.dirs.src.pages}/${gp.ALL}`], ['build-client-pages']);
 });
 
 gulp.task('watch-test-server-scripts', () =>
-    gulp.watch([`${builder.dirs.test.server}/scripts/${gp.SCRIPT}`], ['build-test-server-scripts'])
+    gulp.watch([`${builder.dirs.test.scripts}/server/${gp.SCRIPT}`], ['build-test-server-scripts'])
 );
 
 gulp.task('watch-client', ['watch-client-assets']);

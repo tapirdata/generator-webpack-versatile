@@ -2,7 +2,7 @@
 import Marionette from 'backbone.marionette';
 <% } -%>
 import { PageView, MainNavView } from './views/';
-import mainNavTemplate from '../templates/_main-nav.pug';
+import mainNavTemplate from '../../templates/_main-nav.pug';
 
 <% if (use.marionette) { -%>
 class Controller extends Marionette.Object {
@@ -37,7 +37,7 @@ class Controller {
 
   showSection(section) {
     const templatePromises = [
-      import(`../templates/${section}.pug`),
+      import(`../../templates/${section}.pug`),
     ];
     return Promise.all(templatePromises)
     .then((templates) => {

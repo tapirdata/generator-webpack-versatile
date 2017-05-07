@@ -35,8 +35,8 @@ class Bundler {
 
   getConf(opt) {
     let builder = this.builder;
-    let testScriptDir = path.resolve(builder.dirs.root, builder.dirs.test.client, 'scripts');
-    let scriptDir = path.resolve(builder.dirs.root, builder.dirs.src.client, 'scripts');
+    let testScriptDir = path.resolve(builder.dirs.root, builder.dirs.test.scripts, 'client');
+    let scriptDir = path.resolve(builder.dirs.root, builder.dirs.src.scripts, 'client');
 
     let appEntries = this.normalizeEntries(opt.entry);
 
@@ -79,7 +79,7 @@ class Bundler {
           },
 <% if (use.crusher) { -%>
           {
-            test: path.resolve(builder.dirs.root, builder.dirs.src.client),
+            test: path.resolve(builder.dirs.root, builder.dirs.src.root),
             loader: path.resolve(__dirname, 'crusher-puller-loader'),
             options: {
               crusher: builder.crusher
@@ -126,7 +126,7 @@ class Bundler {
       .pipe(webpackStream(conf, webpack, cb))<% if (use.crusher) { %>
       .pipe(this.builder.crusher.pusher({
         tagger: {
-          relativeBase: path.join(this.builder.dirs.src.client, 'bundles')
+          relativeBase: path.join(this.builder.dirs.src.root, 'bundles')
         }
       }))<% } %>;
   }

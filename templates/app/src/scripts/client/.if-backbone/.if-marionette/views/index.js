@@ -1,8 +1,8 @@
 import Marionette from 'backbone.marionette';
 import $ from 'jquery';
 
-import menuToggler from '../../templates/menu-toggler.pug';
-import footer from '../../templates/_footer.pug';
+import menuToggler from '../../../templates/menu-toggler.pug';
+import footer from '../../../templates/_footer.pug';
 
 class BaseView extends Marionette.View {
   initialize(options) {

@@ -11,16 +11,25 @@ function dirsFactory(root, config) {
     bower:  JSON.parse(fs.readFileSync('./.bowerrc')).directory,
     src: {
       root:   '<%= dirs.src %>',
-      server: '<%= dirs.serverSrc %>',
-      client: '<%= dirs.clientSrc %>'
     },
     test: {
       root:   '<%= dirs.test %>',
-      server: '<%= dirs.test %>/server',
-      client: '<%= dirs.test %>/client'
     },
     tgt: _.clone(config.dirs.tgt) || {}
   };
+
+  _.defaults(dirs.src, {
+    config:  slash(path.join(dirs.src.root, 'config')),
+    images:  slash(path.join(dirs.src.root, 'images')),
+    pages:   slash(path.join(dirs.src.root, 'pages')),
+    scripts: slash(path.join(dirs.src.root, 'scripts')),
+    styles:  slash(path.join(dirs.src.root, 'styles')),
+    templates: slash(path.join(dirs.src.root, 'templates')),
+  });
+
+  _.defaults(dirs.test, {
+    scripts: slash(path.join(dirs.test.root, 'scripts')),
+  });
 
   _.defaults(dirs.tgt, {
     root: '.tmp'

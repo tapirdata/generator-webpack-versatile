@@ -92,8 +92,6 @@ class Makeup {
     _.merge(this.config.dirs, {
       bower     : options.bowerDir,
       src       : options.srcDir,
-      serverSrc : options.serverSrcDir,
-      clientSrc : options.clientSrcDir,
       test      : options.testDir,
       tmp       : options.tmpDir,
       tmpDev    : options.tmpDevDir,
@@ -121,8 +119,6 @@ class Makeup {
       dist: 'dist'
     });
     _.defaults(dirs, {
-      serverSrc: slash(path.join(dirs.src, 'server')),
-      clientSrc: slash(path.join(dirs.src, 'client')),
       tmpDev: slash(path.join(dirs.tmp, 'dev')),
       tmpTest: slash(path.join(dirs.tmp, 'test'))
     });
