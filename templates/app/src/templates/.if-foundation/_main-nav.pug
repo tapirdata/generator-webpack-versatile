@@ -1,6 +1,6 @@
 ul.dropdown.menu.vertical.medium-horizontal(data-dropdown-menu)
-  li.menu-text= title
-  each _section in allSections
+  li.menu-text= constants.title
+  each _section in constants.allSections
     li.item(class=(_section == section) ? 'active' : '')
-      a(data-internal href='/section/' + _section + '/')=sectionTitles[_section]
+      a(data-linking=linkingMode href='/section/' + _section + '/')=constants.sectionTitles[_section]
 

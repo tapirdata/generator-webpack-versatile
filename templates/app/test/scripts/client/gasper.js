@@ -88,11 +88,11 @@ class Gasper {
   }
 
   activate($a) {
-    if ($a.data('internal') == null) {
-      return this.show($a.attr('href'));
-    } else {
+    if ($a.data('linking') == 'client') {
       $a[0].click();
       return Promise.resolve();
+    } else {
+      return this.show($a.attr('href'));
     }
   }
 

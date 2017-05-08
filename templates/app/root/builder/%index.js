@@ -82,6 +82,7 @@ builder.crusher = cacheCrusher({
   }
 });
 builder.crusher.extractorOptions.catalog.registerExts('html', '.pug');
+builder.crusher.extractorOptions.catalog.registerExts('base', '.json');
 <% } -%>
 
 

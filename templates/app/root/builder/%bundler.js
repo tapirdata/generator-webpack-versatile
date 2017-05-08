@@ -35,8 +35,9 @@ class Bundler {
 
   getConf(opt) {
     let builder = this.builder;
-    let testScriptDir = path.resolve(builder.dirs.root, builder.dirs.test.scripts, 'client');
-    let scriptDir = path.resolve(builder.dirs.root, builder.dirs.src.scripts, 'client');
+    let scriptDir = path.resolve(builder.dirs.root, builder.dirs.src.scripts);
+    let configDir = path.resolve(builder.dirs.root, builder.dirs.src.config);
+    let testScriptDir = path.resolve(builder.dirs.root, builder.dirs.test.scripts);
 
     let appEntries = this.normalizeEntries(opt.entry);
 
@@ -67,11 +68,34 @@ class Bundler {
             }
           },
           {
+            test: new RegExp(`^${configDir}\/.*\.js$`),
+            loader: 'babel-loader',
+            options: {
+              presets: presets,
+            }
+          },
+          {
            test: new RegExp(`^${testScriptDir}\/.*\.js$`),
             loader: 'babel-loader',
             options: {
               presets: presets,
             }
+          },
+          {
+            test: /\.json$/,
+            use: [
+              {
+                loader: 'json-loader',
+              },
+              {
+                loader: './builder/ejs-substitute-loader',
+                options: {
+                  params: {
+                    builder
+                  }
+                }
+              },
+            ]
           },
           {
             test: /\.pug$/,

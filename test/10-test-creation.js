@@ -45,32 +45,26 @@ for (let ts of settings) {
           'config/development.json',
           'config/production.json',
           'config/testing.json',
-          'src/server/scripts/routes/main.js',
-          'src/server/scripts/app.js',
-          'src/server/scripts/setup.js',
-          'src/server/scripts/start.js',
-          'src/server/templates/layout.pug',
-          'src/server/templates/index.pug',
-          'src/client/images/favicon.ico',
-          'src/client/pages/robots.txt',
-          'src/client/pages/404.html',
-          'src/client/scripts/main.js',
-          'src/client/scripts/app-starter.js',
-          `src/client/styles/main${STYLE_EXT}`
+          'src/scripts/server/routes/main.js',
+          'src/scripts/server/app.js',
+          'src/scripts/server/setup.js',
+          'src/scripts/server/start.js',
+          'src/templates/layout.pug',
+          'src/templates/index.pug',
+          'src/templates/sections/home.pug',
+          'src/templates/sections/about.pug',
+          'src/templates/sections/contact.pug',
+          'src/images/favicon.ico',
+          'src/pages/robots.txt',
+          'src/pages/404.html',
+          'src/scripts/client/main.js',
+          'src/scripts/client/app-starter.js',
+          `src/styles/main${STYLE_EXT}`
         ];
         if (answers.framework === 'backbone' || answers.framework === 'marionette') {
           expected = expected.concat([
-            'src/client/scripts/router.js',
-            'src/client/scripts/views/simple.js',
-            'src/client/templates/home.pug',
-            'src/client/templates/about.pug',
-            'src/client/templates/contact.pug',
-            'src/client/templates/dummy.pug'
-          ]);
-        } else {
-          expected = expected.concat([
-            'src/server/templates/about.pug',
-            'src/server/templates/contact.pug'
+            'src/scripts/client/router.js',
+            'src/scripts/client/views/index.js',
           ]);
         }
         // console.log(expected)

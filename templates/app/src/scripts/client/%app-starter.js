@@ -6,15 +6,16 @@ import $ from 'jquery';
 <% if (use.foundation) { -%>
 // global document */
 <% } -%>
+<% if (use.marionette) { -%>
+import Marionette from 'backbone.marionette';
+<% } -%>
 
 <% if (use.backbone) { -%>
 import Backbone from 'backbone';
 import Controller from './controller';
 import Router from './router';
 <% } -%>
-<% if (use.marionette) { -%>
-import Marionette from 'backbone.marionette';
-<% } -%>
+import defaultOptions from '../../config/default.json';
 
 <% if (use.bootstrap) { -%>
 window.jQuery = $; // bootstrap needs this
@@ -23,15 +24,7 @@ require('bootstrap-sass');
 
 <% if (use.marionette) { -%>
 class App extends Marionette.Application {
-<% } else { -%>
-class App {
-  constructor(options) {
-    this.initialize(options);
-  }
-<% } -%>
-
   initialize() {
-<% if (use.marionette) { -%>
     return this.on('start', function() {
       this._createRouter();
       Backbone.history.start({
@@ -40,8 +33,17 @@ class App {
       });
       this._catchAnchors();
     });
-<% } -%>
   }
+<% } else { -%>
+class App {
+  constructor(options) {
+    this.initialize(options);
+  }
+
+  initialize(options) {
+    this.options = options;
+  }
+<% } -%>
 
 <% if (use.backbone) { -%>
   _createRouter() {
@@ -53,7 +55,7 @@ class App {
   }
 
   _catchAnchors() {
-    $(document).on('click', 'a[data-internal]', (event) => {
+    $(document).on('click', 'a[data-linking="client"]', (event) => {
       const href = $(event.currentTarget).attr('href');
       if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
         event.preventDefault();
@@ -121,7 +123,9 @@ class App {
 
 
 export default function() {
-  const app = new App();
+  const app = new App({
+    title: defaultOptions.app.title
+  });
   return app.launch()
   .then(() => app);
 }

@@ -2,8 +2,8 @@ import express from 'express';
 <% if (use.serverRender) { -%>
 import path from 'path';
 import pug from 'pug';
-import { allSections, sectionTitles } from '../../config/constants';
 <% } -%>
+import { allSections, sectionTitles } from '../../config/constants';
 
 
 function routerFactory(options) {
@@ -12,24 +12,32 @@ function routerFactory(options) {
 <% if (use.serverRender) { -%>
   const templatesPath = '../../templates/';
   const mainNavPath = path.resolve(__dirname, path.join(templatesPath, '_main-nav.pug'));
+  const footerPath = path.resolve(__dirname, path.join(templatesPath, '_footer.pug'));
 <% } -%>
 
   function getSection(req, res, next) {
     const section = req.params.section;
 
     const params = {
-      title: options.title,
+      constants: {
+        title: options.title,
+        allSections,
+        sectionTitles,
+      },
       section,
+      parts: {},
+      linkingMode: 'server',
     };
 
 <% if (use.serverRender) { -%>
     const pageMeatPath = path.resolve(__dirname, path.join(templatesPath, 'sections', section + '.pug'));
-    params.mainNav = pug.renderFile(mainNavPath, params);
-    params.pageMeat = pug.renderFile(pageMeatPath, params);
-    params.allSections = allSections;
-    params.sectionTitles = sectionTitles;
-<% } -%>
+    params.parts = {
+      mainNav: pug.renderFile(mainNavPath, params),
+      pageMeat: pug.renderFile(pageMeatPath, params),
+      footer:  pug.renderFile(footerPath, params),
+    };
 
+<% } -%>
     res.render('index', params);
     next();
   }

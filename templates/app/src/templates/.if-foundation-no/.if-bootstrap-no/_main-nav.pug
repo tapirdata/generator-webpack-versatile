@@ -1,5 +1,5 @@
 nav
   ul
-    each _section in allSections
+    each _section in constants.allSections
       li.item(class=(_section == section) ? 'active' : '')
-        a(data-internal href='/section/' + _section + '/')= sectionTitles[_section]
+        a(data-linking=linkingMode href='/section/' + _section + '/')= constants.sectionTitles[_section]
