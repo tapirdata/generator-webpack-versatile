@@ -9,11 +9,11 @@
 
 ## Features
 
-Use [webpack](http://webpack.github.io/) to write client code as ES2015 modules or in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format.
+Use [webpack](http://webpack.github.io/) to write client code as ES2016 modules or in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format.
 
 Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices.
 
-Use [babel](http://babeljs.io/) to transpile ES2015.
+Use [babel](http://babeljs.io/) to transpile ES2016.
 
 Use [gulp](http://gulpjs.com/) for all task automation.
 

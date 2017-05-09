@@ -2,21 +2,19 @@ This project was created by [generator-webpack-versatile](https://www.npmjs.com/
 
 ## Layout of this Project
 
-### `<%= dirs.clientSrc %>/`:
+### `<%= dirs.src %>/`:
 - `images/`: static image-files
 - `pages/`: static html-pages
-- `scripts/`: client-side script files
-  - `app-starter.js`: the client-side entry-point
-<% if (use.backbone) { -%>
-  - `scripts/views/`: Backbone/Marionette views
-<% } -%>
-- `styles/`: style-sheets (.sass, .scss, .css)
-- `templates/`: pug-templates to be rendered client sided
-
-### `<%= dirs.serverSrc %>/`:
 - `scripts/`:
+  - `client/`: client-side script files
+    - `app-starter.js`: the client-side entry-point
+<% if (use.backbone) { -%>
+    - `views/`: Backbone/Marionette views
+<% } -%>
+  - `server/`: server-side script files
   - `starter/server.js`: the server-sided entry-point for target *production*
-- `templates/`: pug-templates to be rendered server sided
+- `styles/`: style-sheets (.sass, .scss, .css)
+- `templates/`: pug-templates to be rendered server or client sided
 
 ### `config/`
 
@@ -30,7 +28,11 @@ Projects are built here for targets *development*, *testing*, *production*.
 
 Helper scripts to be used by `gulpfile`
 
-### `<%= dirs.tmpDev %>/test-results/`
+### `test/`
+
+Server and client test files
+
+### `<%= dirs.tmpTest %>/test-results/`
 
 Test results
 
