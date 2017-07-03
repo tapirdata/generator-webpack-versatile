@@ -33,8 +33,7 @@ class AppGenerator extends BaseGenerator {
     return this.prompt(questions)
       .then(answers => {
         this.makeup.putAnswers(answers);
-      }
-    );
+      });
   }
 
   configuring() {

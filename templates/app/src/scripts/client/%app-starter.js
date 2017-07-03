@@ -60,7 +60,7 @@ class App {
       if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
         event.preventDefault();
         // Remove leading slases and hash bangs (backward compatablility)
-        const url = href.replace(/^\//,'').replace('\#\!\/','');
+        const url = href.replace(/^\//,'').replace('#!/','');
         this.router.navigate(url, { trigger: true });
       }
     });
@@ -69,9 +69,9 @@ class App {
 
   launch() {
     return this.amendPage()
-    .then(() => {
-      return this.start();
-    });
+      .then(() => {
+        return this.start();
+      });
   }
 
 <% if (!use.marionette) { -%>
@@ -111,9 +111,9 @@ class App {
     // things to be done after page contents has been modified
 <% if (use.foundation) { -%>
     return Promise.resolve()
-    .then(function() {
-      $(document).foundation();
-    });
+      .then(function() {
+        $(document).foundation();
+      });
 <% } else { -%>
     return Promise.resolve();
 <% } -%>
@@ -127,5 +127,5 @@ export default function() {
     title: defaultOptions.app.title
   });
   return app.launch()
-  .then(() => app);
+    .then(() => app);
 }

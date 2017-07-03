@@ -81,8 +81,6 @@ builder.crusher = cacheCrusher({
     timeout: 20000
   }
 });
-builder.crusher.extractorOptions.catalog.registerExts('html', '.pug');
-builder.crusher.extractorOptions.catalog.registerExts('base', '.json');
 <% } -%>
 
 

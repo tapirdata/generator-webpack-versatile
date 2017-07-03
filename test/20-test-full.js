@@ -7,7 +7,6 @@ import _ from 'lodash';
 import rimraf from 'rimraf';
 import xml2js from 'xml2js';
 import glob from 'glob';
-import gutil from 'gulp-util';
 import helpers from 'yeoman-test';
 import assert from 'yeoman-assert';
 import settings from './settings';
@@ -18,14 +17,14 @@ class ProjectTestError extends Error {
     this.fails = fails;
     Object.defineProperty(this, 'message', { get() {
       let lines = _(this.fails)
-      .map(fail =>
-        [
-          `class: ${fail.classname}`,
-          `name:  ${fail.name}`,
-          `cause: ${fail.cause}`
-        ])
-      .flatten()
-      .value();
+        .map(fail =>
+          [
+            `class: ${fail.classname}`,
+            `name:  ${fail.name}`,
+            `cause: ${fail.cause}`
+          ])
+        .flatten()
+        .value();
       return `ProjectTestError\n${lines.join('\n')}`;
     }});
   }
@@ -169,7 +168,6 @@ for (const ts of settings) {
     for (const browserName of browserNames) {
       it(`run tests without client failures for '${browserName}'` , done =>
         glob(path.join(resultsDir, browserName + '*', 'client.xml'), function(err, clientResultsFiles) {
-          // gutil.log(`clientResultsFiles=${clientResultsFiles}`);
           assert(err === null, 'cannot read "client.xml"');
           assert(clientResultsFiles.length === 1, 'missing or multiple "client.xml"');
           clientResultsFile = clientResultsFiles[0];

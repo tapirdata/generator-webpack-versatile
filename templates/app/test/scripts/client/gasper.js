@@ -10,7 +10,7 @@ chai.use(chaiJq);
 function lift(fn) {
   return function(...args) {
     return Promise.resolve()
-    .then(() => fn.apply(this, args));
+      .then(() => fn.apply(this, args));
   };
 }
 
@@ -33,8 +33,8 @@ class Gasper {
 
   splitHtml(html) {
     html = html
-    .replace(/<(html|head|body)>/g, '<div class="_$1_">')
-    .replace(/<\/(html|head|body)>/g, '</div>');
+      .replace(/<(html|head|body)>/g, '<div class="_$1_">')
+      .replace(/<\/(html|head|body)>/g, '</div>');
     const $html = $(html);
     return {
       $head: $html.find('div._head_'),
@@ -74,16 +74,16 @@ class Gasper {
       return Promise.resolve();
     } else {
       return $.get(location)
-      .then(html => {
-        this.gaspHtml(html);
-        const { app } = this;
-        if (app) {
-          return app.amendPage()
-          .then(
-            () => app.instrumentPage()
-          );
-        }
-      });
+        .then(html => {
+          this.gaspHtml(html);
+          const { app } = this;
+          if (app) {
+            return app.amendPage()
+              .then(
+                () => app.instrumentPage()
+              );
+          }
+        });
     }
   }
 
@@ -104,11 +104,11 @@ class Gasper {
         return result;
       } else {
         return result
-        .catch(() =>
-          Promise.resolve()
-          .then(delay(dt))
-          .then(() => _retry(dt, left - 1, wrappedFn))
-        );
+          .catch(() =>
+            Promise.resolve()
+              .then(delay(dt))
+              .then(() => _retry(dt, left - 1, wrappedFn))
+          );
       }
     }
 

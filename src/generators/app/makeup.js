@@ -209,8 +209,8 @@ class Makeup {
               disabled: answers.frontend === 'foundation'
                 ? 'required by foundation'
                 : answers.frontend === 'bootstrap'
-                ? 'required by bootstrap'
-                : false,
+                  ? 'required by bootstrap'
+                  : false,
             },
             {
               name: 'Cache-crusher',

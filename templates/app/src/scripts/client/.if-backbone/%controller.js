@@ -25,14 +25,13 @@ class Controller {
       mainNavView.render(),
       pageView.render(),
     ])
-    .then(() => {
-      return this.app.instrumentPage()
-        .then(() => {
-          this.currentView = pageView;
-          window.scrollTo(0, 0);
-        }
-      );
-    });
+      .then(() => {
+        return this.app.instrumentPage()
+          .then(() => {
+            this.currentView = pageView;
+            window.scrollTo(0, 0);
+          });
+      });
   }
 
   showSection(section) {
@@ -40,23 +39,23 @@ class Controller {
       import(`../../templates/sections/${section}.pug`),
     ];
     return Promise.all(templatePromises)
-    .then((templates) => {
-      const [pageTemplate] = templates;
+      .then((templates) => {
+        const [pageTemplate] = templates;
 
-      const pageView = new PageView({
-        el: this.pageTargetEl,
-        app: this.app,
-        template: pageTemplate,
-        section: section,
+        const pageView = new PageView({
+          el: this.pageTargetEl,
+          app: this.app,
+          template: pageTemplate,
+          section: section,
+        });
+        const mainNavView = new MainNavView({
+          el: this.mainNavTargetEl,
+          app: this.app,
+          template: mainNavTemplate,
+          section: section,
+        });
+        return this._showView(pageView, mainNavView);
       });
-      const mainNavView = new MainNavView({
-        el: this.mainNavTargetEl,
-        app: this.app,
-        template: mainNavTemplate,
-        section: section,
-      });
-      return this._showView(pageView, mainNavView);
-    });
   }
 
   defaultAction() {

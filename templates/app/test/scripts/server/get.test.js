@@ -15,20 +15,19 @@ let check = function(url) {
   let text = null;
   it('should answer to a request', () =>
     fetch(url)
-    .then(function(_res) {
-      res = _res;
-    })
+      .then(function(_res) {
+        res = _res;
+      })
   );
   it('should serve the root page', () =>
-    expect(res.status)
-    .to.be.equal(200)
+    expect(res.status).to.be.equal(200)
   );
   it('should serve some sort of HTML', () =>
     expect(res.text().then(function(_text) {
       text = _text;
       return _text;
     }))
-    .to.eventually.contain('<html>')
+      .to.eventually.contain('<html>')
   );
   return it('should serve valid HTML5', function() {
     this.timeout(16000);
