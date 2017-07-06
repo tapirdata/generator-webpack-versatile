@@ -1,7 +1,10 @@
 
 import path from 'path';
+import fs from 'fs';
+import json5 from 'json5';
 import gutil from 'gulp-util';
 import pluginsFactory from 'gulp-load-plugins';
+import lazypipe from 'lazypipe';
 
 import configFactory from './config';
 import dirsFactory from './dirs';
@@ -20,10 +23,17 @@ const plugins = pluginsFactory();
 const config = configFactory();
 const dirs = dirsFactory(path.resolve(__dirname, '..'), config);
 const urls = urlsFactory(config);
+const rootDir = path.join(__dirname, '..');
+
 
 function handleError(err) {
   gutil.log(gutil.colors.red(`ERROR: ${err}`));
   return this.emit('end');
+}
+
+function getJson5(fname) {
+  const absFname = path.join(rootDir, 'config', fname)
+  return json5.parse(fs.readFileSync(absFname))
 }
 
 const builder = {
@@ -33,13 +43,18 @@ const builder = {
   watchEnabled: false,
   headlessEnabled: false,
   handleError,
-  rootDir: path.join(__dirname, '..'),
+  rootDir,
+  plugins,
+  serverBabelOptions: getJson5('babelrc-server.json5'),
+  getJson5,
+
   joinRelative(fromParts, toParts) {
     return path.relative(
         path.join.apply(null, toParts),
         path.join.apply(null, fromParts),
         );
   },
+
   getBundleUrl() {
     if (this.watchEnabled) {
       const serverOptions = builder.bundler.serverOptions;
@@ -61,6 +76,16 @@ const builder = {
     });
   },
 
+  makeScriptPipe() {
+    let jsFilter = plugins.filter([this.globPatterns.JS], {restore: true});
+    let lp = lazypipe()
+      .pipe(() => jsFilter)
+      .pipe(plugins.eslint)
+      .pipe(plugins.eslint.format)
+      .pipe(plugins.babel, this.serverBabelOptions)
+      .pipe(() => jsFilter.restore);
+    return lp();
+  },
 };
 
 <% if (use.crusher) { -%>

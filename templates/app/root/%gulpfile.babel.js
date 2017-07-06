@@ -4,9 +4,7 @@ import del from 'del';
 import glob from 'glob';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import pluginsFactory from 'gulp-load-plugins';
 import runSequence from 'run-sequence';
-import lazypipe from 'lazypipe';
 import child_process from 'child_process';
 import builder from './builder';
 
@@ -18,27 +16,12 @@ function exitAfter(done) {
   };
 }
 
-const plugins = pluginsFactory();
+const plugins = builder.plugins
 const gp = builder.globPatterns;
 
 function mapScript(p) {
   return  gutil.replaceExtension(p, '.js');
 }
-
-let makeScriptPipe = function() {
-  let jsFilter = plugins.filter([gp.JS], {restore: true});
-  let lp = lazypipe()
-    .pipe(() => jsFilter)
-    .pipe(plugins.eslint)
-    .pipe(plugins.eslint.format)
-    .pipe(plugins.babel, {
-      presets: ['es2015', 'stage-3'],
-      plugins: ['transform-runtime'],
-    })
-
-    .pipe(() => jsFilter.restore);
-  return lp();
-};
 
 gulp.task('clean', done => del(builder.dirs.tgt.root, done)
 );
@@ -48,7 +31,7 @@ gulp.task('build-server-scripts', function() {
   return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.scripts}/server`})
     .pipe(builder.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
-    .pipe(makeScriptPipe())
+    .pipe(builder.makeScriptPipe())
     .pipe(gulp.dest(dest))
     .pipe(builder.sync.reloadServer())
     .pipe(builder.mocha.rerunIfWatch());
@@ -73,7 +56,7 @@ gulp.task('build-server-config', function() {
   return gulp.src([gp.ALL], {cwd: `${builder.dirs.src.config}`})
     .pipe(builder.plumber())
     .pipe(plugins.ejs({builder}))
-    .pipe(makeScriptPipe())
+    .pipe(builder.makeScriptPipe())
     .pipe(gulp.dest(dest));
 });
 
@@ -82,7 +65,7 @@ gulp.task('build-starter', function() {
   return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.src.scripts}/starter`})
     .pipe(builder.plumber())
     .pipe(plugins.ejs({builder}))
-    .pipe(makeScriptPipe())
+    .pipe(builder.makeScriptPipe())
     .pipe(gulp.dest(dest));
 });
 
@@ -188,7 +171,7 @@ gulp.task('build-test-server-scripts', function() {
     .pipe(builder.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
     .pipe(plugins.ejs({builder}))
-    .pipe(makeScriptPipe())
+    .pipe(builder.makeScriptPipe())
     .pipe(gulp.dest(dest))
     .pipe(builder.mocha.rerunIfWatch());
 });

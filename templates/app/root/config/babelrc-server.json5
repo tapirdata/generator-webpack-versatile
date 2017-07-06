@@ -1,0 +1,12 @@
+// babel settings for server
+//
+{
+  babelrc: false,  // ignore .babelrc
+  presets: [
+    ['es2015-node'],
+    'stage-3',
+  ],
+  plugins: [
+    'transform-runtime',
+  ],
+}

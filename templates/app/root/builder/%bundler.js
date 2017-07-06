@@ -35,16 +35,19 @@ class Bundler {
 
   getConf(opt) {
     let builder = this.builder;
-    let scriptDir = path.resolve(builder.dirs.root, builder.dirs.src.scripts);
-    let configDir = path.resolve(builder.dirs.root, builder.dirs.src.config);
-    let testScriptDir = path.resolve(builder.dirs.root, builder.dirs.test.scripts);
+
+    function resolveRoot(p) {
+      return path.resolve(builder.dirs.root, p);
+    }
+    let scriptDir = resolveRoot(builder.dirs.src.scripts);
+    let configDir = resolveRoot(builder.dirs.src.config);
+    let testScriptDir = resolveRoot(builder.dirs.test.scripts);
+    let modulesDir = resolveRoot('node_modules');
 
     let appEntries = this.normalizeEntries(opt.entry);
 
-    let presets = [
-      ['es2015', { modules: false }],
-      'stage-3',
-    ]
+    const clientBabelOptions = builder.getJson5('babelrc-client.json5')
+    const clientModulesBabelOptions = builder.getJson5('babelrc-client-modules.json5')
 
     let conf = {
       entry: {
@@ -58,28 +61,30 @@ class Bundler {
           {
             enforce: 'pre',
             test: /\.js$/,
+            include: [
+              scriptDir,
+              configDir,
+              testScriptDir,
+            ],
             loaders: ['eslint-loader'],
           },
           {
-            test: new RegExp(`^${scriptDir}\/.*\.js$`),
+            test: /\.js$/,
+            include: [
+              scriptDir,
+              configDir,
+              testScriptDir,
+            ],
             loader: 'babel-loader',
-            options: {
-              presets: presets,
-            }
+            options: clientBabelOptions,
           },
           {
-            test: new RegExp(`^${configDir}\/.*\.js$`),
+            test: /\.js$/,
+            include: [
+              modulesDir,
+            ],
             loader: 'babel-loader',
-            options: {
-              presets: presets,
-            }
-          },
-          {
-           test: new RegExp(`^${testScriptDir}\/.*\.js$`),
-            loader: 'babel-loader',
-            options: {
-              presets: presets,
-            }
+            options: clientModulesBabelOptions,
           },
           {
             test: /\.json$/,
