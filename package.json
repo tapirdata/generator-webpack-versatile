@@ -44,7 +44,8 @@
     "build": "rm -rf dist && tsc",
     "test": "mocha --compilers js:ts-node/register --reporter spec ./test/*-test-*.ts",
     "lint": "tslint src/**/*.ts test/*.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "install": "npm run build"
   },
   "dependencies": {
     "chalk": "^2.0.1",
