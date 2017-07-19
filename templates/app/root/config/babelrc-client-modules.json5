@@ -1,8 +1,0 @@
-// babel settings for client – node modules
-// this is needed to make node modules (e.g. chai-as-promise) digestible for phantomjs.
-{
-  babelrc: false,  // ignore .babelrc
-  presets: [
-    ['es2015', { modules: false } ],
-  ],
-}

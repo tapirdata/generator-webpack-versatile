@@ -1,9 +1,8 @@
-import loaderUtils from 'loader-utils';
-import ejs from 'ejs';
+var loaderUtils = require('loader-utils')
+var ejs = require('ejs')
 
-function substitute(source) {
+module.exports = function substitute(source) {
   const options = loaderUtils.getOptions(this);
   return ejs.render(source, options.params);
 }
 
-export default substitute;

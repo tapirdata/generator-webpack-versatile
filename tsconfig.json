@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es2016",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "strict": true
+  },
+  "files": [
+    "src/generators/app/index.ts"
+  ]
+}
