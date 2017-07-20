@@ -67,9 +67,9 @@ gulp.task("build-server-templates", () => {
     .pipe(builder.mocha.rerunIfWatch())
 })
 
-gulp.task("build-server-config", () => {
-  const dest = `${builder.dirs.tgt.server}/config`
-  return gulp.src([gp.ALL], {cwd: `${builder.dirs.src.config}`})
+gulp.task("build-server-common", () => {
+  const dest = `${builder.dirs.tgt.server}/common`
+  return gulp.src([gp.ALL], {cwd: `${builder.dirs.src.common}`})
     .pipe(builder.plumber())
     .pipe(plugins.ejs({builder}))
     .pipe(builder.makeScriptPipe(serverTsOptions))
@@ -296,7 +296,7 @@ gulp.task("build-server", (done) =>
     "build-server-scripts",
     "lint-server-scripts",
     "build-server-assets",
-    "build-server-config",
+    "build-server-common",
   ], done),
 )
 

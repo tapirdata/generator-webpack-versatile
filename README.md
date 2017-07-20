@@ -9,11 +9,11 @@
 
 ## Features
 
-Use [webpack](http://webpack.github.io/) to write client code as ES2016 modules or in [CommonJS](http://en.wikipedia.org/wiki/CommonJS)-format.
+Use [typescript](http://www.typescriptlang.org/) to transpile typescript modules.
+
+Use [webpack](http://webpack.github.io/) to pack client code into compact bundles.
 
 Use [browersync](http://www.browsersync.io/) for fast live testing on multiple devices.
-
-Use [babel](http://babeljs.io/) to transpile ES2016.
 
 Use [gulp](http://gulpjs.com/) for all task automation.
 

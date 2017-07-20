@@ -1,5 +1,5 @@
 
 export default function() {
-  const options = require("../config/default.json")
+  const options = require("../common/default.json")
   return options
 }

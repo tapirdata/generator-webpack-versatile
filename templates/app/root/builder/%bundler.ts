@@ -49,7 +49,7 @@ export class Bundler {
       return path.resolve(builder.dirs.root, p)
     }
     const scriptDir = resolveRoot(builder.dirs.src.scripts)
-    const configDir = resolveRoot(builder.dirs.src.config)
+    const commonDir = resolveRoot(builder.dirs.src.common)
     const testScriptDir = resolveRoot(builder.dirs.test.scripts)
     const modulesDir = resolveRoot("node_modules")
 
@@ -74,7 +74,7 @@ export class Bundler {
             test: /\.ts$/,
             include: [
               scriptDir,
-              configDir,
+              commonDir,
               testScriptDir,
             ],
             loaders: ["tslint-loader"],
@@ -83,7 +83,7 @@ export class Bundler {
             test: /\.ts$/,
             include: [
               scriptDir,
-              configDir,
+              commonDir,
               testScriptDir,
             ],
             loader: "awesome-typescript-loader",

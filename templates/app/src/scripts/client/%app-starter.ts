@@ -14,7 +14,7 @@ import Backbone = require("backbone")
 import Marionette = require("backbone.marionette")
 <% } -%>
 
-import defaultOptions = require("../config/default.json")
+import defaultOptions = require("../common/default.json")
 <% if (use.backbone) { -%>
 import Controller from "./controller"
 <% } -%>

@@ -23,7 +23,7 @@ function dirsFactory(root: string, config: any) {
     images:  slash(path.join(dirs.src.root, "images")),
     pages:   slash(path.join(dirs.src.root, "pages")),
     scripts: slash(path.join(dirs.src.root, "scripts")),
-    config:  slash(path.join(dirs.src.root, "scripts/config")),
+    common:  slash(path.join(dirs.src.root, "scripts/common")),
     styles:  slash(path.join(dirs.src.root, "styles")),
     templates: slash(path.join(dirs.src.root, "templates")),
   })

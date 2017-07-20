@@ -4,7 +4,7 @@ import path = require("path")
 import pug = require("pug")
 <% } -%>
 
-import { allSections, sectionTitles } from "../../config/constants"
+import { allSections, sectionTitles } from "../../common/constants"
 
 function routerFactory(options: any) {
 

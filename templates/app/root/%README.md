@@ -11,6 +11,7 @@ This project was created by [generator-webpack-versatile](https://www.npmjs.com/
 <% if (use.backbone) { -%>
     - `views/`: Backbone/Marionette views
 <% } -%>
+  - `common/`: shared script and configuration files
   - `server/`: server-side script files
   - `starter/server.js`: the server-sided entry-point for target *production*
 - `styles/`: style-sheets (.sass, .scss, .css)

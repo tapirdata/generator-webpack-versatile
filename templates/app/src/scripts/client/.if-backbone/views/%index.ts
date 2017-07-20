@@ -8,7 +8,7 @@ import Marionette = require("backbone.marionette")
 
 import footer = require("../../../templates/_footer.pug")
 import menuToggler = require("../../../templates/_menu-toggler.pug")
-import { allSections, sectionTitles } from "../../config/constants"
+import { allSections, sectionTitles } from "../../common/constants"
 
 class EmptyModel extends Backbone.Model {
 }
