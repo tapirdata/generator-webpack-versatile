@@ -135,7 +135,7 @@ export default class Makeup {
     })
 
     _.defaults(config, {
-      framework: "marionette",
+      framework: "page",
       frontend: "foundation",
     })
 
@@ -149,11 +149,15 @@ export default class Makeup {
       {
         type: "list",
         name: "framework",
-        message: "What model-view-* framework would you like to use?",
+        message: "What client framework would you like to use?",
         choices: [
           {
-            name: "None",
+            name: "No client rendering",
             value: "none",
+          },
+          {
+            name: "Page.js",
+            value: "page",
           },
           {
             name: "Backbone",
@@ -257,10 +261,12 @@ export default class Makeup {
       dirs        : config.dirs,
       urls        : config.urls,
       use: {
-        backbone   : config.framework === "backbone" || config.framework === "marionette",
-        marionette : config.framework === "marionette",
-        foundation : config.frontend === "foundation",
-        bootstrap  : config.frontend === "bootstrap",
+        clientRender : ["page", "backbone", "marionette"].includes(config.framework),
+        page         : config.framework === "page",
+        backbone     : ["backbone", "marionette"].includes(config.framework),
+        marionette   : config.framework === "marionette",
+        foundation   : config.frontend === "foundation",
+        bootstrap    : config.frontend === "bootstrap",
         serverRender : this.hasFeature("serverRender"),
         modernizr    : this.hasFeature("modernizr"),
         sass         : this.hasFeature("sass"),
@@ -274,7 +280,7 @@ export default class Makeup {
   }
 
   get allFrameworks() {
-    return ["none", "backbone", "marionette"]
+    return ["none", "page", "backbone", "marionette"]
   }
 
   get allFrontends() {

@@ -1,7 +1,8 @@
 <% if (use.marionette) { -%>
 import Marionette = require("backbone.marionette")
 <% } -%>
-import { MainNavView, PageView } from "./views/"
+import MainNavView from "./views/main-nav"
+import PageView from "./views/page"
 import mainNavTemplate = require("../../templates/_main-nav.pug")
 
 <% if (use.marionette) { -%>

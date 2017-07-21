@@ -18,7 +18,11 @@ export default class BaseGenerator extends Generator {
       copyOptions.process = (contents: any) => {
         let s = contents.toString()
         for (const transFn of transFns) {
-          s = transFn(s)
+          try {
+            s = transFn(s)
+          } catch (e) {
+            console.log('ERROR', srcPath, e)
+          }
         }
         return s
       }

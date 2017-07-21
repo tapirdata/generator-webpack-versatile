@@ -21,6 +21,7 @@ const testSettings = [
   "foundation,modernizr,sass,full",
   "foundation,modernizr,sass,backbone,full",
   "foundation,modernizr,sass,crusher,full",
+  "foundation,modernizr,sass,page,crusher,full",
   "foundation,modernizr,sass,backbone,crusher,full",
   "foundation,modernizr,sass,backbone,marionette,crusher,full",
 
@@ -28,6 +29,7 @@ const testSettings = [
   "bootstrap,sass,full",
   "bootstrap,sass,backbone,full",
   "bootstrap,sass,crusher,full",
+  "bootstrap,sass,page,crusher,full",
   "bootstrap,sass,backbone,crusher,full",
   "bootstrap,sass,backbone,marionette,crusher,full",
 

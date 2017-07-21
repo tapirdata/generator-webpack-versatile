@@ -30,6 +30,8 @@ Use [modernizr](http://modernizr.com/) for browser-feature detection.
 
 Use [foundation](http://foundation.zurb.com/) or [bootstrap](http://getbootstrap.com/) for responsive client-side styling.
 
+Use [page.js](https://visionmedia.github.io/page.js/) as a micro client-side router 
+
 Use [backbone](http://backbonejs.org/) as a lightweight client-library to build agile single-page web applications.
 
 Use [marionette](http://marionettejs.com/) to organize your backbone views.

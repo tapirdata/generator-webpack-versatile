@@ -91,21 +91,3 @@ export default class BranchFinder {
     }
   }
 }
-
-// const _do_run = false;
-// if (_do_run) {
-//   let bf = new BranchFinder(__dirname + '/../app/templates', '/tmp/ho-srv', {
-//     branches: {
-//       backbone: true,
-//       requirejs: true
-//     },
-//     pattern: 'server/**/*',
-//     tgtRelalative: 'server',
-//     transformers: [{
-//       name: 'backup',
-//       src: /(.*)/,
-//       tgt: '$1.bak'
-//     }]
-//   });
-//   bf.run();
-// }

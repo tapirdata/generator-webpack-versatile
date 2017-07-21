@@ -1,35 +1,43 @@
 import "babel-polyfill"
-<% if (use.bootstrap || use.foundation || use.backbone) { -%>
+<% if (use.clientRender || use.foundation || use.bootstrap) { -%>
 // global window */
 import $ = require("jquery")
 <% } -%>
 <% if (use.foundation) { -%>
 // global document */
 <% } -%>
+<% if (use.page) { -%>
+
+import page = require("page")
+<% } -%>
 <% if (use.backbone) { -%>
 
 import Backbone = require("backbone")
-<% } -%>
 <% if (use.marionette) { -%>
 import Marionette = require("backbone.marionette")
 <% } -%>
+<% } -%>
 
 import defaultOptions = require("../common/default.json")
-<% if (use.backbone) { -%>
+<% if (use.clientRender) { -%>
 import Controller from "./controller"
 <% } -%>
+<% if (use.foundation) { -%>
 import { wrapDeferred } from "./helpers"
-<% if (use.backbone) { -%>
+<% } -%>
+<% if (use.clientRender) { -%>
 import Router from "./router"
 <% } -%>
-<% if (use.bootstrap || use.foundation) { -%>
-
-(window as any).jQuery = $ // bootstrap needs this, foundation 6.2.3 needs this
-<% } -%>
 <% if (use.bootstrap) { -%>
-    //
+
+(window as any).jQuery = $ // bootstrap needs this
+
 // tslint:disable-next-line:no-var-requires
 require("bootstrap-sass")
+<% } -%>
+<% if (use.foundation) { -%>
+
+(window as any).jQuery = $ // foundation needs this
 <% } -%>
 
 <% if (use.marionette) { -%>
@@ -51,7 +59,7 @@ class App extends Marionette.Application {
 class App {
 
   public options: any
-<% if (use.backbone) { -%>
+<% if (use.clientRender) { -%>
   public router: Router
 <% } -%>
 
@@ -72,10 +80,6 @@ class App {
   public async amendPage() {
     // things to be done on first page load
 <% if (use.foundation) { -%>
-    // $.fn.load = function(fn) {  // foundation 6.2.3 still uses deprecated '$.fn.load'
-    //   return this.on('load', fn);
-    // };
-
     return wrapDeferred($.ajax({ // load script async
       url: "/__static__/vendor/foundation/foundation.js",
       dataType: "script",
@@ -89,7 +93,7 @@ class App {
     ($(document) as any).foundation()
 <% } -%>
   }
-<% if (use.backbone) { -%>
+<% if (use.clientRender) { -%>
 
   private _createRouter() {
     this.router = new Router({
@@ -98,6 +102,7 @@ class App {
       }),
     })
   }
+<% if (use.backbone) { -%>
 
   private _catchAnchors() {
     $(document).on("click", 'a[data-linking="client"]', (event) => {
@@ -113,19 +118,28 @@ class App {
     })
   }
 <% } -%>
-<% if (!use.marionette) { -%>
+<% } -%>
+<% if (use.marionette) { -%>
+<% } else if (use.backbone) { -%>
 
   private async start() {
-<% if (use.backbone) { -%>
     this._createRouter()
     Backbone.history.start({
       pushState: true,
       root: "/",
     })
     this._catchAnchors()
+  }
+<% } else if (use.page) { -%>
+
+  private async start() {
+    this._createRouter()
+    page.start()
+  }
 <% } else { -%>
+
+  private async start() {
     return this.instrumentPage()
-<% } -%>
   }
 <% } -%>
 }

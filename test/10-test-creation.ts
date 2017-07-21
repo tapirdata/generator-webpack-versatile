@@ -66,10 +66,12 @@ for (const ts of settings) {
           "src/scripts/client/app-starter.ts",
           `src/styles/main${STYLE_EXT}`,
         ]
-        if (answers.framework === "backbone" || answers.framework === "marionette") {
+        if (["page", "backbone", "marionette"].includes(answers.framework)) {
           expected = expected.concat([
             "src/scripts/client/router.ts",
-            "src/scripts/client/views/index.ts",
+            "src/scripts/client/views/base.ts",
+            "src/scripts/client/views/main-nav.ts",
+            "src/scripts/client/views/page.ts",
           ])
         }
         // console.log(expected)

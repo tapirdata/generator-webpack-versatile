@@ -14,6 +14,12 @@
       | The most advanced responsive
       | front-end framework in the world.
 <% } -%>
+<% if (use.page) { -%>
+  .small-12.large-4.columns
+    h4 Page.js
+    p
+      | A micro client-side router inspired by the Express router
+<% } -%>
 <% if (use.backbone) { -%>
   .small-12.large-4.columns
     h4 Backbone
