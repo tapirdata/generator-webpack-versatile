@@ -45,7 +45,7 @@ class TestSetting {
     }
 
     const answers = {
-      framework: hasPart("marionette") ? "marionette" : hasPart("backbone") ? "backbone" : "none",
+      framework: hasPart("marionette") ? "marionette" : hasPart("backbone") ? "backbone" : hasPart("page") ? "page" : "none",
       frontend: hasPart("foundation") ? "foundation" : hasPart("bootstrap") ? "bootstrap" : "none",
       features: _(featureNames)
         .filter((name) => hasPart(name))
