@@ -21,7 +21,8 @@ export default class BaseGenerator extends Generator {
           try {
             s = transFn(s)
           } catch (e) {
-            console.log('ERROR', srcPath, e)
+            // tslint:disable-next-line:no-console
+            console.log("ERROR", srcPath, e)
           }
         }
         return s
