@@ -19,6 +19,6 @@ export default function(builder: Builder) {
       timeout: 20000,
     },
   });
-  (crusher as any).extractorOptions.catalog.registerExts("script", [".ts"])
+  // crusher.extractorCatalog.registerExts("script", [".ts"]) // already in cache-crusher@2.0.0
   return crusher
 }

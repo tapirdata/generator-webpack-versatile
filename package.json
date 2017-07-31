@@ -41,11 +41,10 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
     "test": "mocha --compilers js:ts-node/register --reporter spec ./test/*-test-*.ts",
     "lint": "tslint src/**/*.ts test/*.ts",
-    "prepublishOnly": "npm run build",
-    "install": "npm run build"
+    "build": "rm -rf dist && tsc",
+    "prepublishOnly": "npm run lint && npm run build"
   },
   "dependencies": {
     "chalk": "^2.0.1",
