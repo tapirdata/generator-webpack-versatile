@@ -9,6 +9,7 @@ before_install:
 install:
   - npm install -g bower
   - npm install
+  - npm run build # test runs dist-files
 sudo: false
 cache:
   directories:
