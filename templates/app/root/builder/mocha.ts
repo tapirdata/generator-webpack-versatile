@@ -3,7 +3,7 @@ import gulp = require("gulp")
 
 export class Mocha {
 
-  public isActive: boolean
+  public isActive: boolean = false
   private builder: any
 
   constructor(builder: any) {

@@ -2,8 +2,8 @@ import Backbone = require("backbone")
 
 class Router extends Backbone.Router {
 
-  private controller: any
-  private targetEl: string
+  private controller!: any
+  private targetEl!: string
 
   constructor(options?: any) {
     super(options)

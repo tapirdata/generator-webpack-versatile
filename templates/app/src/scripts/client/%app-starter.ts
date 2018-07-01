@@ -43,7 +43,7 @@ require("bootstrap-sass")
 <% if (use.marionette) { -%>
 class App extends Marionette.Application {
 
-  public router: Router
+  public router!: Router
 
   public initialize() {
     this.on("start", () => {
@@ -58,9 +58,9 @@ class App extends Marionette.Application {
 <% } else { -%>
 class App {
 
-  public options: any
+  public options!: any
 <% if (use.clientRender) { -%>
-  public router: Router
+  public router!: Router
 <% } -%>
 
   constructor(options: any) {

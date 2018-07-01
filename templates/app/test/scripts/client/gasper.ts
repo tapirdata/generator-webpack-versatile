@@ -1,7 +1,7 @@
 /* global window */
 
-import $ = require("jquery")
 import chai = require("chai")
+import $ = require("jquery")
 
 export type TargetFunction = (...args: any[]) => any
 export type WrappedFunction = (...args: any[]) => Promise<any>

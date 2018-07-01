@@ -4,7 +4,7 @@ import Controller from "./controller"
 
 export default class Router {
 
-  private controller: Controller
+  private controller!: Controller
 
   constructor(options: any = {}) {
     this.initialize(options)

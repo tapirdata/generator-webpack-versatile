@@ -39,7 +39,7 @@ export default function(builder: Builder) {
         return Modernizr.build(config, (output: string) => {
           const outFile = new VinylFile({
             path: "modernizr.js",
-            contents: new Buffer(output),
+            contents: Buffer.from(output),
           })
           return outStream.push(outFile)
         })

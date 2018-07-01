@@ -1,6 +1,6 @@
-import _ = require("lodash")
-import http = require("http")
 import gutil = require("gulp-util")
+import http = require("http")
+import _ = require("lodash")
 
 import appFactory from "./app"
 import setupFactory from "./setup"

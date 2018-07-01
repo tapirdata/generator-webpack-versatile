@@ -1,9 +1,9 @@
-import path = require("path")
-import express = require("express")
 import compression = require("compression")
-import favicon = require("serve-favicon")
+import express = require("express")
+import path = require("path")
 // tslint:disable-next-line:no-var-requires
 const robots = require("robots.txt")
+import favicon = require("serve-favicon")
 
 import routesFactory from "./routes/main"
 

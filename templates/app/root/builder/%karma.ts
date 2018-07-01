@@ -7,7 +7,7 @@ import { Builder } from "."
 export class Karma {
 
   private builder: Builder
-  private server: karma.Server | null
+  private server: karma.Server | null = null
   private reporters: any
   private browsers: any
   private karmaConf: any

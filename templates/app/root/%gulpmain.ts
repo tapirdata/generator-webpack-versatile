@@ -27,8 +27,8 @@ function mapScript(p: string) {
   return gutil.replaceExtension(p, ".js")
 }
 
-gulp.task("clean", (done: Done) =>
-  del(builder.dirs.tgt.root, done),
+gulp.task("clean", () =>
+  del(builder.dirs.tgt.root)
 )
 
 gulp.task("build-server-scripts", () => {

@@ -1,8 +1,8 @@
-import fetch from "node-fetch"
-import { Response } from "node-fetch"
 import chai = require("chai")
 // tslint:disable-next-line:no-var-requires
 const validator = require("html-validator")
+import fetch from "node-fetch"
+import { Response } from "node-fetch"
 
 import setupFactory from "./setup"
 const { expect } = chai

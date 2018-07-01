@@ -1,9 +1,10 @@
 <% if (use.marionette) { -%>
 import Marionette = require("backbone.marionette")
 <% } -%>
+
+import mainNavTemplate = require("../../templates/_main-nav.pug")
 import MainNavView from "./views/main-nav"
 import PageView from "./views/page"
-import mainNavTemplate = require("../../templates/_main-nav.pug")
 
 <% if (use.marionette) { -%>
 class Controller extends Marionette.Object {
@@ -11,10 +12,10 @@ class Controller extends Marionette.Object {
 class Controller {
 <% } -%>
 
-  public pageTargetEl: string
-  public mainNavTargetEl: string
-  public app: any
-  public currentView: any
+  public pageTargetEl!: string
+  public mainNavTargetEl!: string
+  public app!: any
+  public currentView!: any
 
 <% if (use.marionette) { -%>
   constructor(...args: any[]) {

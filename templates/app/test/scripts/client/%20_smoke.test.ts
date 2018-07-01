@@ -1,6 +1,6 @@
-import $ = require("jquery")
 import chai = require("chai")
 const { expect } = chai
+import $ = require("jquery")
 
 import appStarter from "../../../src/scripts/client/app-starter"
 import Gasper from "./gasper"

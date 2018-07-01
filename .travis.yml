@@ -3,7 +3,7 @@ branches:
   except:
     - /^v[0-9]/
 node_js:
-  - "8.1"
+  - "10.5"
 before_install:
   - if [[ `npm -v` < 5* ]]; then npm i -g npm@5; fi
 install:
