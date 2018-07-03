@@ -2,7 +2,6 @@ import path = require("path")
 import del = require("del")
 import gulp = require("gulp")
 import gutil = require("gulp-util")
-import runSequence = require("run-sequence")
 import child_process = require("child_process")
 import _ = require("lodash")
 
@@ -14,13 +13,12 @@ const gp = builder.globPatterns
 // tslint:disable-next-line:no-var-requires
 const serverTsOptions = require("./config/tsconfig-server.json")
 
-type Done = (err?: any) => void
-
-function exitAfter(done: Done) {
-  return (err?: any) => {
-    done(err)
+function exitAfter() {
+  setTimeout(() => {
+    gutil.log('exitAfter')
     process.exit()
-  }
+  }, 100)
+  return Promise.resolve()
 }
 
 function mapScript(p: string) {
@@ -180,10 +178,9 @@ gulp.task('build-client-vendor-bootstrap-fonts', () =>
 )
 <% } -%>
 
-gulp.task("nop", () => null)
+gulp.task("nop", () => Promise.resolve())
 
-gulp.task("build-client-vendor-assets", (done) =>
-  runSequence([
+gulp.task("build-client-vendor-assets", gulp.series(
 <% if (use.modernizr) { -%>
     "build-client-vendor-modernizr",
 <% } -%>
@@ -194,9 +191,8 @@ gulp.task("build-client-vendor-assets", (done) =>
 <% if (use.bootstrap) { -%>
     "build-client-vendor-bootstrap-fonts",
 <% } -%>
-    "nop",
-  ], done),
-)
+    "nop"
+))
 
 gulp.task("build-test-server-scripts", () => {
   const dest = `${builder.dirs.tgt.serverTest}/scripts`
@@ -285,46 +281,36 @@ gulp.task("karma-watch", () => {
   builder.karma.start({ singleRun: false })
 })
 
-gulp.task("build-server-assets", (done) =>
-  runSequence([
-    "build-server-templates",
-  ], done),
-)
+gulp.task("build-server-assets", gulp.series(
+  "build-server-templates"
+))
 
-gulp.task("build-server", (done) =>
-  runSequence([
-    "build-server-scripts",
-    "lint-server-scripts",
-    "build-server-assets",
-    "build-server-common",
-  ], done),
-)
+gulp.task("build-server", gulp.series(
+  "build-server-scripts",
+  "lint-server-scripts",
+  "build-server-assets",
+  "build-server-common"
+))
 
-gulp.task("build-client-assets", (done) =>
-  runSequence([
-    "build-client-images",
-    "build-client-styles",
-    "build-client-pages",
-    "build-client-vendor-assets",
-  ], done),
-)
+gulp.task("build-client-assets", gulp.series(
+  "build-client-images",
+  "build-client-styles",
+  "build-client-pages",
+  "build-client-vendor-assets"
+))
 
-gulp.task("build-client", (done) =>
-  runSequence([
-    "build-client-assets",
-    "build-client-bundles",
-  ], done),
-)
+gulp.task("build-client", gulp.series(
+  "build-client-assets",
+  "build-client-bundles"
+))
 
-gulp.task("build-test", (done) =>
-  runSequence([
-    "build-server",
-    "build-client-assets",
-    "build-test-server-scripts",
-    "lint-test-server-scripts",
-    "build-test-client-bundles",
-  ], done),
-)
+gulp.task("build-test", gulp.series(
+  "build-server",
+  "build-client-assets",
+  "build-test-server-scripts",
+  "lint-test-server-scripts",
+  "build-test-client-bundles",
+))
 
 gulp.task("build", (done) => {
   const tasks = [
@@ -334,79 +320,72 @@ gulp.task("build", (done) => {
   if (builder.config.mode.isProduction) {
     tasks.push("build-starter")
   }
-  return runSequence(tasks, done)
+  return gulp.series(...tasks)(done)
 })
 
-gulp.task("watch-on", () =>
-  builder.watchEnabled = true,
-)
+gulp.task("watch-on", () => {
+  builder.watchEnabled = true
+  return Promise.resolve()
+})
 
-gulp.task("headless-on", () =>
-  builder.headlessEnabled = true,
-)
+gulp.task("headless-on", () => {
+  builder.headlessEnabled = true
+  return Promise.resolve()
+})
 <% if (use.crusher) { -%>
 
-gulp.task("crush-on", () =>
-  builder.crusher.enabled = true,
-)
+gulp.task("crush-on", () => {
+  builder.crusher.enabled = true
+  return Promise.resolve()
+})
 <% } -%>
 
 gulp.task("watch-server-assets", () =>
-  gulp.watch([`${builder.dirs.src.templates}/${gp.ALL}`], {}, ["build-server-templates"]),
+  gulp.watch([`${builder.dirs.src.templates}/${gp.ALL}`], {}, gulp.series("build-server-templates")),
 )
 
 gulp.task("watch-server-scripts", () =>
-  gulp.watch([`${builder.dirs.src.scripts}/server/${gp.SCRIPT}`], ["build-server-scripts", "lint-server-scripts"]),
+  gulp.watch([`${builder.dirs.src.scripts}/server/${gp.SCRIPT}`], gulp.series("build-server-scripts", "lint-server-scripts")),
 )
 
-gulp.task("watch-server", ["watch-server-assets", "watch-server-scripts"])
+gulp.task("watch-server", gulp.series("watch-server-assets", "watch-server-scripts"))
 
 gulp.task("watch-client-assets", () => {
-  gulp.watch([`${builder.dirs.src.styles}/${gp.ALL}`], ["build-client-styles"])
-  gulp.watch([`${builder.dirs.src.images}/${gp.ALL}`], ["build-client-images"])
-  gulp.watch([`${builder.dirs.src.pages}/${gp.ALL}`], ["build-client-pages"])
+  gulp.watch([`${builder.dirs.src.styles}/${gp.ALL}`], gulp.series("build-client-styles"))
+  gulp.watch([`${builder.dirs.src.images}/${gp.ALL}`], gulp.series("build-client-images"))
+  gulp.watch([`${builder.dirs.src.pages}/${gp.ALL}`], gulp.series("build-client-pages"))
 })
 
 gulp.task("watch-test-server-scripts", () =>
   gulp.watch(
     [`${builder.dirs.test.scripts}/server/${gp.SCRIPT}`],
-    ["build-test-server-scripts", "lint-test-server-scripts"],
+    gulp.series("build-test-server-scripts", "lint-test-server-scripts")
   ),
 )
 
-gulp.task("watch-client", ["watch-client-assets"])
+gulp.task("watch-client", gulp.series("watch-client-assets"))
 
-gulp.task("watch", ["watch-server", "watch-client"])
+gulp.task("watch", gulp.series("watch-server", "watch-client"))
 
-gulp.task("watch-test", ["watch-test-server-scripts"])
+gulp.task("watch-test", gulp.series("watch-test-server-scripts"))
 
-gulp.task("run", (done) => runSequence("clean", "build", "serve", done),
-)
+gulp.task("run", gulp.series("clean", "build", "serve"))
 
-gulp.task("run-watch", (done) => runSequence("watch-on", "clean", "build", "serve", "start-sync", "watch", done),
-)
+gulp.task("run-watch", gulp.series("watch-on", "clean", "build", "serve", "start-sync", "watch"))
 
-gulp.task("test", (done: Done) =>
-  runSequence(<% if (use.crusher) { %>"crush-on", <% } %>"clean", "build-test", "serve", "mocha", "karma",
-    exitAfter(done),
-  ),
-)
+gulp.task("test", gulp.series(<% if (use.crusher) { %>"crush-on", <% } %>"clean", "build-test", "serve", "mocha", "karma", exitAfter))
 
-gulp.task("test-ci", (done: Done) =>
-  runSequence(
-    <% if (use.crusher) { %>"crush-on", <% } %>"headless-on", "clean", "build-test",
-    "serve", "mocha", "karma",
-    exitAfter(done),
-  ),
-)
+gulp.task("test-ci", gulp.series(
+  <% if (use.crusher) { %>"crush-on", <% } %>"headless-on", "clean", "build-test",
+  "serve", "mocha", "karma",
+  exitAfter,
+))
 
-gulp.task("test-watch", (done) => runSequence(
-      "watch-on", "clean", "build-test", "serve", "mocha", "karma-watch",
-      "watch-server", "watch-client-assets", "watch-test",
-      done),
-)
+gulp.task("test-watch", gulp.series(
+  "watch-on", "clean", "build-test", "serve", "mocha", "karma-watch",
+  "watch-server", "watch-client-assets", "watch-test"
+))
 
-gulp.task("dist", (done) => runSequence("crush-on", "clean", "build", "pack", done),
-)
+gulp.task("dist", gulp.series(<% if (use.crusher) { %>"crush-on", <% } %>"clean", "build", "pack"))
 
-gulp.task("default", ["run-watch"])
+gulp.task("default", gulp.series("run-watch"))

@@ -7,6 +7,7 @@ import gutil = require("gulp-util")
 import webpack = require("webpack")
 import WebpackDevServer = require("webpack-dev-server")
 import webpackStream = require("webpack-stream")
+import ip = require("ip")
 
 import { Builder } from "."
 
@@ -19,7 +20,7 @@ export class Bundler {
   constructor(builder: Builder) {
     this.builder = builder
     this.serverOptions = {
-      host: os.hostname(),  // or: 'localhost',
+      host: ip.address(), // or 'localhost'
       port: 8080,
     }
     this.server = null
@@ -58,6 +59,7 @@ export class Bundler {
     const clientModulesBabelOptions = builder.getJsonConfig("babelrc-client-modules.json")
 
     const conf = {
+      mode: "none",
       entry: {
         app: appEntries,
       },
@@ -103,14 +105,9 @@ export class Bundler {
             test: /\.json$/,
             use: [
               {
-                loader: "json-loader",
-              },
-              {
                 loader: "./builder/ejs-substitute-loader",
                 options: {
-                  params: {
-                    builder,
-                  },
+                  params: { builder },
                 },
               },
             ],
@@ -130,18 +127,18 @@ export class Bundler {
 <% } -%>
         ],
       },
+      optimization: {
+        splitChunks: {
+          chunks: "initial",
+          name: "vendor",
+        },
+        runtimeChunk: {
+          name: "manifest",
+        }
+      },
       plugins: [
         // Avoid publishing files when compilation fails
         new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.optimize.CommonsChunkPlugin({
-          name: "vendor",
-          minChunks(module) {
-            return module.context && module.context.indexOf("node_modules") !== -1
-          },
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-          name: "manifest",
-        }),
       ],
       stats: {
         // Nice colored output
@@ -176,20 +173,20 @@ export class Bundler {
 <% } -%>
   }
 
-  public async startDevServer(opt: any) {
+  public startDevServer(opt: any) {
     const conf: any = this.getConf(opt)
-    conf.output.path = "/"
+    //? conf.output.path = "/"
     const serverOptions = this.serverOptions
+    // induce reload after recompile:
     conf.entry.app.unshift(`webpack-dev-server/client?http://${serverOptions.host}:${serverOptions.port}/`)
     const compiler = webpack(conf)
     const server = new WebpackDevServer(compiler, {
       publicPath: "/bundles/",
-      public: serverOptions.host,
       stats: { colors: true },
     })
     return new Promise((resolve) => {
-      server.listen(serverOptions.port, () => {
-        gutil.log(`WepPack Dev Server listening on port ${serverOptions.port}.`)
+      server.listen(serverOptions.port, serverOptions.host, () => {
+        gutil.log(`WepPack Dev Server listening on ${serverOptions.host}:${serverOptions.port}.`)
         this.server = server
         resolve()
       })
