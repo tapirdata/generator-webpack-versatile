@@ -1,5 +1,6 @@
+let crusher
+
 module.exports = function(source) {
-  let crusher = this.query.crusher
   if (!crusher.enabled) {
     return source
   }
@@ -8,4 +9,8 @@ module.exports = function(source) {
   crusher.pullString(source, fileinfo)
     .then(result => callback(null, result))
     .catch(err => callback(err))
+}
+
+module.exports.setCrusher = function(_crusher) {
+  crusher = _crusher
 }

@@ -147,6 +147,7 @@ class App {
 export default async function() {
   const options: any = defaultOptions
   const app = new App({
+    region: "",
     title: options.app.title,
   })
   await app.launch()

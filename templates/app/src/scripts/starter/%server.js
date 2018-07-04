@@ -1,4 +1,4 @@
 
-const starter = require('./<%%= builder.dirs.tgt.server %>/scripts/start').default
+const starter = require('./<%%= dirs.tgt.server %>/scripts/start').default
 const server = starter({})
 

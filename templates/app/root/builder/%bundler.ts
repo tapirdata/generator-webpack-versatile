@@ -1,13 +1,15 @@
+import util = require("util")
 import os = require("os")
 import path = require("path")
 import _ = require("lodash")
 import glob = require("glob")
 import gulp = require("gulp")
 import gutil = require("gulp-util")
+import ip = require("ip")
 import webpack = require("webpack")
 import WebpackDevServer = require("webpack-dev-server")
 import webpackStream = require("webpack-stream")
-import ip = require("ip")
+import merge = require("webpack-merge")
 
 import { Builder } from "."
 
@@ -43,7 +45,7 @@ export class Bundler {
     return normEntries
   }
 
-  public getConf(opt: any) {
+  public getConf(bundlerOpt: any) {
     const builder = this.builder
 
     function resolveRoot(p: string) {
@@ -54,12 +56,12 @@ export class Bundler {
     const testScriptDir = resolveRoot(builder.dirs.test.scripts)
     const modulesDir = resolveRoot("node_modules")
 
-    const appEntries = this.normalizeEntries(opt.entry)
+    const appEntries = this.normalizeEntries(bundlerOpt.entry)
 
     const clientModulesBabelOptions = builder.getJsonConfig("babelrc-client-modules.json")
 
-    const conf = {
-      mode: "none",
+    let conf: webpack.Configuration = {
+      mode: bundlerOpt.mode.isProduction ? "production" : "development",
       entry: {
         app: appEntries,
       },
@@ -107,7 +109,7 @@ export class Bundler {
               {
                 loader: "./builder/ejs-substitute-loader",
                 options: {
-                  params: { builder },
+                  params: builder.params,
                 },
               },
             ],
@@ -120,9 +122,6 @@ export class Bundler {
           {
             test: path.resolve(builder.dirs.root, builder.dirs.src.root),
             loader: path.resolve(__dirname, "crusher-puller-loader"),
-            options: {
-              crusher: builder.crusher,
-            },
           },
 <% } -%>
         ],
@@ -148,21 +147,18 @@ export class Bundler {
       devtool: "source-map",
     }
 
-    if (opt.uglify) {
-      conf.plugins.push(
-        new webpack.optimize.UglifyJsPlugin({
-        }),
-      )
+    if (bundlerOpt.mode.isProduction) {
+      conf = merge(conf, {})
     }
 
     return conf
   }
 
-  public createStream(opt: any) {
-    const conf: any = this.getConf(opt)
-    conf.watch = opt.watch
+  public createStream(bundlerOpt: any) {
+    const conf: any = this.getConf(bundlerOpt)
+    conf.watch = bundlerOpt.watch
     return gulp.src(path.resolve(__dirname, "null.js"))
-      .pipe(this.builder.plumber(!opt.watch))  // continue after error if watching
+      .pipe(this.builder.plumber(!bundlerOpt.watch))  // continue after error if watching
       .pipe(webpackStream(conf, webpack))
 <% if (use.crusher) { -%>
       .pipe(this.builder.crusher.pusher({
@@ -173,8 +169,8 @@ export class Bundler {
 <% } -%>
   }
 
-  public startDevServer(opt: any) {
-    const conf: any = this.getConf(opt)
+  public startDevServer(bundlerOpt: any) {
+    const conf: any = this.getConf(bundlerOpt)
     //? conf.output.path = "/"
     const serverOptions = this.serverOptions
     // induce reload after recompile:
@@ -182,7 +178,6 @@ export class Bundler {
     const compiler = webpack(conf)
     const server = new WebpackDevServer(compiler, {
       publicPath: "/bundles/",
-      stats: { colors: true },
     })
     return new Promise((resolve) => {
       server.listen(serverOptions.port, serverOptions.host, () => {

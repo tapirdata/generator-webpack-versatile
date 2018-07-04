@@ -56,7 +56,7 @@ gulp.task("build-server-templates", () => {
   return gulp.src([gp.PUG], {cwd: `${builder.dirs.src.templates}`})
     .pipe(builder.plumber())
     .pipe(plugins.newer({dest}))
-    .pipe(plugins.ejs({builder}))
+    .pipe(plugins.ejs(builder.params))
 <% if (use.crusher) { -%>
     .pipe(builder.crusher.puller())
 <% } -%>
@@ -69,7 +69,7 @@ gulp.task("build-server-common", () => {
   const dest = `${builder.dirs.tgt.server}/common`
   return gulp.src([gp.ALL], {cwd: `${builder.dirs.src.common}`})
     .pipe(builder.plumber())
-    .pipe(plugins.ejs({builder}))
+    .pipe(plugins.ejs(builder.params))
     .pipe(builder.makeScriptPipe(serverTsOptions))
     .pipe(gulp.dest(dest))
 })
@@ -78,23 +78,23 @@ gulp.task("build-starter", () => {
   const dest = __dirname
   return gulp.src(gp.JS, {cwd: `${builder.dirs.src.scripts}/starter`})
     .pipe(builder.plumber())
-    .pipe(plugins.ejs({builder}))
+    .pipe(plugins.ejs(builder.params))
     .pipe(gulp.dest(dest))
 })
 
 gulp.task("build-client-bundles", () => {
-  const opt = {
+  const bundlerOpt = {
     entry: [
       path.join(builder.dirs.src.scripts, "client", "main.ts"),
       path.join(builder.dirs.src.templates, "**/*.pug"),
     ],
-    uglify: builder.config.mode.isProduction,
+    mode: builder.config.mode,
   }
   if (builder.watchEnabled) {
-    return builder.bundler.startDevServer(opt)
+    return builder.bundler.startDevServer(bundlerOpt)
   } else {
     const dest = `${builder.dirs.tgt.client}/bundles`
-    return builder.bundler.createStream(opt)
+    return builder.bundler.createStream(bundlerOpt)
       .pipe(gulp.dest(dest))
   }
 })
@@ -199,7 +199,7 @@ gulp.task("build-test-server-scripts", () => {
   return gulp.src(gp.SCRIPT, {cwd: `${builder.dirs.test.scripts}/server`})
     .pipe(builder.plumber())
     .pipe(plugins.newer({dest, map: mapScript}))
-    .pipe(plugins.ejs({builder}))
+    .pipe(plugins.ejs(builder.params))
     .pipe(builder.makeScriptPipe(serverTsOptions))
     .pipe(gulp.dest(dest))
     .pipe(builder.mocha.rerunIfWatch())
@@ -221,18 +221,18 @@ gulp.task("build-test-client-bundles", () => {
     gutil.log("webpack bundle done.")
     builder.karma.rerun()
   }, 1000)
-  const opt = {
+  const bundlerOpt = {
     entry: [
       path.join(builder.dirs.test.scripts, "client", "*.test.ts"),
       path.join(builder.dirs.src.templates, "**/*.pug"),
     ],
+    mode: builder.config.mode,
     watch: builder.watchEnabled,
   }
   const dest = `${builder.dirs.tgt.client}/bundles`
-  const resultStream = builder.bundler.createStream(opt)
+  const resultStream = builder.bundler.createStream(bundlerOpt)
     .pipe(gulp.dest(dest))
     .pipe(plugins.tap((f: any) => {
-      // gutil.log('webpack bundle => ', f)
       rerunKarma()
     }))
   if (builder.watchEnabled) {
@@ -281,30 +281,30 @@ gulp.task("karma-watch", () => {
   builder.karma.start({ singleRun: false })
 })
 
-gulp.task("build-server-assets", gulp.series(
+gulp.task("build-server-assets", gulp.parallel(
   "build-server-templates"
 ))
 
-gulp.task("build-server", gulp.series(
+gulp.task("build-server", gulp.parallel(
   "build-server-scripts",
   "lint-server-scripts",
   "build-server-assets",
   "build-server-common"
 ))
 
-gulp.task("build-client-assets", gulp.series(
+gulp.task("build-client-assets", gulp.parallel(
   "build-client-images",
   "build-client-styles",
   "build-client-pages",
   "build-client-vendor-assets"
 ))
 
-gulp.task("build-client", gulp.series(
+gulp.task("build-client", gulp.parallel(
   "build-client-assets",
   "build-client-bundles"
 ))
 
-gulp.task("build-test", gulp.series(
+gulp.task("build-test", gulp.parallel(
   "build-server",
   "build-client-assets",
   "build-test-server-scripts",
@@ -320,7 +320,7 @@ gulp.task("build", (done) => {
   if (builder.config.mode.isProduction) {
     tasks.push("build-starter")
   }
-  return gulp.series(...tasks)(done)
+  return gulp.parallel(...tasks)(done)
 })
 
 gulp.task("watch-on", () => {

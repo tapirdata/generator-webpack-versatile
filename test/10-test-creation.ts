@@ -76,7 +76,7 @@ for (const ts of settings) {
         }
         // console.log(expected)
         (app.options as any)["skip-install"] = true
-        return app.run(() => {
+        app.run(() => {
           assert.file(expected)
           done()
         })

@@ -1,4 +1,4 @@
 /* tslint:disable */
 import setupFactory from 
-  "<%= builder.joinRelative([builder.dirs.tgt.server, 'scripts/setup'], [builder.dirs.tgt.serverTest, 'scripts']) %>"
+  "<%= joinRelative([dirs.tgt.server, 'scripts/setup'], [dirs.tgt.serverTest, 'scripts']) %>"
 export default setupFactory

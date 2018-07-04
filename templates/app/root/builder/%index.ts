@@ -23,6 +23,13 @@ import { Karma } from "./karma" // ts-node needs karma after sync
 
 const rootDir = path.join(__dirname, "..")
 
+function joinRelative(fromParts: string[], toParts: string[]) {
+  return path.relative(
+      path.join(...toParts),
+      path.join(...fromParts),
+      )
+}
+
 export class Builder {
 
   public watchEnabled = false
@@ -48,12 +55,23 @@ export class Builder {
 <% } -%>
 <% if (use.crusher) { -%>
     this.crusher = crusherFactory(this)
+    let cpl = require("./crusher-puller-loader");
+    cpl.setCrusher(this.crusher)
 <% } -%>
     this.bundler = new Bundler(this)
     this.server = new Server(this)
     this.sync = new Sync(this)
     this.mocha = new Mocha(this)
     this.karma = new Karma(this)
+  }
+
+  public get params() {
+    return {
+      config: this.config,
+      dirs: this.dirs,
+      bundleUrl: this.getBundleUrl(),
+      joinRelative,
+    }
   }
 
   public getConfigPath(fname: string) {
@@ -63,13 +81,6 @@ export class Builder {
   public getJsonConfig(fname: string) {
     const configPath = this.getConfigPath(fname)
     return JSON.parse(fs.readFileSync(configPath, "utf-8"))
-  }
-
-  public joinRelative(fromParts: string[], toParts: string[]) {
-    return path.relative(
-        path.join(...toParts),
-        path.join(...fromParts),
-        )
   }
 
   public getBundleUrl() {

@@ -1,8 +1,8 @@
 {
   "app": {
-    "title": "<%= builder.config.app.title %>",
-    "port": <%= builder.config.server.port %>,
-    "clientDir": "<%= builder.dirs.tgt.client %>"
+    "title": "<%= config.app.title %>",
+    "port": <%= config.server.port %>,
+    "clientDir": "<%= dirs.tgt.client %>"
   }
 }
 
