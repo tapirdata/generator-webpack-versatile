@@ -7,7 +7,7 @@ import Makeup from "./makeup"
 
 export default class AppGenerator extends BaseGenerator {
 
-  protected makeup: Makeup
+  protected makeup!: Makeup
 
   constructor(args: string|string[], options: {}) {
     super(args, options)

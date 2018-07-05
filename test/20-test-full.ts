@@ -1,14 +1,14 @@
-import path = require("path")
-import fs = require("fs")
 import child_process = require("child_process")
+import fs = require("fs")
+import glob = require("glob")
 import _ = require("lodash")
+import path = require("path")
 import rimraf = require("rimraf")
 import xml2js = require("xml2js")
-import glob = require("glob")
-import helpers = require("yeoman-test")
-import Generator = require("yeoman-generator")
 // tslint:disable-next-line:no-var-requires
 const assert = require("yeoman-assert")
+import Generator = require("yeoman-generator")
+import helpers = require("yeoman-test")
 
 import settings from "./settings"
 

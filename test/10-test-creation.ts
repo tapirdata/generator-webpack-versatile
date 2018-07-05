@@ -1,8 +1,8 @@
 import path = require( "path")
-import helpers = require("yeoman-test")
-import Generator = require("yeoman-generator")
 // tslint:disable-next-line:no-var-requires
 const assert = require("yeoman-assert")
+import Generator = require("yeoman-generator")
+import helpers = require("yeoman-test")
 
 import settings from "./settings"
 

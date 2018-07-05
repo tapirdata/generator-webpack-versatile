@@ -1,6 +1,6 @@
-import path = require("path")
 import fs = require("fs")
 import minimatch = require("minimatch")
+import path = require("path")
 
 export type TransFn = (s: string) => string
 
