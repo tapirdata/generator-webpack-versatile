@@ -86,7 +86,6 @@ gulp.task("build-client-bundles", () => {
   const bundlerOpt = {
     entry: [
       path.join(builder.dirs.src.scripts, "client", "main.ts"),
-      path.join(builder.dirs.src.templates, "**/*.pug"),
     ],
     mode: builder.config.mode,
   }
@@ -224,7 +223,6 @@ gulp.task("build-test-client-bundles", () => {
   const bundlerOpt = {
     entry: [
       path.join(builder.dirs.test.scripts, "client", "*.test.ts"),
-      path.join(builder.dirs.src.templates, "**/*.pug"),
     ],
     mode: builder.config.mode,
     watch: builder.watchEnabled,
